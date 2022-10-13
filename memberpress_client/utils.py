@@ -26,20 +26,8 @@ from openedx.core.djangoapps.user_api.errors import UserNotFound
 # our  stuff
 
 UTC = pytz.UTC
-logger = logging.getLogger(__name__)
 User = get_user_model()
-
-
-def logger(msg):
-    logger.info(msg)
-
-
-def objects_key_by(iter, key):
-    index = {}
-    for obj in iter:
-        value = getattr(obj, key)
-        index[value] = obj
-    return index
+logger = logging.getLogger(__name__)
 
 
 def masked_dict(obj) -> dict:

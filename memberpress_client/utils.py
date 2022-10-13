@@ -49,7 +49,7 @@ def masked_dict(obj) -> dict:
     obj: a dict or a string representation of a dict, or None
 
     example:
-        2022-10-07 20:03:01,455 INFO member_press.client.Client.register_user() request: path=/api/user/v1/account/registration/, data={
+        2022-10-07 20:03:01,455 INFO memberpress_client.client.Client.register_user() request: path=/api/user/v1/account/registration/, data={
             "name": "__Pat_SelfReg-07",
             "username": "__Pat_SelfReg-07",
             "email": "pat.mcguire+Pat_SelfReg-07@cabinetoffice.gov.uk",
@@ -104,7 +104,7 @@ def log_trace(caller: str, path: str, data: dict) -> None:
     add an application log entry for higher level defs that call the edxapp api.
     """
     logger.info(
-        "member_press.client.Client.{caller}() request: path={path}, data={data}".format(
+        "memberpress_client.client.Client.{caller}() request: path={path}, data={data}".format(
             caller=caller, path=path, data=json.dumps(masked_dict(data), cls=MPJSONEncoder, indent=4)
         )
     )
@@ -115,7 +115,7 @@ def log_pretrip(caller: str, url: str, data: dict, operation: str = "") -> None:
     add an application log entry immediately prior to calling the edxapp api.
     """
     logger.info(
-        "member_press.client.Client.{caller}() {operation}, request: url={url}, data={data}".format(
+        "memberpress_client.client.Client.{caller}() {operation}, request: url={url}, data={data}".format(
             operation=operation,
             caller=caller,
             url=url,
@@ -129,7 +129,7 @@ def log_postrip(caller: str, path: str, response: Response, operation: str = "")
     log the api response immediately after calling the edxapp api.
     """
     status_code = response.status_code if response is not None else 599
-    log_message = "member_press.client.Client.{caller}() {operation}, response status_code={response_status_code}, path={path}".format(
+    log_message = "memberpress_client.client.Client.{caller}() {operation}, response status_code={response_status_code}, path={path}".format(
         operation=operation, caller=caller, path=path, response_status_code=status_code
     )
     if 200 <= status_code <= 399:

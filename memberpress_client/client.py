@@ -35,47 +35,12 @@ logger = logging.getLogger(__name__)
 
 
 class APIClientBaseClass:
-    def __init__(self, headers=None):
-        self.token = self.get_token()
-        self._headers = headers
-
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
 
-    def get_token(self) -> str:
-        url = self.get_url("/oauth2/access_token")
-        data = {
-            "grant_type": "client_credentials",
-            "token_type": "jwt",
-            "key": settings.MEMBERPRESS_API_KEY,
-        }
-
-        try:
-            log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data=data)
-            response = requests.post(url, data=data)
-            log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response)
-            response.raise_for_status()
-            return response.json().get("access_token")
-        except HTTPError as e:
-            if e.response.status_code == 401:
-                logger.warning(
-                    "MPClient.get_token() oauth might be misconfigured. A request for an oauth session token returned '401 - unauthorized' which suggests that something might be misconfigured with the gcas oauth client located here https://staging.global-communications-academy.com/admin/oauth2_provider/application/"
-                )
-                raise Exception() from e
-            # treat anything else like a regular exception, but add the inputs from this def to the stack trace
-            raise Exception(
-                "MPClient.get_token() response raised the following exception for requests.post(url={url}, data={data}, headers={headers}, verify=False)".format(
-                    url=url,
-                    data=json.dumps(masked_dict(dict(data)), cls=MPJSONEncoder, indent=4),
-                    headers=json.dumps(masked_dict(dict(self.headers())), cls=MPJSONEncoder, indent=4),
-                )
-            ) from e
-
     def headers(self) -> dict:
-        if self._headers:
-            return self._headers
         return {
-            "Authorization": f"JWT {self.token}",
+            f"{settings.MEMBERPRESS_API_KEY_NAME}": f"{settings.MEMBERPRESS_API_KEY}",
         }
 
     @request_manager

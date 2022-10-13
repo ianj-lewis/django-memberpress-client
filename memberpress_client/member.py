@@ -1,13 +1,9 @@
-"""
-Lawrence McDaniel - https://lawrencemcdaniel.com
-Oct-2022
-
-memberpress REST API Client plugin for Open edX - rest api client implementation
-"""
 # Python stuff
+import validators
 import logging
 import inspect
 import json
+from datetime import datetime
 import urllib3
 from urllib.parse import urljoin
 import requests
@@ -17,77 +13,111 @@ from django.conf import settings
 from django.core.cache import cache
 
 # our stuff
-from utils import MPJSONEncoder, masked_dict, log_pretrip, log_postrip, log_trace
+from client import APIClientBaseClass
+from utils import MPJSONEncoder, masked_dict, log_trace
 from constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations, COMPLETE_MEMBER_DICT, MINIMUM_MEMBER_DICT
-from decorators import request_manager, app_logger
-
-# disable the following warnings:
-# -------------------------------
-# /usr/local/lib/python3.9/site-packages/urllib3/connectionpool.py:1043:
-# InsecureRequestWarning: Unverified HTTPS request is being made to host 'staging.global-communications-academy.com'.
-# Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from decorators import app_logger
 
 logger = logging.getLogger(__name__)
 
 
-class APIClientBaseClass:
-    def get_url(self, path) -> str:
-        return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
-
-    @property
-    def headers(self) -> dict:
-        return {
-            f"{settings.MEMBERPRESS_API_KEY_NAME}": f"{settings.MEMBERPRESS_API_KEY}",
-        }
-
-    @request_manager
-    def post(self, path, data=None, host=None, operation="") -> json:
-        url = self.get_url(path, host=host)
-        log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data=data, operation=operation)
-        response = requests.post(url, data=data, headers=self.headers)
-        log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
-        response.raise_for_status()
-        return response.json()
-
-    @request_manager
-    def patch(self, path, data=None, host=None, headers=None, json=True, operation=""):
-        url = self.get_url(path, host=host)
-        if not headers:
-            headers = self.headers
-
-        log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data=data, operation=operation)
-        response = requests.patch(url, json=data, headers=headers)
-        log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
-        response.raise_for_status()
-        if json:
-            return response.json()
-        return response
-
-    @request_manager
-    def get(self, path, params=None, operation="") -> json:
-        url = self.get_url(path)
-        log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
-        response = requests.get(url, params=params, headers=self.headers, verify=False)
-        log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
-        response.raise_for_status()
-        return response.json()
-
-    def is_valid_dict(self, response, qc_keys) -> bool:
-        if not type(response) == dict:
-            logger.warning(
-                "is_valid_dict() was expecting a dict but received an object of type: {type}".format(
-                    type=type(response)
-                )
-            )
-            return False
-        return all(key in response for key in qc_keys)
-
-
-class MPClient(APIClientBaseClass):
+class Member(APIClientBaseClass):
     """
     memberpress REST API client
     """
+
+    _request = None
+
+    _member = None
+    _user = None
+    _active_memberships = None
+    _recent_subscriptions = None
+    _recent_transactions = None
+
+    def __init__(self, request) -> None:
+        super().__init__()
+        self._request = request
+
+    @property
+    def request(self):
+        return self._request
+
+    @property
+    def member(self):
+        if not self._member:
+            self._member = self.get_member(username=self._user.username)
+        return self._member
+
+    @property
+    def user(self):
+        if not self._user:
+            self._user = self.request.user
+
+    @property
+    def active_memberships(self):
+        if not self._active_memberships:
+            self._active_memberships = self.get_active_memberships(self.request)
+        return self._active_memberships
+
+    @property
+    def recent_subscriptions(self):
+        if not self._recent_subscriptions:
+            self._recent_subscriptions = self.get_recent_subscriptions(self.request)
+        return self._recent_subscriptions
+
+    @property
+    def recent_transactions(self):
+        if not self._recent_transactions:
+            self._recent_transactions = self.get_recent_transactions(request=self.request)
+        return self._recent_transactions
+
+    @property
+    def id(self):
+        try:
+            return int(self.member.get("id", ""))
+        except ValueError:
+            return None
+
+    @property
+    def email(self):
+        return self.member.get("email", "")
+
+    @property
+    def username(self):
+        return self.member.get("username", "")
+
+    @property
+    def nicename(self):
+        return self.member.get("nicename", "")
+
+    @property
+    def url(self):
+        _url = self.member.get("url", "")
+        return _url if validators.url(_url) else ""
+
+    @property
+    def message(self):
+        return self.member.get("message", "")
+
+    @property
+    def registered_at(self):
+        date_str = self.member.get("registered_at", "")
+        try:
+            return datetime.strptime(date_str, "%m/%d/%y %H:%M:%S")
+        except Exception:
+            return None
+
+    @property
+    def first_name(self):
+        return self.member.get("first_name", "")
+
+    @property
+    def last_name(self):
+        return self.member.get("last_name", "")
+
+    @property
+    def display_name(self):
+        return self.member.get("display_name", "")
 
     def is_complete_member_dict(self, response: json) -> bool:
         """
@@ -119,6 +149,7 @@ class MPClient(APIClientBaseClass):
         if response is None:
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
             response = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
+            response = response or {}
         cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
         return response
 
@@ -213,26 +244,3 @@ class MPClient(APIClientBaseClass):
             return True
 
         return False
-
-
-class ClientWrapper:
-    """
-    A singleton wrapper around MPClient. Manages a single instance
-    and returns it for reuse.
-    """
-
-    _client = None
-
-    @classmethod
-    def get_client(cls) -> MPClient:
-        if not cls._client:
-            cls._client = MPClient()
-        return cls._client
-
-
-def mp_client() -> MPClient:
-    """
-    A handy function to return a single client instance
-    which is reused across all requests.
-    """
-    return ClientWrapper.get_client()

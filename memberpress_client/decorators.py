@@ -1,6 +1,6 @@
 """
 Lawrence McDaniel - https://lawrencemcdaniel.com
-Aug-2021
+Oct-2022
 
 memberpress REST API Client plugin for Open edX - decorators.
 request_manager() - common logging and error handling for all REST api verbs

@@ -1,3 +1,11 @@
+"""
+Lawrence McDaniel - https://lawrencemcdaniel.com
+Aug-2021
+
+memberpress REST API Client plugin for Open edX - decorators.
+request_manager() - common logging and error handling for all REST api verbs
+app_logger() - better logging for lms.log and cms.log
+"""
 # Python imports
 import json
 import functools

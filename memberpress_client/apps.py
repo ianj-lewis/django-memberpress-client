@@ -2,7 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Aug-2021
 
-Wordpress MemberPress REST API Client plugin for Open edX - App Configuration
+memberpress REST API Client plugin for Open edX - App Configuration
 """
 import logging
 

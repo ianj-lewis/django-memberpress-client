@@ -1,3 +1,9 @@
+"""
+Lawrence McDaniel - https://lawrencemcdaniel.com
+Aug-2021
+
+memberpress REST API Client plugin for Open edX - plugin constants
+"""
 from django.conf import settings
 
 MEMBERPRESS_OPERATION_PREFIX = "memberpress_api_operation_"

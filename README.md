@@ -4,7 +4,7 @@
 
 ![Open edX](https://avatars.githubusercontent.com/u/40179672)  ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
 
-Implements integrations to/from a MemberPress REST API host for the Open edX LMS and Studio applications using the new [pluggable extensibility](https://blog.lawrencemcdaniel.com/getting-started-with-open-edx-plugin-architecture/) model.
+An Open edX plugin that implements integrations to/from a MemberPress REST API host. This is based on the [pluggable extensibility model](https://blog.lawrencemcdaniel.com/getting-started-with-open-edx-plugin-architecture/) that was introduced in Lilac.
 
 ## Usage
 

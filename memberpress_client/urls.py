@@ -2,6 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Aug-2021
 
+memberpress REST API Client plugin for Open edX - urls
 """
 # Django
 from django.conf.urls import url

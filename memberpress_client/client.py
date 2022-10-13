@@ -1,3 +1,9 @@
+"""
+Lawrence McDaniel - https://lawrencemcdaniel.com
+Aug-2021
+
+memberpress REST API Client plugin for Open edX - rest api client implementation
+"""
 # Python
 import logging
 import inspect
@@ -13,12 +19,13 @@ from django.core.cache import cache
 
 # This plugin
 from utils import masked_dict
-from .constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations
-from .decorators import request_manager
-from .utils import MPJSONEncoder, log_pretrip, log_postrip, log_trace
-from .decorators import app_logger
+from constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations
+from decorators import request_manager
+from utils import MPJSONEncoder, log_pretrip, log_postrip, log_trace
+from decorators import app_logger
 
-# mcdaniel jul-2022: disable these warnings
+# disable the following warnings:
+# -------------------------------
 # /usr/local/lib/python3.9/site-packages/urllib3/connectionpool.py:1043:
 # InsecureRequestWarning: Unverified HTTPS request is being made to host 'staging.global-communications-academy.com'.
 # Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
@@ -51,8 +58,6 @@ class APIClientBaseClass:
             return response.json().get("access_token")
         except HTTPError as e:
             if e.response.status_code == 401:
-                # mcdaniel jul-2022
-                # add some breadcrumbs in case oauth is misconfigured or is missing
                 logger.warning(
                     "MPClient.get_token() oauth might be misconfigured. A request for an oauth session token returned '401 - unauthorized' which suggests that something might be misconfigured with the gcas oauth client located here https://staging.global-communications-academy.com/admin/oauth2_provider/application/"
                 )
@@ -118,7 +123,7 @@ class APIClientBaseClass:
 
 class MPClient(APIClientBaseClass):
     """
-    MemberPress API MPClient
+    memberpress REST API client
     """
 
     @app_logger

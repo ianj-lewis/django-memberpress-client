@@ -34,6 +34,8 @@ class Member(MemberpressAPIClient):
         self.request = request
         self._member = response
         self._is_offline = False if response is None else True
+        if response:
+            self.validate_response_object()
 
     def init(self):
         self._request = None
@@ -54,7 +56,7 @@ class Member(MemberpressAPIClient):
             )
             self._is_validated_member = False
 
-        if self.username != self.request.user.username:
+        if self.user and self.username != self.user.username:
             logger.error(
                 "internal error: openedx username {req_username} does not match the username returned by memberpress REST api member response object: {res_username}".format(
                     req_username=self.request.user.username, res_username=self.username
@@ -156,7 +158,7 @@ class Member(MemberpressAPIClient):
     def registered_at(self) -> datetime:
         date_str = self.member.get("registered_at", "")
         try:
-            return datetime.strptime(date_str, "%m/%d/%y %H:%M:%S")
+            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
         except Exception:
             logger.warning("Cannot read registered_at for username {username}".format(username=self.username))
             return None

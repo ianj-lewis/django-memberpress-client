@@ -1,34 +1,28 @@
-# bootstrap the test environment
-from memberpress_client.settings.test import (
-    MEMBERPRESS_API_KEY,
-    MEMBERPRESS_API_KEY_NAME,
-    MEMBERPRESS_API_BASE_URL,
-    MEMBERPRESS_CACHE_EXPIRATION,
-    MEMBERPRESS_SENSITIVE_KEYS,
-)
+# python stuff
+import os
+import io
+import unittest
+import json
+from datetime import datetime
+from requests import request
 
+# bootstrap the test environment
+from memberpress_client.settings import test as test_settings
 from django.conf import settings
 
 settings.configure(
-    MEMBERPRESS_API_KEY=MEMBERPRESS_API_KEY,
-    MEMBERPRESS_API_KEY_NAME=MEMBERPRESS_API_KEY_NAME,
-    MEMBERPRESS_API_BASE_URL=MEMBERPRESS_API_BASE_URL,
-    MEMBERPRESS_CACHE_EXPIRATION=MEMBERPRESS_CACHE_EXPIRATION,
-    MEMBERPRESS_SENSITIVE_KEYS=MEMBERPRESS_SENSITIVE_KEYS,
+    MEMBERPRESS_API_KEY=test_settings.MEMBERPRESS_API_KEY,
+    MEMBERPRESS_API_KEY_NAME=test_settings.MEMBERPRESS_API_KEY_NAME,
+    MEMBERPRESS_API_BASE_URL=test_settings.MEMBERPRESS_API_BASE_URL,
+    MEMBERPRESS_CACHE_EXPIRATION=test_settings.MEMBERPRESS_CACHE_EXPIRATION,
+    MEMBERPRESS_SENSITIVE_KEYS=test_settings.MEMBERPRESS_SENSITIVE_KEYS,
 )
-
-
-# python stuff
-import os  # noqa: E402
-import io  # noqa: E402
-import unittest  # noqa: E402
-import json  # noqa: E402
-from requests import request   # noqa: E402
 
 # our stuff
 from memberpress_client.member import Member  # noqa: E402
 
 
+# setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -86,6 +80,55 @@ class TestMember(unittest.TestCase):
         # advanced class properties - business rule support
         self.assertEqual(member.is_active_subscription, False)
         self.assertEqual(member.is_trial_subscription, False)
+
+    def test_member_1(self):
+
+        member = Member(request=None, response=member_response)
+        registered_at = datetime.strptime("2022-10-07 22:21:58", "%Y-%m-%d %H:%M:%S")
+
+        # class properties
+        self.assertEqual(member.request, None)
+        self.assertEqual(member.is_offline, True)
+        self.assertEqual(type(member.member), dict)
+        self.assertEqual(member.user, None)
+        self.assertEqual(member.id, 8)
+        self.assertEqual(member.email, "jon.spurling@crstrategypartners.com")
+        self.assertEqual(member.username, "JonSpurling81")
+        self.assertEqual(member.nicename, "jonspurling81")
+        self.assertEqual(member.url, None)
+        self.assertEqual(member.message, "")
+        self.assertEqual(member.registered_at, registered_at)
+        self.assertEqual(member.first_name, "Jon")
+        self.assertEqual(member.last_name, "Spurling")
+        self.assertEqual(member.display_name, "Jon Spurling")
+        self.assertEqual(member.active_txn_count, 1)
+        self.assertEqual(member.expired_txn_count, 0)
+        self.assertEqual(member.trial_txn_count, 1)
+        self.assertEqual(member.login_count, 1)
+
+        # dict structural integrity
+        self.assertEqual(member.is_complete_member_dict, True)
+        self.assertEqual(member.is_minimum_member_dict, True)
+        self.assertEqual(member.is_validated_member, True)
+
+        self.assertEqual(type(member.active_memberships), list)
+        self.assertEqual(type(member.recent_subscriptions), list)
+        self.assertEqual(type(member.recent_transactions), list)
+        self.assertEqual(type(member.first_transaction), dict)
+        self.assertEqual(type(member.latest_transaction), dict)
+
+        self.assertEqual(len(member.active_memberships), 1)
+        self.assertEqual(len(member.recent_subscriptions), 1)
+        self.assertEqual(len(member.recent_transactions), 1)
+        # self.assertEqual(member.first_transaction, {})
+        # self.assertEqual(member.latest_transaction, {})
+
+        # self.assertEqual(member.address, {})
+        # self.assertEqual(member.profile, {})
+
+        # advanced class properties - business rule support
+        self.assertEqual(member.is_active_subscription, True)
+        self.assertEqual(member.is_trial_subscription, True)
 
 
 if __name__ == "__main__":

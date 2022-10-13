@@ -10,15 +10,10 @@ from requests import request
 from memberpress_client.settings import test as test_settings
 from django.conf import settings
 
-settings.configure(
-    MEMBERPRESS_API_KEY=test_settings.MEMBERPRESS_API_KEY,
-    MEMBERPRESS_API_KEY_NAME=test_settings.MEMBERPRESS_API_KEY_NAME,
-    MEMBERPRESS_API_BASE_URL=test_settings.MEMBERPRESS_API_BASE_URL,
-    MEMBERPRESS_CACHE_EXPIRATION=test_settings.MEMBERPRESS_CACHE_EXPIRATION,
-    MEMBERPRESS_SENSITIVE_KEYS=test_settings.MEMBERPRESS_SENSITIVE_KEYS,
-)
+settings.configure(default_settings=test_settings)
 
-# our stuff
+# our testing code starts here
+# -----------------------------------------------------------------------------
 from memberpress_client.member import Member  # noqa: E402
 
 
@@ -26,12 +21,12 @@ from memberpress_client.member import Member  # noqa: E402
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
-def load_test_member():
-    with io.open(os.path.join(HERE, "data", "mb-member.json"), "rt", encoding="utf8") as f:
+def load_test_member(test_file):
+    with io.open(os.path.join(HERE, "data", test_file), "rt", encoding="utf8") as f:
         return f.read()
 
 
-member_response = json.loads(load_test_member(), strict=False)
+valid_member_response = json.loads(load_test_member("valid-member.json"), strict=False)
 
 
 class TestMember(unittest.TestCase):
@@ -83,7 +78,7 @@ class TestMember(unittest.TestCase):
 
     def test_member_1(self):
 
-        member = Member(request=None, response=member_response)
+        member = Member(request=None, response=valid_member_response)
         registered_at = datetime.strptime("2022-10-07 22:21:58", "%Y-%m-%d %H:%M:%S")
 
         # class properties

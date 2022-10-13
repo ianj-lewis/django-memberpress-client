@@ -10,3 +10,11 @@ MEMBERPRESS_SENSITIVE_KEYS = [  # noqa: F841
     "Authorization",
     "secret",
 ]
+DEBUG = True
+LOGGING_CONFIG = None
+LOGGING = None
+FORCE_SCRIPT_NAME = None
+INSTALLED_APPS = []
+ALLOWED_HOSTS = []
+EMAIL_BACKEND = None
+USE_I18N = False

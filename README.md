@@ -12,7 +12,8 @@ An Open edX plugin that implements integrations to/from a MemberPress REST API h
 pip install edx-memberpress-client
 ```
 
-Set these using tutor.
+Set the Django settings using tutor.
+
 ```bash
 
 tutor config save "MEMBERPRESS_API_KEY = 'set-me-please'" \

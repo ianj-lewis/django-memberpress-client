@@ -12,6 +12,17 @@ An Open edX plugin that implements integrations to/from a MemberPress REST API h
 pip install edx-memberpress-client
 ```
 
+Set these using tutor.
+```bash
+
+tutor config save "MEMBERPRESS_API_KEY = 'set-me-please'" \
+                  "MEMBERPRESS_API_BASE_URL = 'https://set-me-please.com/'"
+```
+
+You'll find the memberpress API Key in the Wordpress admin site. If you use Cookiecutter then
+keep in mind that you can store the memberpress API Key in GitHub Secrets or Kubernetes Secrets.
+![memberpress API Key](doc/memberpress-api-key.png "memberpress API Key")
+
 ### Local development
 
 * Use the same virtual environment that you use for edx-platform

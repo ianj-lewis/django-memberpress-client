@@ -26,6 +26,7 @@ class Member(MemberpressAPIClient):
     _request = None
     _member = None
     _user = None
+    _is_validated_member = False
 
     def __init__(self, request) -> None:
         super().__init__()
@@ -35,6 +36,46 @@ class Member(MemberpressAPIClient):
         self._request = None
         self._member = None
         self._user = None
+        self._is_validated_member = False
+
+    def validate_response_object(self) -> None:
+        if not self.member:
+            logger.error("member property is not set for username {username}".format(username=self.user.username))
+            self._is_validated_member = False
+
+        if type(self.member) != dict:
+            logger.error(
+                "was expecting member object of type dict but received an object of type {t}".format(
+                    t=type(self.member)
+                )
+            )
+            self._is_validated_member = False
+
+        if self.username != self.request.user.username:
+            logger.error(
+                "internal error: openedx username {req_username} does not match the username returned by memberpress REST api member response object: {res_username}".format(
+                    req_username=self.request.user.username, res_username=self.username
+                )
+            )
+            self._is_validated_member = False
+        self._is_validated_member = True
+
+    def validate_dict_keys(self) -> None:
+        def list_diff(self, list_1: list, list_2: list) -> list:
+            diff = list(set(list_2) - set(list_1))
+            return ",".join(diff)
+
+        if self.is_complete_member_dict:
+            logger.info("validated member response object for username {username}.".format(username=self.user.username))
+            return
+
+        if not self.is_minimum_member_dict:
+            missing = list_diff(MINIMUM_MEMBER_DICT, self.member.keys())
+            logger.warning(
+                "member response object for username {username} is missing the following required keys: {missing}".format(
+                    username=self.user.username, missing=missing
+                )
+            )
 
     @property
     def request(self):
@@ -45,6 +86,8 @@ class Member(MemberpressAPIClient):
         if type(value) == requests.request:
             self.init()
             self._request = value
+            if self.validate_response_object():
+                self.validate_dict_keys()
         else:
             raise TypeError("Was expecting value of type request but received object of type {t}".format(t=type(value)))
 
@@ -66,6 +109,7 @@ class Member(MemberpressAPIClient):
         try:
             return int(self.member.get("id", ""))
         except ValueError:
+            logger.warning("Cannot read id for username {username}".format(username=self.username))
             return None
 
     @property
@@ -73,6 +117,7 @@ class Member(MemberpressAPIClient):
         email_str = self.member.get("email", "")
         if validators.email(email_str):
             return email_str
+        logger.warning("invalid email address for username {username}".format(username=self.username))
         return None
 
     @property
@@ -86,7 +131,7 @@ class Member(MemberpressAPIClient):
     @property
     def url(self) -> str:
         _url = self.member.get("url", "")
-        return _url if validators.url(_url) else ""
+        return _url if validators.url(_url) else None
 
     @property
     def message(self) -> str:
@@ -98,6 +143,7 @@ class Member(MemberpressAPIClient):
         try:
             return datetime.strptime(date_str, "%m/%d/%y %H:%M:%S")
         except Exception:
+            logger.warning("Cannot read registered_at for username {username}".format(username=self.username))
             return None
 
     @property
@@ -114,30 +160,49 @@ class Member(MemberpressAPIClient):
 
     @property
     def active_txn_count(self) -> int:
+        """
+        the number of historical financial transactions (ie Stripe, PayPal, etc.)
+        that exist for this member.
+        """
         try:
             return int(self.member.get("active_txn_count", ""))
         except Exception:
+            logger.warning("Cannot read active_txn_count for username {username}".format(username=self.username))
             return 0
 
     @property
     def expired_txn_count(self) -> int:
+        """
+        the number of historical financial transactions (ie Stripe, PayPal, etc.)
+        that exist for this member with an expiration date in the past.
+        """
         try:
             return int(self.member.get("expired_txn_count", ""))
         except Exception:
+            logger.warning("Cannot read expired_txn_count for username {username}".format(username=self.username))
             return 0
 
     @property
     def trial_txn_count(self) -> int:
+        """
+        the number of free trials that exist for this member.
+        """
         try:
             return int(self.member.get("trial_txn_count", ""))
         except Exception:
+            logger.warning("Cannot read trial_txn_count for username {username}".format(username=self.username))
             return 0
 
     @property
     def login_count(self) -> int:
+        """
+        the number of times that this member has logged in to the
+        Wordpress site hosting the memberpress REST API plugin.
+        """
         try:
             return int(self.member.get("login_count", ""))
         except Exception:
+            logger.warning("Cannot read login_count for username {username}".format(username=self.username))
             return 0
 
     """
@@ -169,63 +234,43 @@ class Member(MemberpressAPIClient):
 
     @property
     def is_validated_member(self) -> bool:
-        if not self.is_minimum_member_dict:
-            logger.warning(
-                "get_member() returned an invalid json response {response}".format(
-                    response=json.dumps(masked_dict(self.member), cls=MPJSONEncoder, indent=4)
-                )
-            )
-            return False
-
-        if not self.member:
-            logger.warning("member property is not set for username {username}".format(username=self.user.username))
-            return False
-
-        if self.username != self.request.user.username:
-            logger.warning(
-                "internal error: requested username {req_username} but received {res_username}".format(
-                    req_username=self.request.user.username, res_username=self.username
-                )
-            )
-            return False
-
-        return True
+        return self._is_validated_member
 
     @property
     def active_memberships(self) -> list:
-        return self.member["active_memberships"] if self.is_validated_member else []
+        return self.member.get("active_memberships", []) if self.is_validated_member else []
 
     @property
     def recent_subscriptions(self) -> list:
-        return self.member["recent_subscriptions"] if self.is_validated_member else []
+        return self.member.get("recent_subscriptions", []) if self.is_validated_member else []
 
     @property
     def recent_transactions(self) -> list:
-        return self.member["recent_transactions"] if self.is_validated_member else []
+        return self.member.get("recent_transactions", []) if self.is_validated_member else []
 
     @property
     def first_transaction(self) -> list:
-        return self.member["first_txn"] if self.is_validated_member else {}
+        return self.member.get("first_txn", {}) if self.is_validated_member else {}
 
     @property
     def glatest_transaction(self) -> list:
-        return self.member["latest_txn"] if self.is_validated_member else {}
+        return self.member.get("latest_txn", {}) if self.is_validated_member else {}
 
     @property
     def first_txn(self) -> dict:
-        return self.member["first_txn"] if self.is_validated_member else {}
+        return self.member.get("first_txn", {}) if self.is_validated_member else {}
 
     @property
     def latest_txn(self) -> dict:
-        return self.member["latest_txn"] if self.is_validated_member else {}
+        return self.member.get("latest_txn", {}) if self.is_validated_member else {}
 
     @property
     def address(self) -> dict:
-        return self.member["address"] if self.is_validated_member else {}
+        return self.member.get("address", {}) if self.is_validated_member else {}
 
     @property
     def profile(self) -> dict:
-        return self.member["profile"] if self.is_validated_member else {}
+        return self.member.get("profile", {}) if self.is_validated_member else {}
 
     @property
     def is_active_subscription(self) -> bool:

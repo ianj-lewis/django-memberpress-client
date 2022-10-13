@@ -68,12 +68,12 @@ class MemberpressAPIClient:
         url = self.get_url(path)
         cache_key = f"MemberpressAPIClient.get:{url}"
         response = cache.get(cache_key)
-        if not response:
+        if not response or response == {}:
             log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
             response = requests.get(url, params=params, headers=self.headers, verify=False)
             log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
             response.raise_for_status()
-            cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
+            cache.set(cache_key, response.json(), settings.MEMBERPRESS_CACHE_EXPIRATION)
         return response.json()
 
     def is_valid_dict(self, response, qc_keys) -> bool:

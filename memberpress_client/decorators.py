@@ -6,14 +6,13 @@ memberpress REST API Client plugin for Open edX - decorators.
 request_manager() - common logging and error handling for all REST api verbs
 app_logger() - better logging for lms.log and cms.log
 """
-# Python imports
+# python stuff
 import json
 import functools
 import logging
-
 from requests.exceptions import HTTPError
 
-# imports from this project
+# our stuff
 from .utils import MPJSONEncoder, masked_dict
 
 # module initializations

@@ -4,10 +4,13 @@ Aug-2021
 
 memberpress REST API Client plugin for Open edX - App Configuration
 """
+# python stuff
 import logging
 
+# django stuff
 from django.apps import AppConfig
 
+# openedx stuff
 from edx_django_utils.plugins import PluginSettings, PluginURLs
 from openedx.core.djangoapps.plugins.constants import ProjectType, SettingsType
 

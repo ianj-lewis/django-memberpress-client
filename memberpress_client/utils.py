@@ -4,6 +4,7 @@ Aug-2021
 
 memberpress REST API Client plugin for Open edX - utility and helper functions.
 """
+# python stuff
 import json
 import logging
 import pytz

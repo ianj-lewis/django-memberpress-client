@@ -4,7 +4,7 @@ Aug-2021
 
 memberpress REST API Client plugin for Open edX - rest api client implementation
 """
-# Python
+# Python stuff
 import logging
 import inspect
 import json
@@ -13,11 +13,11 @@ from urllib.parse import urljoin
 import requests
 from requests.exceptions import HTTPError
 
-# Django
+# Django stuff
 from django.conf import settings
 from django.core.cache import cache
 
-# This plugin
+# our stuff
 from utils import masked_dict
 from constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations
 from decorators import request_manager

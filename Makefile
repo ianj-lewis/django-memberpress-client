@@ -12,7 +12,7 @@ build:
 
 	if [ -d "./build" ]; then sudo rm -r build; fi
 	if [ -d "./dist" ]; then sudo rm -r dist; fi
-	if [ -d "./edx_memberpress_client.egg-info" ]; then sudo rm -r edx_memberpress_client.egg-info; fi
+	if [ -d "./django_memberpress_client.egg-info" ]; then sudo rm -r django_memberpress_client.egg-info; fi
 
 	python3 -m build --sdist ./
 	python3 -m build --wheel ./
@@ -32,7 +32,7 @@ release-test:
 
 # -------------------------------------------------------------------------
 # upload to PyPi
-# https://pypi.org/project/edx-memberpress-client/
+# https://pypi.org/project/django-memberpress-client/
 # -------------------------------------------------------------------------
 release-prod:
 	make build

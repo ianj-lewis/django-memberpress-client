@@ -23,7 +23,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 # PyPi meta data
 #------------------------------------------------------------------------------
 [project]
-name = "edx-memberpress-client"
+name = "django-memberpress-client"
 version = "14.0.0"
 authors = [
   { name="Lawrence McDaniel", email="lpm0073@gmail.com" }
@@ -43,9 +43,9 @@ dependencies = [
 keywords = ["Python", "Django", "Open edX", "Wordpress", "MemberPress", "REST API"]
 
 [project.urls]
-Homepage = "https://github.com/lpm0073/edx-memberpress-client"
-"Bug Tracker" = "https://github.com/lpm0073/edx-memberpress-client/issues"
-Repository = "https://github.com/lpm0073/edx-memberpress-client"
+Homepage = "https://github.com/lpm0073/django-memberpress-client"
+"Bug Tracker" = "https://github.com/lpm0073/django-memberpress-client/issues"
+Repository = "https://github.com/lpm0073/django-memberpress-client"
 
 #------------------------------------------------------------------------------
 # see: https://setuptools.pypa.io/en/latest/userguide/dependency_management.html

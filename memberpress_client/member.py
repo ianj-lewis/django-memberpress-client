@@ -4,8 +4,6 @@ import logging
 from datetime import datetime
 import requests
 
-# Django stuff
-
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.constants import (

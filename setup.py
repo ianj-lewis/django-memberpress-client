@@ -65,12 +65,12 @@ print("Found packages: {packages}".format(packages=find_packages()))
 print("requirements found: {requirements}".format(requirements=load_requirements("requirements/common.in")))
 
 setup(
-    name="edx-memberpress-client",
+    name="django-memberpress-client",
     version=VERSION,
-    url="https://github.com/lpm0073/edx-memberpress-client",
+    url="https://github.com/lpm0073/django-memberpress-client",
     project_urls={
-        "Code": "https://github.com/lpm0073/edx-memberpress-client",
-        "Issue tracker": "https://github.com/lpm0073/edx-memberpress-client/issues",
+        "Code": "https://github.com/lpm0073/django-memberpress-client",
+        "Issue tracker": "https://github.com/lpm0073/django-memberpress-client/issues",
         "Community": "https://docs.memberpress.com/category/215-developer-resources",
     },
     author="Lawrence McDaniel",

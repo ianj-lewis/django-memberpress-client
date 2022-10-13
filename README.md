@@ -1,6 +1,6 @@
 # MemberPress Open edX Plugin
 
-[![pypi edx-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=edx-memberpress-client)](https://pypi.org/project/edx-memberpress-client/) [![memberpress](https://img.shields.io/static/v1?label=memberpress&style=flat-square&color=04d4e4&message=REST%20API)](https://memberpress.com/addons/developer-tools/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
+[![pypi django-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=django-memberpress-client)](https://pypi.org/project/django-memberpress-client/) [![memberpress](https://img.shields.io/static/v1?label=memberpress&style=flat-square&color=04d4e4&message=REST%20API)](https://memberpress.com/addons/developer-tools/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
 
 ![Open edX](https://avatars.githubusercontent.com/u/40179672)  ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
 
@@ -9,7 +9,7 @@ An Open edX plugin that implements integrations to/from a MemberPress REST API h
 ## Usage
 
 ```bash
-pip install edx-memberpress-client
+pip install django-memberpress-client
 ```
 
 Set the Django settings using tutor.

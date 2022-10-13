@@ -26,9 +26,6 @@ class Member(MemberpressAPIClient):
     _request = None
     _member = None
     _user = None
-    _active_memberships = None
-    _recent_subscriptions = None
-    _recent_transactions = None
 
     def __init__(self, request) -> None:
         super().__init__()
@@ -38,9 +35,6 @@ class Member(MemberpressAPIClient):
         self._request = None
         self._member = None
         self._user = None
-        self._active_memberships = None
-        self._recent_subscriptions = None
-        self._recent_transactions = None
 
     @property
     def request(self):
@@ -48,37 +42,24 @@ class Member(MemberpressAPIClient):
 
     @request.setter
     def request(self, value):
-        self.init()
-        self._request = value
+        if type(value) == requests.request:
+            self.init()
+            self._request = value
+        else:
+            raise TypeError("Was expecting value of type request but received object of type {t}".format(t=type(value)))
 
     @property
     def member(self) -> dict:
         if not self._member:
-            self._member = self.get_member()
+            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
+            self._member = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
         return self._member
 
     @property
     def user(self) -> User:
         if not self._user:
             self._user = self.request.user
-
-    @property
-    def active_memberships(self) -> list:
-        if not self._active_memberships:
-            self._active_memberships = self.get_active_memberships(self.request)
-        return self._active_memberships
-
-    @property
-    def recent_subscriptions(self) -> list:
-        if not self._recent_subscriptions:
-            self._recent_subscriptions = self.get_recent_subscriptions(self.request)
-        return self._recent_subscriptions
-
-    @property
-    def recent_transactions(self) -> list:
-        if not self._recent_transactions:
-            self._recent_transactions = self.get_recent_transactions(request=self.request)
-        return self._recent_transactions
+        return self._user
 
     @property
     def id(self) -> int:
@@ -132,6 +113,40 @@ class Member(MemberpressAPIClient):
         return self.member.get("display_name", "")
 
     @property
+    def active_txn_count(self) -> int:
+        try:
+            return int(self.member.get("active_txn_count", ""))
+        except Exception:
+            return 0
+
+    @property
+    def expired_txn_count(self) -> int:
+        try:
+            return int(self.member.get("expired_txn_count", ""))
+        except Exception:
+            return 0
+
+    @property
+    def trial_txn_count(self) -> int:
+        try:
+            return int(self.member.get("trial_txn_count", ""))
+        except Exception:
+            return 0
+
+    @property
+    def login_count(self) -> int:
+        try:
+            return int(self.member.get("login_count", ""))
+        except Exception:
+            return 0
+
+    """
+    ---------------------------------------------------------------------------
+                                Computed properties
+    ---------------------------------------------------------------------------
+    """
+
+    @property
     def is_complete_member_dict(self) -> bool:
         """
         validate that response is a json dict containing at least
@@ -151,15 +166,6 @@ class Member(MemberpressAPIClient):
         """
         qc_keys = MINIMUM_MEMBER_DICT
         return self.is_valid_dict(self.member, qc_keys)
-
-    @app_logger
-    def get_member(self) -> requests.Response:
-        """
-        Return a Memberpress REST api json object describing the authenticated user.
-        Invoke the REST API only once for the lifecycle of this instance.
-        """
-        path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
-        return self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
 
     @property
     def is_validated_member(self) -> bool:
@@ -185,42 +191,60 @@ class Member(MemberpressAPIClient):
 
         return True
 
-    def get_active_memberships(self, request) -> list:
+    @property
+    def active_memberships(self) -> list:
         return self.member["active_memberships"] if self.is_validated_member else []
 
-    def get_recent_subscriptions(self, request) -> list:
+    @property
+    def recent_subscriptions(self) -> list:
         return self.member["recent_subscriptions"] if self.is_validated_member else []
 
-    def get_recent_transactions(self, request) -> list:
+    @property
+    def recent_transactions(self) -> list:
         return self.member["recent_transactions"] if self.is_validated_member else []
 
-    def get_first_transaction(self, request) -> list:
+    @property
+    def first_transaction(self) -> list:
         return self.member["first_txn"] if self.is_validated_member else {}
 
-    def get_latest_transaction(self, request) -> list:
+    @property
+    def glatest_transaction(self) -> list:
         return self.member["latest_txn"] if self.is_validated_member else {}
 
-    @app_logger
-    def is_active_subscription(self, request) -> bool:
-        member = self.is_validated_member(request=request)
-        if not member:
+    @property
+    def first_txn(self) -> dict:
+        return self.member["first_txn"] if self.is_validated_member else {}
+
+    @property
+    def latest_txn(self) -> dict:
+        return self.member["latest_txn"] if self.is_validated_member else {}
+
+    @property
+    def address(self) -> dict:
+        return self.member["address"] if self.is_validated_member else {}
+
+    @property
+    def profile(self) -> dict:
+        return self.member["profile"] if self.is_validated_member else {}
+
+    @property
+    def is_active_subscription(self) -> bool:
+        if not self.is_validated_member:
             return False
 
-        recent_subscriptions = self.get_recent_subscriptions(request=request)
-        for subscription in recent_subscriptions:
+        for subscription in self.recent_subscriptions:
             if subscription.get("status", "") == "active":
                 return True
 
         return False
 
-    @app_logger
-    def is_trial_subscription(self, request) -> bool:
-        member = self.is_validated_member(request=request)
-        if not member:
+    @property
+    def is_trial_subscription(self) -> bool:
+        if not self.is_validated_member:
             return False
 
-        memberships = self.get_active_memberships(request=request)
-        for membership in memberships:
+        for membership in self.active_memberships:
+            # FIX NOTE: I DON'T WORK YET.
             membership["date_gmt"] + membership["trial_days"]
             return True
 

@@ -115,11 +115,6 @@ class TestMember(unittest.TestCase):
         self.assertEqual(len(member.active_memberships), 1)
         self.assertEqual(len(member.recent_subscriptions), 1)
         self.assertEqual(len(member.recent_transactions), 1)
-        # self.assertEqual(member.first_transaction, {})
-        # self.assertEqual(member.latest_transaction, {})
-
-        # self.assertEqual(member.address, {})
-        # self.assertEqual(member.profile, {})
 
         # advanced class properties - business rule support
         self.assertEqual(member.is_active_subscription, True)

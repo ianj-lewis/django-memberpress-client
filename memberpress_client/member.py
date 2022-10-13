@@ -6,6 +6,8 @@ import requests
 
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
+from memberpress_client.subscription import Subscription
+from memberpress_client.transaction import Transaction
 from memberpress_client.constants import (
     MemberPressAPI_Endpoints,
     MemberPressAPI_Operations,
@@ -26,6 +28,11 @@ class Member(MemberpressAPIClient):
     _username = None
     _is_validated_member = False
     _is_offline = True
+
+    _recent_subscriptions = None
+    _recent_transactions = None
+    _first_transaction = None
+    _latest_transaction = None
 
     def __init__(self, username=None, user=None, request=None, response=None) -> None:
         """
@@ -74,6 +81,10 @@ class Member(MemberpressAPIClient):
         self._username = None
         self._is_validated_member = False
         self._is_offline = True
+        self._recent_subscriptions = None
+        self._recent_transactions = None
+        self._first_transaction = None
+        self._latest_transaction = None
 
     def validate_response_object(self) -> None:
         if not self.member:
@@ -94,7 +105,7 @@ class Member(MemberpressAPIClient):
             diff = list(set(list_2) - set(list_1))
             return ",".join(diff)
 
-        if self.is_complete_member_dict:
+        if self.is_complete_dict:
             logger.info("validated member response object for username {username}.".format(username=self.username))
             return
 
@@ -128,7 +139,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def member(self) -> dict:
-        if self.username and not self._member:
+        if self._username and not self._member:
             # FIX NOTE: change me to a username end point
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
             self._member = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
@@ -152,7 +163,9 @@ class Member(MemberpressAPIClient):
 
     @property
     def username(self) -> str:
-        return self._username
+        if self._username:
+            return self._username
+        return self.member.get("username", None)
 
     @property
     def nicename(self) -> str:
@@ -245,7 +258,7 @@ class Member(MemberpressAPIClient):
     """
 
     @property
-    def is_complete_member_dict(self) -> bool:
+    def is_complete_dict(self) -> bool:
         """
         validate that response is a json dict containing at least
         the keys in qc_keys. These are the dict keys returned by the
@@ -275,19 +288,38 @@ class Member(MemberpressAPIClient):
 
     @property
     def recent_subscriptions(self) -> list:
-        return self.member.get("recent_subscriptions", []) if self.is_validated_member else []
+        if not self._recent_subscriptions and self.is_validated_member:
+            retval = []
+            for subscription_json in self.member.get("recent_subscriptions", []):
+                subscription = Subscription(subscription_json)
+                retval.append(subscription)
+            self._recent_subscriptions = retval
+        return self._recent_subscriptions
 
     @property
     def recent_transactions(self) -> list:
-        return self.member.get("recent_transactions", []) if self.is_validated_member else []
+        if not self._recent_transactions and self.is_validated_member:
+            transactions = self.member.get("recent_transactions", [])
+            retval = []
+            for transaction_json in transactions:
+                transaction = Transaction(transaction_json)
+                retval.append(transaction)
+            self._recent_transactions = retval
+        return self._recent_transactions
 
     @property
-    def first_transaction(self) -> list:
-        return self.member.get("first_txn", {}) if self.is_validated_member else {}
+    def first_transaction(self) -> Transaction:
+        transaction_json = self.member.get("first_txn", None)
+        if not self._first_transaction and transaction_json and self.is_validated_member:
+            self._first_transaction = Transaction(transaction_json)
+        return self._first_transaction
 
     @property
-    def latest_transaction(self) -> list:
-        return self.member.get("latest_txn", {}) if self.is_validated_member else {}
+    def latest_transaction(self) -> Transaction:
+        transaction_json = self.member.get("latest_txn", None)
+        if not self._latest_transaction and self.is_validated_member:
+            self._latest_transaction = Transaction(transaction_json)
+        return self._latest_transaction
 
     @property
     def address(self) -> dict:
@@ -309,7 +341,7 @@ class Member(MemberpressAPIClient):
             return False
 
         for subscription in self.recent_subscriptions:
-            if subscription.get("status", "") == "active":
+            if subscription.status == "active":
                 return True
 
         return False

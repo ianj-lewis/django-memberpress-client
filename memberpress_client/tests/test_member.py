@@ -15,6 +15,7 @@ settings.configure(default_settings=test_settings)
 # our testing code starts here
 # -----------------------------------------------------------------------------
 from memberpress_client.member import Member  # noqa: E402
+from memberpress_client.transaction import Transaction  # noqa: E402
 
 
 # setup test data
@@ -44,7 +45,6 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.request, None)
         self.assertEqual(member.is_offline, True)
         self.assertEqual(member.member, {})
-        self.assertEqual(member.user, None)
         self.assertEqual(member.id, None)
         self.assertEqual(member.email, None)
         self.assertEqual(member.username, None)
@@ -61,14 +61,14 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.login_count, 0)
 
         # dict structural integrity
-        self.assertEqual(member.is_complete_member_dict, False)
+        self.assertEqual(member.is_complete_dict, False)
         self.assertEqual(member.is_minimum_member_dict, False)
         self.assertEqual(member.is_validated_member, False)
         self.assertEqual(member.active_memberships, [])
-        self.assertEqual(member.recent_subscriptions, [])
-        self.assertEqual(member.recent_transactions, [])
-        self.assertEqual(member.first_transaction, {})
-        self.assertEqual(member.latest_transaction, {})
+        self.assertEqual(member.recent_subscriptions, None)
+        self.assertEqual(member.recent_transactions, None)
+        self.assertEqual(member.first_transaction, None)
+        self.assertEqual(member.latest_transaction, None)
         self.assertEqual(member.address, {})
         self.assertEqual(member.profile, {})
 
@@ -85,7 +85,6 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.request, None)
         self.assertEqual(member.is_offline, True)
         self.assertEqual(type(member.member), dict)
-        self.assertEqual(member.user, None)
         self.assertEqual(member.id, 8)
         self.assertEqual(member.email, "jon.spurling@crstrategypartners.com")
         self.assertEqual(member.username, "JonSpurling81")
@@ -102,15 +101,15 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.login_count, 1)
 
         # dict structural integrity
-        self.assertEqual(member.is_complete_member_dict, True)
+        self.assertEqual(member.is_complete_dict, True)
         self.assertEqual(member.is_minimum_member_dict, True)
         self.assertEqual(member.is_validated_member, True)
 
         self.assertEqual(type(member.active_memberships), list)
         self.assertEqual(type(member.recent_subscriptions), list)
         self.assertEqual(type(member.recent_transactions), list)
-        self.assertEqual(type(member.first_transaction), dict)
-        self.assertEqual(type(member.latest_transaction), dict)
+        self.assertEqual(type(member.first_transaction), Transaction)
+        self.assertEqual(type(member.latest_transaction), Transaction)
 
         self.assertEqual(len(member.active_memberships), 1)
         self.assertEqual(len(member.recent_subscriptions), 1)

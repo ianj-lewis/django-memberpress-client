@@ -1,8 +1,8 @@
 # MemberPress Open edX Plugin
 
-[![<pypi edx-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=edx-memberpress-client)](https://pypi.org/project/edx-memberpress-client/) [![<Querium Stepwise Math](https://img.shields.io/static/v1?label=Querium&style=flat-square&color=ff5434&message=Stepwise%20Math)](https://stepwisemath.ai/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
+[![pypi edx-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=edx-memberpress-client)](https://pypi.org/project/edx-memberpress-client/) [![memberpress](https://img.shields.io/static/v1?label=memberpress&style=flat-square&color=ff5434&message=REST%20API)](https://memberpress.com/addons/developer-tools/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
 
-![Open edX](https://avatars.githubusercontent.com/u/40179672)
+![Open edX](https://avatars.githubusercontent.com/u/40179672)  ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg) 
 
 Implements integrations to/from a MemberPress REST API host for the Open edX LMS and Studio applications using the new [pluggable extensibility](https://blog.lawrencemcdaniel.com/getting-started-with-open-edx-plugin-architecture/) model.
 

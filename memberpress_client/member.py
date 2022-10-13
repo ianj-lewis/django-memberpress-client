@@ -1,21 +1,21 @@
 # Python stuff
 import validators
 import logging
-import json
 from datetime import datetime
 import requests
 
 # Django stuff
-from django.contrib.auth import get_user_model
 
 # our stuff
-from client import MemberpressAPIClient
-from utils import MPJSONEncoder, masked_dict
-from constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations, COMPLETE_MEMBER_DICT, MINIMUM_MEMBER_DICT
-from decorators import app_logger
+from memberpress_client.client import MemberpressAPIClient
+from memberpress_client.constants import (
+    MemberPressAPI_Endpoints,
+    MemberPressAPI_Operations,
+    COMPLETE_MEMBER_DICT,
+    MINIMUM_MEMBER_DICT,
+)
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 
 class Member(MemberpressAPIClient):
@@ -27,10 +27,13 @@ class Member(MemberpressAPIClient):
     _member = None
     _user = None
     _is_validated_member = False
+    _is_offline = True
 
-    def __init__(self, request) -> None:
+    def __init__(self, request, response=None) -> None:
         super().__init__()
         self.request = request
+        self._member = response
+        self._is_offline = False if response is None else True
 
     def init(self):
         self._request = None
@@ -83,25 +86,34 @@ class Member(MemberpressAPIClient):
 
     @request.setter
     def request(self, value):
-        if type(value) == requests.request:
+        if type(value) == requests.request or value is None:
             self.init()
             self._request = value
-            if self.validate_response_object():
+            if value and self.validate_response_object():
                 self.validate_dict_keys()
         else:
             raise TypeError("Was expecting value of type request but received object of type {t}".format(t=type(value)))
 
     @property
-    def member(self) -> dict:
-        if not self._member:
-            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
-            self._member = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
-        return self._member
+    def is_offline(self):
+        if not self.request:
+            return True
+        return self._is_offline
 
     @property
-    def user(self) -> User:
-        if not self._user:
-            self._user = self.request.user
+    def member(self) -> dict:
+        if self.request and not self._member:
+            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
+            self._member = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
+        return self._member or {}
+
+    @property
+    def user(self):
+        if self.request and not self._user:
+            try:
+                self._user = self.request.user
+            except Exception:
+                return None
         return self._user
 
     @property
@@ -114,7 +126,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def email(self) -> str:
-        email_str = self.member.get("email", "")
+        email_str = self.member.get("email", None)
         if validators.email(email_str):
             return email_str
         logger.warning("invalid email address for username {username}".format(username=self.username))
@@ -122,20 +134,23 @@ class Member(MemberpressAPIClient):
 
     @property
     def username(self) -> str:
-        return self.member.get("username", "")
+        return self.member.get("username", None)
 
     @property
     def nicename(self) -> str:
-        return self.member.get("nicename", "")
+        return self.member.get("nicename", None)
 
     @property
     def url(self) -> str:
-        _url = self.member.get("url", "")
-        return _url if validators.url(_url) else None
+        _url = self.member.get("url", None)
+        try:
+            return _url if validators.url(_url) else None
+        except Exception:
+            return None
 
     @property
     def message(self) -> str:
-        return self.member.get("message", "")
+        return self.member.get("message", None)
 
     @property
     def registered_at(self) -> datetime:
@@ -148,15 +163,15 @@ class Member(MemberpressAPIClient):
 
     @property
     def first_name(self) -> str:
-        return self.member.get("first_name", "")
+        return self.member.get("first_name", None)
 
     @property
     def last_name(self) -> str:
-        return self.member.get("last_name", "")
+        return self.member.get("last_name", None)
 
     @property
     def display_name(self) -> str:
-        return self.member.get("display_name", "")
+        return self.member.get("display_name", None)
 
     @property
     def active_txn_count(self) -> int:
@@ -253,15 +268,7 @@ class Member(MemberpressAPIClient):
         return self.member.get("first_txn", {}) if self.is_validated_member else {}
 
     @property
-    def glatest_transaction(self) -> list:
-        return self.member.get("latest_txn", {}) if self.is_validated_member else {}
-
-    @property
-    def first_txn(self) -> dict:
-        return self.member.get("first_txn", {}) if self.is_validated_member else {}
-
-    @property
-    def latest_txn(self) -> dict:
+    def latest_transaction(self) -> list:
         return self.member.get("latest_txn", {}) if self.is_validated_member else {}
 
     @property
@@ -271,6 +278,12 @@ class Member(MemberpressAPIClient):
     @property
     def profile(self) -> dict:
         return self.member.get("profile", {}) if self.is_validated_member else {}
+
+    """
+    ---------------------------------------------------------------------------
+                                Business Rule Implementations
+    ---------------------------------------------------------------------------
+    """
 
     @property
     def is_active_subscription(self) -> bool:

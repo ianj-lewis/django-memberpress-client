@@ -17,8 +17,8 @@ from django.conf import settings
 from django.core.cache import cache
 
 # our stuff
-from utils import log_pretrip, log_postrip
-from decorators import request_manager
+from memberpress_client.utils import log_pretrip, log_postrip
+from memberpress_client.decorators import request_manager
 
 # disable the following warnings:
 # -------------------------------

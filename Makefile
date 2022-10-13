@@ -1,6 +1,9 @@
 # -------------------------------------------------------------------------
 # build a package for PyPi
 # -------------------------------------------------------------------------
+test:
+	py.test
+
 build:
 	python3 -m pip install --upgrade setuptools wheel twine
 	python -m pip install --upgrade build

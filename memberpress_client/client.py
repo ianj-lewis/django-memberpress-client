@@ -65,8 +65,8 @@ class APIClientBaseClass:
         return response
 
     @request_manager
-    def get(self, path, params=None, host=None, full_url=False, operation="") -> json:
-        url = self.get_url(path, host=host) if full_url is False else path
+    def get(self, path, params=None, operation="") -> json:
+        url = self.get_url(path)
         log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
         response = requests.get(url, params=params, headers=self.headers, verify=False)
         log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)

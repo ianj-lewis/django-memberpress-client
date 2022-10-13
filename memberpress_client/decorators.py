@@ -12,8 +12,6 @@ from .utils import MPJSONEncoder, masked_dict
 logger = logging.getLogger(__name__)
 
 
-
-
 def request_manager(method):
     """
     Decorate a method to

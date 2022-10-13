@@ -15,3 +15,4 @@ ipython             # ditto
 setuptools
 wheel
 twine
+python-dotenv

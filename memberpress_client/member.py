@@ -8,6 +8,7 @@ import requests
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.subscription import Subscription
 from memberpress_client.transaction import Transaction
+from memberpress_client.membership import Membership
 from memberpress_client.constants import (
     MemberPressAPI_Endpoints,
     MemberPressAPI_Operations,
@@ -33,6 +34,7 @@ class Member(MemberpressAPIClient):
     _recent_transactions = None
     _first_transaction = None
     _latest_transaction = None
+    _active_memberships = None
 
     def __init__(self, username=None, user=None, request=None, response=None) -> None:
         """
@@ -85,6 +87,7 @@ class Member(MemberpressAPIClient):
         self._recent_transactions = None
         self._first_transaction = None
         self._latest_transaction = None
+        self._active_memberships = None
 
     def validate_response_object(self) -> None:
         if not self.member:
@@ -284,13 +287,21 @@ class Member(MemberpressAPIClient):
 
     @property
     def active_memberships(self) -> list:
-        return self.member.get("active_memberships", []) if self.is_validated_member else []
+        if not self._active_memberships and self.is_validated_member:
+            active_memberships = self.member.get("active_memberships", [])
+            retval = []
+            for membership_json in active_memberships:
+                membership = Membership(membership_json)
+                retval.append(membership)
+            self._active_memberships = retval
+        return self._active_memberships
 
     @property
     def recent_subscriptions(self) -> list:
         if not self._recent_subscriptions and self.is_validated_member:
+            recent_subscriptions = self.member.get("recent_subscriptions", [])
             retval = []
-            for subscription_json in self.member.get("recent_subscriptions", []):
+            for subscription_json in recent_subscriptions:
                 subscription = Subscription(subscription_json)
                 retval.append(subscription)
             self._recent_subscriptions = retval
@@ -350,10 +361,10 @@ class Member(MemberpressAPIClient):
     def is_trial_subscription(self) -> bool:
         if not self.is_validated_member:
             return False
-
+        now = datetime.now()
         for membership in self.active_memberships:
-            # FIX NOTE: I DON'T WORK YET.
-            membership["date_gmt"] + membership["trial_days"]
-            return True
+            expire_date = membership.expire_fixed or now
+            if expire_date >= now:
+                return True
 
         return False

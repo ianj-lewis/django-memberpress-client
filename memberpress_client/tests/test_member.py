@@ -64,7 +64,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.is_complete_dict, False)
         self.assertEqual(member.is_minimum_member_dict, False)
         self.assertEqual(member.is_validated_member, False)
-        self.assertEqual(member.active_memberships, [])
+        self.assertEqual(member.active_memberships, None)
         self.assertEqual(member.recent_subscriptions, None)
         self.assertEqual(member.recent_transactions, None)
         self.assertEqual(member.first_transaction, None)

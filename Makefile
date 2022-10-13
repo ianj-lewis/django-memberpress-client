@@ -1,8 +1,7 @@
+# -------------------------------------------------------------------------
+# build a package for PyPi
+# -------------------------------------------------------------------------
 build:
-	# -------------------------------------------------------------------------
-	# build package and upload to PyPi.
-	# https://pypi.org/project/edx-memberpress-client/
-	# -------------------------------------------------------------------------
 	python3 -m pip install --upgrade setuptools wheel twine
 	python -m pip install --upgrade build
 
@@ -15,12 +14,19 @@ build:
 
 	python3 -m pip install --upgrade twine
 	twine check dist/*
-
+# -------------------------------------------------------------------------
+# build a package for PyPi
+# https:// ?????
+# -------------------------------------------------------------------------
 release-test:
 	make build
 	twine upload --skip-existing --repository testpypi dist/*
 
 
+# -------------------------------------------------------------------------
+# build a package for PyPi
+# https://pypi.org/project/edx-memberpress-client/
+# -------------------------------------------------------------------------
 release-prod:
 	make build
 	twine upload --skip-existing dist/*

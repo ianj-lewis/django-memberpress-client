@@ -25,12 +25,45 @@ class Member(MemberpressAPIClient):
 
     _request = None
     _member = None
-    _user = None
+    _username = None
     _is_validated_member = False
     _is_offline = True
 
-    def __init__(self, request, response=None) -> None:
+    def __init__(self, username=None, user=None, request=None, response=None) -> None:
+        """
+        username <str>: a Wordpress username
+        user <obj>: a Django user object
+        request <requests> a Django requests.request object
+        response <json> the json reponse from memberpress REST API
+        """
         super().__init__()
+        self.init()
+
+        # 4th priority username
+        if response:
+            try:
+                self._username = response["username"]
+            except Exception:
+                pass
+
+        # 3rd priority username
+        if request:
+            try:
+                self._username = request.user.username
+            except Exception:
+                pass
+
+        # 2nd priority username
+        if user:
+            try:
+                self._username = user.username
+            except Exception:
+                pass
+
+        # 1st priority username
+        if username:
+            self._username = username
+
         self.request = request
         self._member = response
         self._is_offline = False if response is None else True
@@ -40,26 +73,19 @@ class Member(MemberpressAPIClient):
     def init(self):
         self._request = None
         self._member = None
-        self._user = None
+        self._username = None
         self._is_validated_member = False
+        self._is_offline = True
 
     def validate_response_object(self) -> None:
         if not self.member:
-            logger.error("member property is not set for username {username}".format(username=self.user.username))
+            logger.error("member property is not set for username {username}".format(username=self.username))
             self._is_validated_member = False
 
         if type(self.member) != dict:
             logger.error(
                 "was expecting member object of type dict but received an object of type {t}".format(
                     t=type(self.member)
-                )
-            )
-            self._is_validated_member = False
-
-        if self.user and self.username != self.user.username:
-            logger.error(
-                "internal error: openedx username {req_username} does not match the username returned by memberpress REST api member response object: {res_username}".format(
-                    req_username=self.request.user.username, res_username=self.username
                 )
             )
             self._is_validated_member = False
@@ -71,14 +97,14 @@ class Member(MemberpressAPIClient):
             return ",".join(diff)
 
         if self.is_complete_member_dict:
-            logger.info("validated member response object for username {username}.".format(username=self.user.username))
+            logger.info("validated member response object for username {username}.".format(username=self.username))
             return
 
         if not self.is_minimum_member_dict:
             missing = list_diff(MINIMUM_MEMBER_DICT, self.member.keys())
             logger.warning(
                 "member response object for username {username} is missing the following required keys: {missing}".format(
-                    username=self.user.username, missing=missing
+                    username=self.username, missing=missing
                 )
             )
 
@@ -104,19 +130,11 @@ class Member(MemberpressAPIClient):
 
     @property
     def member(self) -> dict:
-        if self.request and not self._member:
+        if self.username and not self._member:
+            # FIX NOTE: change me to a username end point
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
             self._member = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
         return self._member or {}
-
-    @property
-    def user(self):
-        if self.request and not self._user:
-            try:
-                self._user = self.request.user
-            except Exception:
-                return None
-        return self._user
 
     @property
     def id(self) -> int:
@@ -136,7 +154,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def username(self) -> str:
-        return self.member.get("username", None)
+        return self._username
 
     @property
     def nicename(self) -> str:

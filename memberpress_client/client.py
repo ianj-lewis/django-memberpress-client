@@ -17,9 +17,8 @@ from django.conf import settings
 from django.core.cache import cache
 
 # our stuff
-from utils import MPJSONEncoder, masked_dict, log_pretrip, log_postrip, log_trace
-from constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations, COMPLETE_MEMBER_DICT, MINIMUM_MEMBER_DICT
-from decorators import request_manager, app_logger
+from utils import log_pretrip, log_postrip
+from decorators import request_manager
 
 # disable the following warnings:
 # -------------------------------
@@ -31,7 +30,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logger = logging.getLogger(__name__)
 
 
-class APIClientBaseClass:
+class MemberpressAPIClient:
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
 
@@ -67,10 +66,14 @@ class APIClientBaseClass:
     @request_manager
     def get(self, path, params=None, operation="") -> json:
         url = self.get_url(path)
-        log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
-        response = requests.get(url, params=params, headers=self.headers, verify=False)
-        log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
-        response.raise_for_status()
+        cache_key = f"MemberpressAPIClient.get:{url}"
+        response = cache.get(cache_key)
+        if not response:
+            log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
+            response = requests.get(url, params=params, headers=self.headers, verify=False)
+            log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
+            response.raise_for_status()
+            cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
         return response.json()
 
     def is_valid_dict(self, response, qc_keys) -> bool:
@@ -82,157 +85,3 @@ class APIClientBaseClass:
             )
             return False
         return all(key in response for key in qc_keys)
-
-
-class MPClient(APIClientBaseClass):
-    """
-    memberpress REST API client
-    """
-
-    def is_complete_member_dict(self, response: json) -> bool:
-        """
-        validate that response is a json dict containing at least
-        the keys in qc_keys. These are the dict keys returned by the
-        MemberPress REST api "/me" endpoint for a subscribed user.
-        """
-        qc_keys = COMPLETE_MEMBER_DICT
-        return self.is_valid_dict(response, qc_keys)
-
-    def is_minimum_member_dict(self, response: json) -> bool:
-        """
-        validate that response is a json dict containing at least
-        the minimum required keys in qc_keys. These are the dict keys
-        containing information about the identity of the member and
-        the status of the member's subscription.
-        """
-        qc_keys = MINIMUM_MEMBER_DICT
-        return self.is_valid_dict(response, qc_keys)
-
-    @app_logger
-    def get_member(self, username) -> requests.Response:
-        """
-        Return a Memberpress REST api json object describing the authenticated user.
-        """
-        cache_key = f"get_member:{username}"
-        log_trace(caller=inspect.currentframe().f_code.co_name, path=cache_key, data={})
-        response = cache.get(cache_key)
-        if response is None:
-            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
-            response = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
-        cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
-        return response
-
-    @app_logger
-    def get_member_and_validate(self, request) -> bool:
-        req_username = request.user.username
-        if not req_username or req_username == "":
-            logger.warning("received request with an invalid username {username}".format(username=req_username))
-            return False
-
-        member = self.get_member(req_username)
-        if not self.is_minimum_member_dict(member):
-            logger.warning(
-                "get_member() returned an invalid json response {response}".format(
-                    response=json.dumps(masked_dict(member), cls=MPJSONEncoder, indent=4)
-                )
-            )
-            return False
-
-        if not member:
-            logger.warning("get_member() returned None for username {username}".format(username=req_username))
-            return False
-
-        res_username = member.get("username", "MISSING")
-        if res_username != req_username:
-            logger.warning(
-                "internal error: requested username {req_username} but received {res_username}".format(
-                    req_username=req_username, res_username=res_username
-                )
-            )
-            return False
-
-        return member
-
-    @app_logger
-    def get_active_memberships(self, request) -> list:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return []
-        return member["active_memberships"]
-
-    @app_logger
-    def get_recent_subscriptions(self, request) -> list:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return []
-        return member["recent_subscriptions"]
-
-    @app_logger
-    def get_recent_transactions(self, request) -> list:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return []
-        return member["recent_transactions"]
-
-    @app_logger
-    def get_first_transaction(self, request) -> list:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return {}
-        return member["first_txn"]
-
-    @app_logger
-    def get_latest_transaction(self, request) -> list:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return {}
-        return member["latest_txn"]
-
-    @app_logger
-    def is_active_subscription(self, request) -> bool:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return False
-
-        recent_subscriptions = self.get_recent_subscriptions(request=request)
-        for subscription in recent_subscriptions:
-            if subscription.get("status", "") == "active":
-                return True
-
-        return False
-
-    @app_logger
-    def is_trial_subscription(self, request) -> bool:
-        member = self.get_member_and_validate(request=request)
-        if not member:
-            return False
-
-        memberships = self.get_active_memberships(request=request)
-        for membership in memberships:
-            membership["date_gmt"] + membership["trial_days"]
-            return True
-
-        return False
-
-
-class ClientWrapper:
-    """
-    A singleton wrapper around MPClient. Manages a single instance
-    and returns it for reuse.
-    """
-
-    _client = None
-
-    @classmethod
-    def get_client(cls) -> MPClient:
-        if not cls._client:
-            cls._client = MPClient()
-        return cls._client
-
-
-def mp_client() -> MPClient:
-    """
-    A handy function to return a single client instance
-    which is reused across all requests.
-    """
-    return ClientWrapper.get_client()

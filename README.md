@@ -2,46 +2,14 @@
 
 [![pypi edx-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=edx-memberpress-client)](https://pypi.org/project/edx-memberpress-client/) [![memberpress](https://img.shields.io/static/v1?label=memberpress&style=flat-square&color=ff5434&message=REST%20API)](https://memberpress.com/addons/developer-tools/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
 
-![Open edX](https://avatars.githubusercontent.com/u/40179672)  ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg) 
+![Open edX](https://avatars.githubusercontent.com/u/40179672)  ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
 
 Implements integrations to/from a MemberPress REST API host for the Open edX LMS and Studio applications using the new [pluggable extensibility](https://blog.lawrencemcdaniel.com/getting-started-with-open-edx-plugin-architecture/) model.
 
-
-## Getting Started
-
-### Install
-
-#### Native
+## Usage
 
 ```bash
-# where github-plugin is defined in .ssh/config
-git clone git@github-plugin:QueriumCorp/memberpress-openedx-plugin.git -b main  /home/ubuntu/memberpress_client
-
-sudo -H -u edxapp bash
-source /edx/app/edxapp/edxapp_env
-source /edx/app/edxapp/venvs/edxapp/bin/activate
-pip install /home/ubuntu/memberpress_client
-```
-
-```python
-# DO NOT!! add this near the bottom of /edx/app/edxapp/edx-platform/lms/envs/common.py
-
-# NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO!
-INSTALLED_APPS.extend('memberpress_client')    # DO NOT DO THIS!!!!!!
-# NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO! NO!
-
-# it turns out that Open edX finds this package of its own accord.
-# magical!!! :O
-```
-
-```bash
-# to run tests
-sudo -H -u edxapp bash
-source /edx/app/edxapp/edxapp_env
-source /edx/app/edxapp/venvs/edxapp/bin/activate
-pip install -r requirements/edx/testing.txt
-cd ~/edx-platform
-./manage.py lms test memberpress_client --settings=test
+pip install edx-memberpress-client
 ```
 
 ### Local development

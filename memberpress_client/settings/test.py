@@ -3,10 +3,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# your local dev & test settings go here
+# -----------------------------------------------------------------------------
 MEMBERPRESS_API_KEY = os.getenv("MEMBERPRESS_API_KEY")
-MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
 MEMBERPRESS_API_BASE_URL = "https://stepwisemath.ai/"
+
+# common local dev & test settings
+# -----------------------------------------------------------------------------
 MEMBERPRESS_CACHE_EXPIRATION = 300
+MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
 MEMBERPRESS_SENSITIVE_KEYS = [
     "password",
     "token",
@@ -15,6 +20,9 @@ MEMBERPRESS_SENSITIVE_KEYS = [
     "Authorization",
     "secret",
 ]
+
+# generic required Django settings
+# -----------------------------------------------------------------------------
 DEBUG = True
 LOGGING_CONFIG = None
 LOGGING = None

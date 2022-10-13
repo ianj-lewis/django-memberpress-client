@@ -11,18 +11,15 @@ import json
 import urllib3
 from urllib.parse import urljoin
 import requests
-from requests.exceptions import HTTPError
 
 # Django stuff
 from django.conf import settings
 from django.core.cache import cache
 
 # our stuff
-from utils import masked_dict
+from utils import MPJSONEncoder, masked_dict, log_pretrip, log_postrip, log_trace
 from constants import MemberPressAPI_Endpoints, MemberPressAPI_Operations
-from decorators import request_manager
-from utils import MPJSONEncoder, log_pretrip, log_postrip, log_trace
-from decorators import app_logger
+from decorators import request_manager, app_logger
 
 # disable the following warnings:
 # -------------------------------

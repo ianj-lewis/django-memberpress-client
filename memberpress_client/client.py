@@ -35,6 +35,7 @@ class APIClientBaseClass:
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
 
+    @property
     def headers(self) -> dict:
         return {
             f"{settings.MEMBERPRESS_API_KEY_NAME}": f"{settings.MEMBERPRESS_API_KEY}",
@@ -44,7 +45,7 @@ class APIClientBaseClass:
     def post(self, path, data=None, host=None, operation="") -> json:
         url = self.get_url(path, host=host)
         log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data=data, operation=operation)
-        response = requests.post(url, data=data, headers=self.headers())
+        response = requests.post(url, data=data, headers=self.headers)
         log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
         response.raise_for_status()
         return response.json()
@@ -53,7 +54,7 @@ class APIClientBaseClass:
     def patch(self, path, data=None, host=None, headers=None, json=True, operation=""):
         url = self.get_url(path, host=host)
         if not headers:
-            headers = self.headers()
+            headers = self.headers
 
         log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data=data, operation=operation)
         response = requests.patch(url, json=data, headers=headers)
@@ -67,7 +68,7 @@ class APIClientBaseClass:
     def get(self, path, params=None, host=None, full_url=False, operation="") -> json:
         url = self.get_url(path, host=host) if full_url is False else path
         log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
-        response = requests.get(url, params=params, headers=self.headers(), verify=False)
+        response = requests.get(url, params=params, headers=self.headers, verify=False)
         log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
         response.raise_for_status()
         return response.json()

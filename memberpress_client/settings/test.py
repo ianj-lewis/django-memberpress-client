@@ -32,8 +32,8 @@ ALLOWED_HOSTS = []
 EMAIL_BACKEND = None
 USE_I18N = False
 CACHES = CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': './/django_cache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": ".//django_cache",
     }
 }

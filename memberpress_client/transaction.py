@@ -12,14 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class Transaction(MemberpressAPIClient):
-    _json = None
-
     def __init__(self, transaction=None) -> None:
         super().__init__()
+        self.init()
         if self.is_valid(transaction):
-            self._json = transaction
+            self.json = transaction
         else:
             logger.warning("received an invalid transaction object: {o}".format(o=transaction))
+
+    def init(self):
+        super().init()
 
     @property
     def is_complete_dict(self) -> bool:
@@ -30,10 +32,6 @@ class Transaction(MemberpressAPIClient):
         """
         qc_keys = COMPLETE_TRANSACTION_DICT
         return self.is_valid_dict(self.json, qc_keys)
-
-    @property
-    def json(self) -> json:
-        return self._json
 
     @property
     def membership(self) -> int:

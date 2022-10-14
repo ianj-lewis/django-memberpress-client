@@ -12,15 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class Membership(MemberpressAPIClient):
-
-    _json = None
-
     def __init__(self, membership=None) -> None:
         super().__init__()
+        self.init()
         if self.is_valid(membership):
-            self._json = membership
+            self.json = membership
         else:
             logger.warning("received an invalid membership object: {o}".format(o=membership))
+
+    def init(self):
+        super().init()
 
     @property
     def is_complete_dict(self) -> bool:
@@ -31,10 +32,6 @@ class Membership(MemberpressAPIClient):
         """
         qc_keys = COMPLETE_MEMBERSHIP_DICT
         return self.is_valid_dict(self.member, qc_keys)
-
-    @property
-    def json(self) -> json:
-        return self._json
 
     @property
     def id(self) -> int:

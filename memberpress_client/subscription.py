@@ -12,15 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class Subscription(MemberpressAPIClient):
-
-    _json = None
-
     def __init__(self, subscription=None) -> None:
         super().__init__()
+        self.init()
         if self.is_valid(subscription):
-            self._json = subscription
+            self.json = subscription
         else:
             logger.warning("received an invalid subscription object: {o}".format(o=subscription))
+
+    def init(self):
+        super().init()
 
     @property
     def is_complete_dict(self) -> bool:
@@ -31,10 +32,6 @@ class Subscription(MemberpressAPIClient):
         """
         qc_keys = COMPLETE_SUBSCRIPTION_DICT
         return self.is_valid_dict(self.json, qc_keys)
-
-    @property
-    def json(self) -> json:
-        return self._json
 
     @property
     def coupon(self) -> int:

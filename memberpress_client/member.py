@@ -26,7 +26,6 @@ class Member(MemberpressAPIClient):
     """
 
     _request = None
-    _member = None
     _username = None
     _is_validated_member = False
 
@@ -46,7 +45,7 @@ class Member(MemberpressAPIClient):
         super().__init__()
         self.init()
         self.request = request
-        self._member = response
+        self.json = response
 
         if response:
             self.validate_response_object()
@@ -77,8 +76,8 @@ class Member(MemberpressAPIClient):
             self._username = username
 
     def init(self):
+        super().init()
         self._request = None
-        self._member = None
         self._username = None
         self._is_validated_member = False
         self._recent_subscriptions = None
@@ -146,7 +145,7 @@ class Member(MemberpressAPIClient):
         an empty dict {} for the life of the object instance.
         """
         # note: need to use private _username in order to avoid recursion.
-        if self._username and not self._member and not self.locked:
+        if self._username and not self.json and not self.locked:
             """
             expected result is a list containing 1 dict
             """
@@ -169,10 +168,10 @@ class Member(MemberpressAPIClient):
                             "member() was expecting a return type of dict but received {t}.".format(t=type(retval))
                         )
                         retval = None
-                self._member = retval
+                self.json = retval
         # convert NoneType to a dict so that other class properties
         # can safely use the form, val = self.member.get("blah")
-        return self._member or {}
+        return self.json or {}
 
     @property
     def id(self) -> int:

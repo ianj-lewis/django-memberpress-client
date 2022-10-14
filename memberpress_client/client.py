@@ -24,7 +24,7 @@ from memberpress_client.decorators import request_manager
 # -------------------------------
 # /usr/local/lib/python3.9/site-packages/urllib3/connectionpool.py:1043:
 # InsecureRequestWarning: Unverified HTTPS request is being made to host 'staging.global-communications-academy.com'.
-# Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+# Adding certificate verification is strongly advised. See: https://urllib3.readtheocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
@@ -32,12 +32,32 @@ logger = logging.getLogger(__name__)
 
 class MemberpressAPIClient:
     _locked = False
+    _json = None
+
+    def init(self):
+        self._locked = False
+        self._json = None
 
     def lock(self):
         self._locked = True
 
     def unlock(self):
         self._locked = False
+
+    @property
+    def locked(self):
+        return self._locked
+
+    @property
+    def json(self):
+        return self._json
+
+    @json.setter
+    def json(self, value):
+        if type(value) == dict or value is None:
+            self._json = value
+        else:
+            logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
 
     def is_valid(self, value) -> bool:
         if type(value) != dict:
@@ -46,10 +66,6 @@ class MemberpressAPIClient:
 
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
-
-    @property
-    def locked(self):
-        return self._locked
 
     @property
     def headers(self) -> dict:

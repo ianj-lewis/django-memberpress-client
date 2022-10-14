@@ -110,6 +110,11 @@ class MemberpressAPIClient:
         if not response and not self.locked:
             # set a lock to prevent multiple calls
             self.lock()
+
+            # purge whatever might have previously existing in the cache, in case our
+            # response object raises an exception here ...
+            cache.delete(cache_key)
+
             log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
             response = requests.get(url, params=params, headers=self.headers, verify=False)
             log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
@@ -117,13 +122,11 @@ class MemberpressAPIClient:
             # @request_manager will create verbose log entries for any responses outside of 200-299.
             response.raise_for_status()
 
-            # purge whatever might have previously existing in the cache, in case our
-            # response object raises an exception here ...
-            cache.delete(cache_key)
-            try:
-                response = response.json()
-            except Exception:
-                response = json.dumps(response)
+            if type(response) not in [dict, list]:
+                try:
+                    response = response.json()
+                except Exception:
+                    response = json.dumps(response)
 
             # caching results iff response is a valid json object.
             cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)

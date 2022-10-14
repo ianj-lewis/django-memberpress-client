@@ -1,0 +1,29 @@
+{
+    "id": 10,
+    "email": "jon.spurling@crstrategypartners.com",
+    "username": "jon",
+    "nicename": "jon",
+    "url": "",
+    "message": "",
+    "registered_at": "2022-10-13 22:27:16",
+    "first_name": "Jon",
+    "last_name": "Spurling",
+    "display_name": "Jon Spurling",
+    "active_memberships": [],
+    "active_txn_count": "0",
+    "expired_txn_count": "0",
+    "trial_txn_count": "0",
+    "sub_count": null,
+    "login_count": "0",
+    "address": {
+      "mepr-address-one": "",
+      "mepr-address-two": "",
+      "mepr-address-city": "",
+      "mepr-address-state": "",
+      "mepr-address-zip": "",
+      "mepr-address-country": ""
+    },
+    "profile": {},
+    "recent_transactions": [],
+    "recent_subscriptions": []
+  }

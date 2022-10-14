@@ -6,6 +6,7 @@ from datetime import datetime
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.constants import COMPLETE_SUBSCRIPTION_DICT
+from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +172,7 @@ class Subscription(MemberpressAPIClient):
     def created_at(self) -> datetime:
         date_str = self.json.get("created_at", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read created_at for id {id}".format(id=self.id))
             return None

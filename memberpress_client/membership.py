@@ -6,6 +6,7 @@ from datetime import datetime
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.constants import COMPLETE_MEMBERSHIP_DICT
+from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class Membership(MemberpressAPIClient):
     def date(self) -> datetime:
         date_str = self.json.get("date", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read date for id {id}".format(id=self.id))
             return None
@@ -81,7 +82,7 @@ class Membership(MemberpressAPIClient):
     def date_gmt(self) -> datetime:
         date_str = self.json.get("date_gmt", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read date_gmt for id {id}".format(id=self.id))
             return None
@@ -90,7 +91,7 @@ class Membership(MemberpressAPIClient):
     def modified(self) -> datetime:
         date_str = self.json.get("modified", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read modified for id {id}".format(id=self.id))
             return None
@@ -99,7 +100,7 @@ class Membership(MemberpressAPIClient):
     def modified_gmt(self) -> datetime:
         date_str = self.json.get("modified_gmt", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read modified_gmt for id {id}".format(id=self.id))
             return None
@@ -314,7 +315,7 @@ class Membership(MemberpressAPIClient):
     def expire_fixed(self) -> datetime:
         date_str = self.json.get("expire_fixed", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read date_gmt for id {id}".format(id=self.id))
             return None

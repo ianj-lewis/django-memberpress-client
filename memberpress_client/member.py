@@ -15,6 +15,7 @@ from memberpress_client.constants import (
     COMPLETE_MEMBER_DICT,
     MINIMUM_MEMBER_DICT,
 )
+from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -190,7 +191,7 @@ class Member(MemberpressAPIClient):
     def registered_at(self) -> datetime:
         date_str = self.member.get("registered_at", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return str2datetime(date_str)
         except Exception:
             logger.warning("Cannot read registered_at for username {username}".format(username=self.username))
             return None
@@ -328,7 +329,7 @@ class Member(MemberpressAPIClient):
     @property
     def latest_transaction(self) -> Transaction:
         transaction_json = self.member.get("latest_txn", None)
-        if not self._latest_transaction and self.is_validated_member:
+        if not self._latest_transaction and transaction_json and self.is_validated_member:
             self._latest_transaction = Transaction(transaction_json)
         return self._latest_transaction
 

@@ -42,7 +42,8 @@ class TestMember(unittest.TestCase):
     def test_online_1(self):
 
         member = Member(username="jon")
-        sleep(5)
+        while not member.ready:
+            sleep(1)
 
         registered_at = datetime.strptime("2022-10-13 22:27:16", "%Y-%m-%d %H:%M:%S")
 

@@ -46,6 +46,12 @@ class Member(MemberpressAPIClient):
         """
         super().__init__()
         self.init()
+        self.request = request
+        self._member = response
+        self._is_offline = False if response is None else True
+
+        if response:
+            self.validate_response_object()
 
         # 4th priority username
         if response:
@@ -71,12 +77,6 @@ class Member(MemberpressAPIClient):
         # 1st priority username
         if username:
             self._username = username
-
-        self.request = request
-        self._member = response
-        self._is_offline = False if response is None else True
-        if response:
-            self.validate_response_object()
 
     def init(self):
         self._request = None
@@ -144,10 +144,33 @@ class Member(MemberpressAPIClient):
     @property
     def member(self) -> dict:
         if self._username and not self._member:
-            # FIX NOTE: change me to a username end point
-            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_ME_PATH
-            self._member = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER) or {}
-        return self._member or {}
+            """
+            expected result is a list containing 1 dict
+            """
+            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(username=self._username)
+            retval = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
+
+            if type(retval) == list:
+                if len(retval) > 1:
+                    logger.warning(
+                        "member() was expecting to receive a list with 1 item from REST api, but actually received {n}.".format(
+                            n=len(retval)
+                        )
+                    )
+                    retval = None
+
+                if len(retval) == 1:
+                    retval = retval[0]
+                    if type(retval) != dict:
+                        logger.warning(
+                            "member() was expecting a return type of dict but received {t}.".format(t=type(retval))
+                        )
+                        retval = None
+
+            # convert NoneType to a dict so that other class properties
+            # can use the form, val = self.member.get("blah")
+            self._member = retval or {}
+        return self._member
 
     @property
     def id(self) -> int:

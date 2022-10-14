@@ -2,7 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Open edX - plugin constants
+memberpress REST API Client plugin for Django - plugin constants
 """
 
 # django stuff

@@ -28,7 +28,7 @@ version = "0.0.1"
 authors = [
   { name="Lawrence McDaniel", email="lpm0073@gmail.com" }
 ]
-description = "A Django plugin to add Memberpress REST API integrations Open edX installations."
+description = "A Django plugin to add Memberpress REST API integrations."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -40,7 +40,7 @@ dependencies = [
   "Django>=2.2,<2.3"
 ]
 
-keywords = ["Python", "Django", "Open edX", "Wordpress", "MemberPress", "REST API"]
+keywords = ["Python", "Django", "Wordpress", "MemberPress", "REST API"]
 
 [project.urls]
 Homepage = "https://github.com/lpm0073/django-memberpress-client"

@@ -2,7 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Open edX - App Configuration
+memberpress REST API Client plugin for Django - App Configuration
 """
 # python stuff
 import logging
@@ -24,7 +24,7 @@ class MemberPressPluginConfig(AppConfig):
     # This is the text that appears in the Django admin console in all caps
     # as the title box encapsulating all Django app models that are registered
     # in admin.py.
-    verbose_name = "memberpress REST API Client plugin for Open edX"
+    verbose_name = "memberpress REST API Client plugin"
 
     # See: https://edx.readthedocs.io/projects/edx-django-utils/en/latest/edx_django_utils.plugins.html
     plugin_app = {

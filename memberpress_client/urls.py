@@ -2,7 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Open edX - url scaffolding
+memberpress REST API Client plugin for Django - url scaffolding
 """
 from memberpress_client.api import urls as api_urls
 

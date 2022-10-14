@@ -2,7 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Open edX - utility and helper functions.
+memberpress REST API Client plugin for Django - utility and helper functions.
 """
 # python stuff
 import json

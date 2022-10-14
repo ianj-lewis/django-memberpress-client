@@ -75,14 +75,14 @@ setup(
     },
     author="Lawrence McDaniel",
     author_email="lpm0073@gmail.com",
-    description="A Django plugin to add Memberpress REST API integrations Open edX installations.",
+    description="A Django plugin to add Memberpress REST API integrations.",
     long_description=README,
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
     package_data={"": ["*.html"]},  # include any Mako templates found in this repo.
     zip_safe=False,
-    keywords="Python, Django, Open edX, Wordpress, MemberPress, REST API",
+    keywords="Python, Django, Wordpress, MemberPress, REST API",
     python_requires=">=3.8",
     install_requires=load_requirements("requirements/common.txt"),
     entry_points={

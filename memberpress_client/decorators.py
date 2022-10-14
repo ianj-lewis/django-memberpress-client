@@ -2,7 +2,7 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Open edX - decorators.
+memberpress REST API Client plugin for Django - decorators.
 request_manager() - common logging and error handling for all REST api verbs
 app_logger() - better logging for lms.log and cms.log
 """

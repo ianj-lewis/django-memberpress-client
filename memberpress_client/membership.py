@@ -20,11 +20,6 @@ class Membership(MemberpressAPIClient):
         if self.is_valid(membership):
             self._json = membership
 
-    def is_valid(self, value) -> bool:
-        if type(value) != dict:
-            return False
-        return True
-
     @property
     def is_complete_dict(self) -> bool:
         """

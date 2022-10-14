@@ -19,11 +19,6 @@ class Transaction(MemberpressAPIClient):
         if self.is_valid(transaction):
             self._json = transaction
 
-    def is_valid(self, value) -> bool:
-        if type(value) != dict:
-            return False
-        return True
-
     @property
     def is_complete_dict(self) -> bool:
         """

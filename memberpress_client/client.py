@@ -39,6 +39,11 @@ class MemberpressAPIClient:
     def unlock(self):
         self._locked = False
 
+    def is_valid(self, value) -> bool:
+        if type(value) != dict:
+            return False
+        return True
+
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
 

@@ -164,7 +164,7 @@ class Member(MemberpressAPIClient):
 
                 if len(retval) == 1:
                     retval = retval[0]
-                    if type(retval) != dict:
+                    if not self.is_valid(retval):
                         logger.warning(
                             "member() was expecting a return type of dict but received {t}.".format(t=type(retval))
                         )

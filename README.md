@@ -33,6 +33,10 @@ from memberpress_client.member import Member
 member = Member(username="jsmith")
 print(member.is_active_subscription)
 print(member.is_trial_subscription)
+print(member.should_raise_paywall)
+print(member.latest_transaction.amount)
+print(member.recent_subscriptions[0].created_at)
+print(member.active_memberships[0].pricing_title)
 
 # 2. using with Django request object
 member = Member(request=request)

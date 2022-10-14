@@ -29,7 +29,7 @@ class Member(MemberpressAPIClient):
     _member = None
     _username = None
     _is_validated_member = False
-    _is_offline = True
+    _locked = False
 
     _recent_subscriptions = None
     _recent_transactions = None
@@ -48,7 +48,6 @@ class Member(MemberpressAPIClient):
         self.init()
         self.request = request
         self._member = response
-        self._is_offline = False if response is None else True
 
         if response:
             self.validate_response_object()
@@ -83,7 +82,6 @@ class Member(MemberpressAPIClient):
         self._member = None
         self._username = None
         self._is_validated_member = False
-        self._is_offline = True
         self._recent_subscriptions = None
         self._recent_transactions = None
         self._first_transaction = None
@@ -136,10 +134,8 @@ class Member(MemberpressAPIClient):
             raise TypeError("Was expecting value of type request but received object of type {t}".format(t=type(value)))
 
     @property
-    def is_offline(self):
-        if not self.request:
-            return True
-        return self._is_offline
+    def ready(self):
+        return True if len(self.member) > 0 and not self._locked else False
 
     @property
     def member(self) -> dict:
@@ -151,10 +147,11 @@ class Member(MemberpressAPIClient):
         an empty dict {} for the life of the object instance.
         """
         # note: need to use private _username in order to avoid recursion.
-        if self._username and not self._member:
+        if self._username and not self._member and not self._locked:
             """
             expected result is a list containing 1 dict
             """
+            self._locked = True
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(username=self._username)
             retval = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
 
@@ -174,11 +171,11 @@ class Member(MemberpressAPIClient):
                             "member() was expecting a return type of dict but received {t}.".format(t=type(retval))
                         )
                         retval = None
-
-            # convert NoneType to a dict so that other class properties
-            # can safely use the form, val = self.member.get("blah")
-            self._member = retval or {}
-        return self._member
+                self._member = retval
+            self._locked = False
+        # convert NoneType to a dict so that other class properties
+        # can safely use the form, val = self.member.get("blah")
+        return self._member or {}
 
     @property
     def id(self) -> int:

@@ -19,6 +19,8 @@ class Membership(MemberpressAPIClient):
         super().__init__()
         if self.is_valid(membership):
             self._json = membership
+        else:
+            logger.warning("received an invalid membership object: {o}".format(o=membership))
 
     @property
     def is_complete_dict(self) -> bool:

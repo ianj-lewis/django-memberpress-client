@@ -19,6 +19,8 @@ class Subscription(MemberpressAPIClient):
         super().__init__()
         if self.is_valid(subscription):
             self._json = subscription
+        else:
+            logger.warning("received an invalid subscription object: {o}".format(o=subscription))
 
     @property
     def is_complete_dict(self) -> bool:

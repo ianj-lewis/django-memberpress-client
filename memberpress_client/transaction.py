@@ -18,6 +18,8 @@ class Transaction(MemberpressAPIClient):
         super().__init__()
         if self.is_valid(transaction):
             self._json = transaction
+        else:
+            logger.warning("received an invalid transaction object: {o}".format(o=transaction))
 
     @property
     def is_complete_dict(self) -> bool:

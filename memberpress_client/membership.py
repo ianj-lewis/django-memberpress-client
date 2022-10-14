@@ -314,7 +314,7 @@ class Membership(MemberpressAPIClient):
     def expire_fixed(self) -> datetime:
         date_str = self.json.get("expire_fixed", "")
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            return datetime.strptime(date_str, "%Y-%m-%d")
         except Exception:
             logger.warning("Cannot read date_gmt for id {id}".format(id=self.id))
             return None

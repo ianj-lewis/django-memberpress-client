@@ -364,6 +364,7 @@ class Member(MemberpressAPIClient):
         now = datetime.now()
         for membership in self.active_memberships:
             expire_date = membership.expire_fixed or now
+            logger.info("expre_idate = {dt}".format(dt=expire_date))
             if expire_date >= now:
                 return True
 

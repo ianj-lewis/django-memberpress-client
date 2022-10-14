@@ -4,7 +4,7 @@
 
 ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
 
-A lightweight, performant Django plugin that implements integrations to/from a ![Wordpress](https://wordpress.org/) ![memberpress](https://memberpress.com/) ![REST API](https://memberpress.com/blog/memberpress-developer-tools/#REST_API_Documentation) host.
+A lightweight, performant Django plugin that implements integrations to/from a [Wordpress](https://wordpress.org/) [memberpress](https://memberpress.com/) [REST API](https://memberpress.com/blog/memberpress-developer-tools/#REST_API_Documentation) host.
 
 ## Installation
 

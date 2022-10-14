@@ -1,4 +1,4 @@
-# MemberPress Open edX Plugin
+# Django Plugin For MemberPress REST API Client
 
 [![pypi django-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=django-memberpress-client)](https://pypi.org/project/django-memberpress-client/) [![memberpress](https://img.shields.io/static/v1?label=memberpress&style=flat-square&color=04d4e4&message=REST%20API)](https://memberpress.com/addons/developer-tools/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
 
@@ -6,7 +6,7 @@
 
 An Open edX plugin that implements integrations to/from a MemberPress REST API host. This is based on the [pluggable extensibility model](https://blog.lawrencemcdaniel.com/getting-started-with-open-edx-plugin-architecture/) that was introduced in Lilac.
 
-## Usage
+## Installation
 
 ```bash
 pip install django-memberpress-client
@@ -14,17 +14,41 @@ pip install django-memberpress-client
 
 Set the Django settings using tutor.
 
-```bash
+```python
+from django.conf import settings
 
-tutor config save "MEMBERPRESS_API_KEY = 'set-me-please'" \
-                  "MEMBERPRESS_API_BASE_URL = 'https://set-me-please.com/'"
+settings.MEMBERPRESS_API_KEY = 'set-me-please'
+settings.MEMBERPRESS_API_BASE_URL = 'https://set-me-please.com/'
 ```
 
-You'll find the memberpress API Key in the Wordpress admin site. If you use Cookiecutter then
-keep in mind that you can store the memberpress API Key in GitHub Secrets or Kubernetes Secrets.
+You'll find the memberpress API Key in the Wordpress admin site.
 ![memberpress API Key](doc/memberpress-api-key.png "memberpress API Key")
 
-### Local development
+## Usage
+
+```python
+from memberpress_client.member import Member
+
+# 1. passing an explicit Wordpress username
+member = Member(username="jsmith")
+print(member.is_active_subscription)
+print(member.is_trial_subscription)
+
+# 2. using with Django request object
+member = Member(request=request)
+
+# 3. passing a Django user object
+member = Member(user=user)
+
+# 4. passing a Django user object
+member = Member(user=user)
+
+# 5. passing an json return object from memberpress REST API
+Member(response=memberpress_response_json)
+```
+
+
+## Local development
 
 * Use the same virtual environment that you use for edx-platform
 * Set your Python interpreter to 3.8x

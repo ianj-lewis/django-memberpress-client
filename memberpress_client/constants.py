@@ -28,7 +28,7 @@ class MemberPressAPI_Endpoints:
     # -------------------------------------------------------------------------
     # api end points originating from https://stepwisemath.ai/wp-json/mp/v1/
     # -------------------------------------------------------------------------
-    MEMBERPRESS_API_BASE = settings.MEMBERPRESS_API_BASE_URL + "/wp-json/mp/v1/"
+    MEMBERPRESS_API_BASE = settings.MEMBERPRESS_API_BASE_URL + "wp-json/mp/v1/"
     MEMBERPRESS_API_ME_PATH = MEMBERPRESS_API_BASE + "me/"
 
     # -------------------------------------------------------------------------

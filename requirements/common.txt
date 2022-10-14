@@ -6,6 +6,8 @@
 #
 asgiref==3.5.2
     # via django
+decorator==5.1.1
+    # via validators
 django==3.2.13
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
@@ -19,3 +21,5 @@ pytz==2022.1
     # via django
 sqlparse==0.4.2
     # via django
+validators==0.20.0
+    # via -r requirements/common.in

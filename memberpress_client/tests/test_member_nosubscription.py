@@ -36,7 +36,7 @@ class TestMember(unittest.TestCase):
 
         # class properties
         self.assertEqual(member.request, None)
-        self.assertEqual(member.is_offline, True)
+        self.assertEqual(member.ready, True)
         self.assertEqual(type(member.member), dict)
         self.assertEqual(member.id, 10)
         self.assertEqual(member.email, "jon.spurling@crstrategypartners.com")

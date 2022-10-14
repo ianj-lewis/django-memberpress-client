@@ -1,6 +1,8 @@
 # python stuff
+import logging
 import os
 import io
+from time import sleep
 import unittest
 import json
 from datetime import datetime
@@ -12,6 +14,8 @@ from memberpress_client.member import Member  # noqa: E402
 from memberpress_client.transaction import Transaction  # noqa: E402
 from memberpress_client.subscription import Subscription  # noqa: E402
 from memberpress_client.membership import Membership  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -38,44 +42,51 @@ class TestMember(unittest.TestCase):
     def test_online_1(self):
 
         member = Member(username="jon")
-        registered_at = datetime.strptime("2022-10-07 22:21:58", "%Y-%m-%d %H:%M:%S")
+        sleep(5)
+
+        registered_at = datetime.strptime("2022-10-13 22:27:16", "%Y-%m-%d %H:%M:%S")
 
         # class properties
         self.assertEqual(member.request, None)
-        self.assertEqual(member.is_offline, True)
+        self.assertEqual(member.ready, True)
         self.assertEqual(type(member.member), dict)
         self.assertEqual(member.id, 10)
         self.assertEqual(member.email, "jon.spurling@crstrategypartners.com")
-        self.assertEqual(member.username, "JonSpurling81")
-        self.assertEqual(member.nicename, "jonspurling81")
+        self.assertEqual(member.username, "jon")
+        self.assertEqual(member.nicename, "jon")
         self.assertEqual(member.url, None)
         self.assertEqual(member.message, "")
         self.assertEqual(member.registered_at, registered_at)
         self.assertEqual(member.first_name, "Jon")
         self.assertEqual(member.last_name, "Spurling")
         self.assertEqual(member.display_name, "Jon Spurling")
-        self.assertEqual(member.active_txn_count, 1)
+        self.assertEqual(member.active_txn_count, 0)
         self.assertEqual(member.expired_txn_count, 0)
-        self.assertEqual(member.trial_txn_count, 1)
-        self.assertEqual(member.login_count, 1)
+        self.assertEqual(member.trial_txn_count, 0)
+        self.assertEqual(member.login_count, 0)
 
         # dict structural integrity
-        self.assertEqual(member.is_complete_dict, True)
+        self.assertEqual(member.is_complete_dict, False)
         self.assertEqual(member.is_minimum_member_dict, True)
-        self.assertEqual(member.is_validated_member, True)
+        self.assertEqual(member.is_validated_member, False)
 
-        self.assertEqual(type(member.active_memberships), list)
-        self.assertEqual(type(member.recent_subscriptions), list)
-        self.assertEqual(type(member.recent_transactions), list)
-        self.assertEqual(type(member.first_transaction), Transaction)
-        self.assertEqual(type(member.latest_transaction), Transaction)
+        self.assertEqual(member.active_memberships, None)
+        self.assertEqual(member.recent_subscriptions, None)
+        self.assertEqual(member.recent_transactions, None)
+        self.assertEqual(member.first_transaction, None)
+        self.assertEqual(member.latest_transaction, None)
 
-        self.assertEqual(len(member.active_memberships), 1)
-        self.assertEqual(len(member.recent_subscriptions), 1)
-        self.assertEqual(len(member.recent_transactions), 1)
+        if member.active_memberships is not None:
+            self.assertEqual(len(member.active_memberships), 0)
+
+        if member.recent_subscriptions is not None:
+            self.assertEqual(len(member.recent_subscriptions), 0)
+
+        if member.recent_transactions is not None:
+            self.assertEqual(len(member.recent_transactions), 0)
 
         # advanced class properties - business rule support
-        self.assertEqual(member.is_active_subscription, True)
+        self.assertEqual(member.is_active_subscription, False)
         self.assertEqual(member.is_trial_subscription, False)
 
 

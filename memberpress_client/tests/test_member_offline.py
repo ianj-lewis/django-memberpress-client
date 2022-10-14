@@ -45,7 +45,7 @@ class TestMember(unittest.TestCase):
         member = Member(request=None, response=None)
         # class properties
         self.assertEqual(member.request, None)
-        self.assertEqual(member.is_offline, True)
+        self.assertEqual(member.ready, False)
         self.assertEqual(member.member, {})
         self.assertEqual(member.id, None)
         self.assertEqual(member.email, None)
@@ -85,7 +85,7 @@ class TestMember(unittest.TestCase):
 
         # class properties
         self.assertEqual(member.request, None)
-        self.assertEqual(member.is_offline, True)
+        self.assertEqual(member.ready, True)
         self.assertEqual(type(member.member), dict)
         self.assertEqual(member.id, 8)
         self.assertEqual(member.email, "jon.spurling@crstrategypartners.com")

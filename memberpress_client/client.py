@@ -55,6 +55,7 @@ class MemberpressAPIClient:
     @json.setter
     def json(self, value):
         if type(value) == dict or value is None:
+            self.init()
             self._json = value
         else:
             logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
@@ -106,19 +107,25 @@ class MemberpressAPIClient:
         cache_key = f"MemberpressAPIClient.get:{url}"
         response = cache.get(cache_key)
 
-        if not response:
+        if not response and not self.locked:
+            # set a lock to prevent multiple calls
             self.lock()
             log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
             response = requests.get(url, params=params, headers=self.headers, verify=False)
             log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
+
+            # @request_manager will create verbose log entries for any responses outside of 200-299.
             response.raise_for_status()
 
+            # purge whatever might have previously existing in the cache, in case our
+            # response object raises an exception here ...
             cache.delete(cache_key)
             try:
                 response = response.json()
             except Exception:
                 response = json.dumps(response)
 
+            # caching results iff response is a valid json object.
             cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
             self.unlock()
         return response

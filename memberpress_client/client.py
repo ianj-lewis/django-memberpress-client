@@ -31,8 +31,20 @@ logger = logging.getLogger(__name__)
 
 
 class MemberpressAPIClient:
+    _locked = False
+
+    def lock(self):
+        self._locked = True
+
+    def unlock(self):
+        self._locked = False
+
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
+
+    @property
+    def locked(self):
+        return self._locked
 
     @property
     def headers(self) -> dict:
@@ -69,23 +81,21 @@ class MemberpressAPIClient:
         cache_key = f"MemberpressAPIClient.get:{url}"
         response = cache.get(cache_key)
 
-        if response == "locked":
-            return None
-
         if not response:
-            cache.set(cache_key, "locked", settings.MEMBERPRESS_CACHE_EXPIRATION)
+            self.lock()
             log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
             response = requests.get(url, params=params, headers=self.headers, verify=False)
-            cache.delete(cache_key)
             log_postrip(caller=inspect.currentframe().f_code.co_name, path=url, response=response, operation=operation)
             response.raise_for_status()
 
+            cache.delete(cache_key)
             try:
                 response = response.json()
             except Exception:
                 response = json.dumps(response)
 
             cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
+            self.unlock()
         return response
 
     def is_valid_dict(self, response, qc_keys) -> bool:

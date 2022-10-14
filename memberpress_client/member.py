@@ -29,7 +29,6 @@ class Member(MemberpressAPIClient):
     _member = None
     _username = None
     _is_validated_member = False
-    _locked = False
 
     _recent_subscriptions = None
     _recent_transactions = None
@@ -135,7 +134,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def ready(self):
-        return True if len(self.member) > 0 and not self._locked else False
+        return True if len(self.member) > 0 and not self.locked else False
 
     @property
     def member(self) -> dict:
@@ -147,11 +146,10 @@ class Member(MemberpressAPIClient):
         an empty dict {} for the life of the object instance.
         """
         # note: need to use private _username in order to avoid recursion.
-        if self._username and not self._member and not self._locked:
+        if self._username and not self._member and not self.locked:
             """
             expected result is a list containing 1 dict
             """
-            self._locked = True
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(username=self._username)
             retval = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
 
@@ -172,7 +170,6 @@ class Member(MemberpressAPIClient):
                         )
                         retval = None
                 self._member = retval
-            self._locked = False
         # convert NoneType to a dict so that other class properties
         # can safely use the form, val = self.member.get("blah")
         return self._member or {}

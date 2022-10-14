@@ -1,10 +1,10 @@
-# Django Plugin For MemberPress REST API Client
+# Django Plugin For memberpress REST API Client
 
 [![pypi django-memberpress-client](https://img.shields.io/static/v1?label=pypi&style=flat-square&color=0475b6&message=django-memberpress-client)](https://pypi.org/project/django-memberpress-client/) [![memberpress](https://img.shields.io/static/v1?label=memberpress&style=flat-square&color=04d4e4&message=REST%20API)](https://memberpress.com/addons/developer-tools/) [![hack.d Lawrence McDaniel](https://img.shields.io/badge/hack.d-Lawrence%20McDaniel-orange.svg)](https://lawrencemcdaniel.com)
 
-![Open edX](https://avatars.githubusercontent.com/u/40179672)  ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
+![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
 
-An Open edX plugin that implements integrations to/from a MemberPress REST API host. This is based on the [pluggable extensibility model](https://blog.lawrencemcdaniel.com/getting-started-with-open-edx-plugin-architecture/) that was introduced in Lilac.
+A Django plugin that implements integrations to/from a Wordpress memberpress REST API host.
 
 ## Installation
 

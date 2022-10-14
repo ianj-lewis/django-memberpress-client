@@ -4,7 +4,7 @@
 
 ![memberpress](https://memberpress.com/wp-content/uploads/2022/01/memberpress-logo-color.svg)
 
-A Django plugin that implements integrations to/from a Wordpress memberpress REST API host.
+A lightweight, performant Django plugin that implements integrations to/from a Wordpress memberpress REST API host.
 
 ## Installation
 
@@ -44,7 +44,7 @@ member = Member(user=user)
 member = Member(user=user)
 
 # 5. passing an json return object from memberpress REST API
-Member(response=memberpress_response_json)
+member = Member(response=memberpress_response_json)
 ```
 
 

@@ -386,10 +386,10 @@ class Member(MemberpressAPIClient):
     def is_trial_subscription(self) -> bool:
         if not self.is_validated_member:
             return False
+
         now = datetime.now()
         for membership in self.active_memberships:
             expire_date = membership.expire_fixed or now
-            logger.info("expre_idate = {dt}".format(dt=expire_date))
             if expire_date >= now:
                 return True
 

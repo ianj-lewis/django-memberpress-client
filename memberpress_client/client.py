@@ -59,6 +59,10 @@ class MemberpressAPIClient:
         else:
             logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
 
+    @property
+    def ready(self):
+        return True if not self.locked and self.json and len(self.json) > 0 else False
+
     def is_valid(self, value) -> bool:
         if type(value) != dict:
             return False

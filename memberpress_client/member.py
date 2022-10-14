@@ -75,6 +75,10 @@ class Member(MemberpressAPIClient):
         if username:
             self._username = username
 
+        if self.username:
+            # invoke the getter
+            self.member
+
     def init(self):
         super().init()
         self._request = None
@@ -130,10 +134,6 @@ class Member(MemberpressAPIClient):
                 self.validate_dict_keys()
         else:
             raise TypeError("Was expecting value of type request but received object of type {t}".format(t=type(value)))
-
-    @property
-    def ready(self):
-        return True if len(self.member) > 0 and not self.locked else False
 
     @property
     def member(self) -> dict:

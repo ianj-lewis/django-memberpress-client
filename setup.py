@@ -75,7 +75,7 @@ setup(
     },
     author="Lawrence McDaniel",
     author_email="lpm0073@gmail.com",
-    description="A Django plugin to add Memberpress REST API integrations.",
+    description="A Django plugin to add Memberpress REST API and Webhook integrations.",
     long_description=README,
     long_description_content_type="text/markdown",
     packages=find_packages(),

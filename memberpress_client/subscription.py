@@ -32,7 +32,7 @@ class Subscription(MemberpressAPIClient):
         MemberPress REST api "/me" endpoint for a subscribed user.
         """
         qc_keys = COMPLETE_SUBSCRIPTION_DICT
-        return self.is_valid_dict(self.member, qc_keys)
+        return self.is_valid_dict(self.json, qc_keys)
 
     @property
     def json(self) -> json:
@@ -169,7 +169,7 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def created_at(self) -> datetime:
-        date_str = self.member.get("created_at", "")
+        date_str = self.json.get("created_at", "")
         try:
             return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
         except Exception:

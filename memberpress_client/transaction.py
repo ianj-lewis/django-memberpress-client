@@ -31,7 +31,7 @@ class Transaction(MemberpressAPIClient):
         MemberPress REST api "/me" endpoint for a subscribed user.
         """
         qc_keys = COMPLETE_TRANSACTION_DICT
-        return self.is_valid_dict(self.member, qc_keys)
+        return self.is_valid_dict(self.json, qc_keys)
 
     @property
     def json(self) -> json:
@@ -55,6 +55,13 @@ class Transaction(MemberpressAPIClient):
     def coupon(self) -> int:
         try:
             return int(self.json["coupon"])
+        except Exception:
+            return None
+
+    @property
+    def subscription(self) -> int:
+        try:
+            return int(self.json["subscription"])
         except Exception:
             return None
 
@@ -133,7 +140,7 @@ class Transaction(MemberpressAPIClient):
 
     @property
     def created_at(self) -> datetime:
-        date_str = self.member.get("created_at", "")
+        date_str = self.json.get("created_at", "")
         try:
             return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
         except Exception:
@@ -142,7 +149,7 @@ class Transaction(MemberpressAPIClient):
 
     @property
     def expires_at(self) -> datetime:
-        date_str = self.member.get("expires_at", "")
+        date_str = self.json.get("expires_at", "")
         try:
             return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
         except Exception:

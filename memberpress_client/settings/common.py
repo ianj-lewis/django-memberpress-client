@@ -25,9 +25,9 @@ def plugin_settings(settings):
     see: https://stackoverflow.com/questions/56129708/how-to-force-redirect-uri-to-use-https-with-python-social-app
     """
 
-    MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"  # noqa: F841
-    MEMBERPRESS_CACHE_EXPIRATION = 300  # noqa: F841
-    MEMBERPRESS_SENSITIVE_KEYS = [  # noqa: F841
+    settings.MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"  # noqa: F841
+    settings.MEMBERPRESS_CACHE_EXPIRATION = 300  # noqa: F841
+    settings.MEMBERPRESS_SENSITIVE_KEYS = [  # noqa: F841
         "password",
         "token",
         "client_id",
@@ -35,3 +35,7 @@ def plugin_settings(settings):
         "Authorization",
         "secret",
     ]
+
+    settings.MAKO_TEMPLATE_DIRS_BASE.extend([TEMPLATES_DIR])
+    settings.INSTALLED_APPS.append("django_extensions")
+    settings.INSTALLED_APPS.append("django-environ")

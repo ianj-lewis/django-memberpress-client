@@ -4,6 +4,7 @@ Oct-2022
 
 memberpress REST API Client plugin for Open edX - url scaffolding
 """
+from memberpress_client.api import urls as api_urls
 
 app_name = "memberpress_client"
-urlpatterns = []
+urlpatterns = [] + api_urls.urlpatterns

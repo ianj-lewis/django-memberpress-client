@@ -1,0 +1,25 @@
+{
+    "id": 8,
+    "email": "jon.spurling@crstrategypartners.com",
+    "username": "JonSpurling81",
+    "nicename": "jonspurling81",
+    "url": "",
+    "message": "",
+    "registered_at": "2022-10-07 22:21:58",
+    "first_name": "Jon",
+    "last_name": "Spurling",
+    "display_name": "Jon Spurling",
+    "active_txn_count": "1",
+    "expired_txn_count": "0",
+    "trial_txn_count": "1",
+    "sub_count": null,
+    "login_count": "1",
+    "address": {
+      "mepr-address-one": "5710 Centinela Avenue",
+      "mepr-address-two": "Apt 108",
+      "mepr-address-city": "Los Angeles",
+      "mepr-address-state": "CA",
+      "mepr-address-zip": "90045",
+      "mepr-address-country": "US"
+    }
+  }

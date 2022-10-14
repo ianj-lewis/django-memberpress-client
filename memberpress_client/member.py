@@ -143,6 +143,14 @@ class Member(MemberpressAPIClient):
 
     @property
     def member(self) -> dict:
+        """
+        implements a single-shot attempt at retreiving a member dict from the rest api.
+        if all works as hoped then then set the property to the rest api dict result.
+
+        Any errors or validation failures will result in self.member returning
+        an empty dict {} for the life of the object instance.
+        """
+        # note: need to use private _username in order to avoid recursion.
         if self._username and not self._member:
             """
             expected result is a list containing 1 dict
@@ -168,7 +176,7 @@ class Member(MemberpressAPIClient):
                         retval = None
 
             # convert NoneType to a dict so that other class properties
-            # can use the form, val = self.member.get("blah")
+            # can safely use the form, val = self.member.get("blah")
             self._member = retval or {}
         return self._member
 

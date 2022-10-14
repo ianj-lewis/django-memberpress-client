@@ -42,6 +42,10 @@ class TestMember(unittest.TestCase):
     def test_online_1(self):
 
         member = Member(username="jon")
+
+        if not member.ready:
+            self.assertEqual(member.should_raise_paywall, False)
+
         while not member.ready:
             sleep(1)
 
@@ -89,6 +93,7 @@ class TestMember(unittest.TestCase):
         # advanced class properties - business rule support
         self.assertEqual(member.is_active_subscription, False)
         self.assertEqual(member.is_trial_subscription, False)
+        self.assertEqual(member.should_raise_paywall, True)
 
 
 if __name__ == "__main__":

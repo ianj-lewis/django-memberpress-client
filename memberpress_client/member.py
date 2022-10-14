@@ -394,3 +394,9 @@ class Member(MemberpressAPIClient):
                 return True
 
         return False
+
+    @property
+    def should_raise_paywall(self) -> bool:
+        if self.is_active_subscription or self.is_trial_subscription:
+            return False
+        return self.ready

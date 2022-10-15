@@ -1,5 +1,5 @@
 # bootstrap the test environment
-from memberpress_client.settings import test as test_settings
+from memberpress_client.settings import local
 from django.conf import settings
 
-settings.configure(default_settings=test_settings)
+settings.configure(default_settings=local)

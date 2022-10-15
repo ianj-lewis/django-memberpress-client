@@ -1,0 +1,13 @@
+# this project
+# ------------------------------------------------------------------------------
+MEMBERPRESS_API_KEY = "set-me-please"
+MEMBERPRESS_API_BASE_URL = "https://stepwisemath.ai/"
+
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=no
+IPYTHONDIR=/app/.ipython
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0

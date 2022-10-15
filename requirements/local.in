@@ -6,13 +6,44 @@
 -c ./constraints.txt
 -r ./common.txt
 
-pre-commit          # to link cornflakes
-black               # Github Actions CI runs this on each push.
-flake8              # ditto
-
 ipython             # ditto
-
 setuptools
 wheel
 twine
 python-dotenv
+
+# Cookiecutter Django (minus stuff that's already required by Open edX)
+# =============================================================================
+Werkzeug[watchdog]==2.2.2           # https://github.com/pallets/werkzeug
+ipdb                                # https://github.com/gotcha/ipdb
+mysqlclient                         # https://github.com/PyMySQL/mysqlclient
+
+# Testing
+# ------------------------------------------------------------------------------
+mypy                                # https://github.com/python/mypy
+django-stubs                        # https://github.com/typeddjango/django-stubs
+#pytest                              # https://github.com/pytest-dev/pytest
+pytest-sugar                        # https://github.com/Frozenball/pytest-sugar
+djangorestframework-stubs           # https://github.com/typeddjango/djangorestframework-stubs
+
+# Documentation
+# ------------------------------------------------------------------------------
+sphinx                              # https://github.com/sphinx-doc/sphinx
+sphinx-autobuild                    # https://github.com/GaretJax/sphinx-autobuild
+
+# Code quality
+# ------------------------------------------------------------------------------
+flake8                              # https://github.com/PyCQA/flake8
+flake8-isort                        # https://github.com/gforcada/flake8-isort
+coverage                            # https://github.com/nedbat/coveragepy
+black                               # https://github.com/psf/black
+pylint-django                       # https://github.com/PyCQA/pylint-django
+pre-commit                          # https://github.com/pre-commit/pre-commit
+
+# Django
+# ------------------------------------------------------------------------------
+factory-boy                         # https://github.com/FactoryBoy/factory_boy
+django-debug-toolbar                # https://github.com/jazzband/django-debug-toolbar
+django-extensions                   # https://github.com/django-extensions/django-extensions
+django-coverage-plugin              # https://github.com/nedbat/django_coverage_plugin
+pytest-django                       # https://github.com/pytest-dev/pytest-django

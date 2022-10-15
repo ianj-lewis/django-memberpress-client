@@ -8,5 +8,5 @@ from django.urls import include, path
 
 app_name = "memberpress_client"
 urlpatterns = [
-    path("api/v1/", include("api.v1.urls")),
+    path("api/v1/", include("memberpress_client.api.v1.urls")),
 ]

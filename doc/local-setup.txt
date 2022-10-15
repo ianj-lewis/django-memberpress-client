@@ -1,0 +1,38 @@
+# Django Reference Project for local development
+
+
+brew services list
+brew services restart -vvv mysql
+mysql -uroot -p[my macbook pwd]
+
+CREATE USER 'mp-user'@'localhost' IDENTIFIED BY 'mp';
+CREATE DATABASE `mp-db`;
+GRANT ALL PRIVILEGES ON `mp-db`.* TO "mp-user"@"localhost";
+FLUSH PRIVILEGES;
+
+
+cookiecutter https://github.com/mabdullahadeel/cookiecutter-django-mysql
+pip install -r requirements/local.txt
+
+
+Environment:
+-----------------
+export CELERY_BROKER_URL=redis://localhost:6379/0
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mp-db',
+        'USER': 'mp-user',
+        'PASSWORD': 'mp',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
+    }
+}
+
+
+./manage.py migrate
+./manage.py runserver

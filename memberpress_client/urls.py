@@ -4,7 +4,10 @@ Oct-2022
 
 memberpress REST API Client plugin for Django - url scaffolding
 """
-from memberpress_client.api import urls as api_urls
+from django.urls import path
+from memberpress_client.api import views as api_views
 
 app_name = "memberpress_client"
-urlpatterns = [] + api_urls.urlpatterns
+urlpatterns = [
+    path("webhook/", api_views.WebhookView.as_view(), name="webhook"),
+]

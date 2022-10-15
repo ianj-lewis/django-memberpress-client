@@ -3,6 +3,9 @@
 # -------------------------------------------------------------------------
 .PHONY: build
 
+server:
+	./manage.py runserver
+
 test:
 	py.test
 

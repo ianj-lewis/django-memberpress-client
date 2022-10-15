@@ -13,6 +13,7 @@ Afterwards i copied select chunks of the blank project into this repo.
 from pathlib import Path
 
 import environ
+import os
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # blank_django/
@@ -22,12 +23,13 @@ env = environ.Env()
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
-    env.read_env(str(ROOT_DIR / "memberpress_client/settings/.env/.local/.django"))
+    ENV_PATH = os.path.join(APPS_DIR, "settings", ".env", ".local", ".django")
+    env.read_env(ENV_PATH)
 
 # your local dev & test settings go here
 # -----------------------------------------------------------------------------
-MEMBERPRESS_API_KEY = env("MEMBERPRESS_API_KEY", "set-me-please")
-MEMBERPRESS_API_BASE_URL = env("MEMBERPRESS_API_BASE_URL", "https://example.com/")
+MEMBERPRESS_API_KEY = env.str("MEMBERPRESS_API_KEY", "set-me-please")
+MEMBERPRESS_API_BASE_URL = env.url("MEMBERPRESS_API_BASE_URL", "https://example.com/")
 
 # common local dev & test settings
 # -----------------------------------------------------------------------------
@@ -134,19 +136,15 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
-AUTHENTICATION_BACKENDS = []
+# AUTHENTICATION_BACKENDS = []
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#password-hashers
-PASSWORD_HASHERS = []
+# PASSWORD_HASHERS = []
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = []
+# AUTH_PASSWORD_VALIDATORS = []
 
-# MIDDLEWARE
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#middleware
-MIDDLEWARE = []
 
 # django-rest-framework
 # -------------------------------------------------------------------------------

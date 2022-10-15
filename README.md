@@ -26,6 +26,8 @@ You'll find the memberpress API Key in the Wordpress admin site.
 
 ## Usage
 
+### REST API
+
 ```python
 from memberpress_client.member import Member
 
@@ -50,6 +52,11 @@ member = Member(user=user)
 # 5. passing an json return object from memberpress REST API
 member = Member(response=memberpress_response_json)
 ```
+
+### Webhooks
+
+You can setup this plugin to receive webhooks from your memberpress Wordpress site. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
+![memberpress webhooks](doc/memberpress-api-webhook.png "memberpress webhooks")
 
 
 ## Local development

@@ -3,8 +3,15 @@
 # -------------------------------------------------------------------------
 .PHONY: build
 
-server:
+up:
+	brew services start mysql
+	brew services start redis
+	sleep 5
 	./manage.py runserver
+
+down:
+	brew services stop mysql
+	brew services stop redis
 
 test:
 	py.test

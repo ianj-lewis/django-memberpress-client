@@ -1,7 +1,7 @@
 # this project
 # ------------------------------------------------------------------------------
-MEMBERPRESS_API_KEY = "set-me-please"
-MEMBERPRESS_API_BASE_URL = "https://stepwisemath.ai/"
+MEMBERPRESS_API_KEY="t5paMwZKGq"
+MEMBERPRESS_API_BASE_URL="https://stepwisemath.ai/"
 
 # General
 # ------------------------------------------------------------------------------

@@ -10,10 +10,6 @@ logger = logging.getLogger(__name__)
 
 class WebhookView(APIView):
     @app_logger
-    def process_webhook(self, method, user, data):
-        pass
-
-    @app_logger
     def put(self, request):
         user = request.user
         data = request.POST

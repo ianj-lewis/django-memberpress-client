@@ -1,7 +1,7 @@
 from django.urls import path
 from memberpress_client.api.v1 import views
 
-app_name = "memberpress_client"
+app_name = "memberpress_client_api"
 urlpatterns = [
     path("webhook/", views.WebhookView.as_view(), name="webhook"),
     path("webhook/log/", views.WebhookLogView.as_view(), name="webhook_log"),

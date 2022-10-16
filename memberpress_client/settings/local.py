@@ -21,14 +21,14 @@ env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
-    # OS environment variables take precedence over variables from .env
-    ENV_PATH = os.path.join(APPS_DIR, "settings", ".env", ".local", ".django")
+    ENV_PATH = os.path.join(APPS_DIR, "settings", ".envs", ".local", ".django")
+    print("Loading environment variables from {ENV_PATH}".format(ENV_PATH=ENV_PATH))
     env.read_env(ENV_PATH)
 
 # your local dev & test settings go here
 # -----------------------------------------------------------------------------
 MEMBERPRESS_API_KEY = env.str("MEMBERPRESS_API_KEY", "set-me-please")
-MEMBERPRESS_API_BASE_URL = env.url("MEMBERPRESS_API_BASE_URL", "https://example.com/")
+MEMBERPRESS_API_BASE_URL = env.str("MEMBERPRESS_API_BASE_URL", "https://example.com/")
 
 # common local dev & test settings
 # -----------------------------------------------------------------------------

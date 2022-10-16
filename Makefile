@@ -3,6 +3,9 @@
 # -------------------------------------------------------------------------
 .PHONY: build
 
+db:
+	mysql -uroot -p < memberpress_client/scripts/init-db.sql
+
 up:
 	brew services start mysql
 	brew services start redis
@@ -12,7 +15,12 @@ down:
 	brew services stop redis
 
 server:
-	./manage.py runserver
+	./manage.py runserver 0.0.0.0:8000
+
+migrate:
+	./manage.py migrate
+	./manage.py makemigrations memberpress_client
+	./manage.py migrate memberpress_client
 
 test:
 	py.test

@@ -15,11 +15,11 @@ import jsonfield
 from memberpress_client.constants import MEMBERPRESS_EVENTS
 
 
-class WebHooks(TimeStampedModel):
+class MemberpressEvents(TimeStampedModel):
     """ """
 
     class Meta:
-        pass
+        verbose_name_plural = "memberpress events"
 
     sender = models.URLField(
         blank=True,

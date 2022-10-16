@@ -1,8 +1,8 @@
 from django.contrib import admin
-from memberpress_client.models import WebHooks
+from memberpress_client.models import MemberpressEvents
 
 
-class WebHooksAdmin(admin.ModelAdmin):
+class MemberpressEventsAdmin(admin.ModelAdmin):
     """
     Memberpress Webhook event log
     """
@@ -10,7 +10,7 @@ class WebHooksAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    search_fields = ("course_id",)
+    search_fields = ()
     list_display = (
         "sender",
         "webhook",
@@ -20,4 +20,4 @@ class WebHooksAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(WebHooks, WebHooksAdmin)
+admin.site.register(MemberpressEvents, MemberpressEventsAdmin)

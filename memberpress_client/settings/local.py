@@ -50,7 +50,10 @@ DEBUG = True
 LOGGING_CONFIG = None
 LOGGING = None
 FORCE_SCRIPT_NAME = None
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "0.0.0.0",
+]
 EMAIL_BACKEND = None
 USE_I18N = False
 CACHES = {
@@ -114,8 +117,6 @@ DJANGO_APPS = [
     "django.forms",
 ]
 THIRD_PARTY_APPS = [
-    "crispy_forms",
-    "crispy_bootstrap5",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",

@@ -3,6 +3,6 @@ from memberpress_client.api.v1 import views
 
 app_name = "memberpress_client_api"
 urlpatterns = [
-    path("webhook/", views.WebhookView.as_view(), name="webhook"),
-    path("webhook/log/", views.WebhookLogView.as_view(), name="webhook_log"),
+    path("events/", views.EventView.as_view(), name="events"),
+    path("events/log/", views.EventLogView.as_view(), name="events_log"),
 ]

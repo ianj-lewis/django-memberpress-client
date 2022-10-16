@@ -8,52 +8,108 @@ memberpress REST API Client plugin for Django - plugin constants
 # django stuff
 from django.conf import settings
 
+
+class MemberpressEventsTypes:
+    TRANSACTION = "transaction"
+    SUBSCRIPTION = "subscription"
+    MEMBER = "member"
+    MEMBERSHIP = "membership"
+
+
+class MemberpressEvents:
+    AFTER_CC_EXPIRES_REMINDER = "after_cc_expires_reminder"
+    AFTER_MEMBER_SIGNUP_REMINDER = "after_member_signup_reminder"
+    AFTER_SIGNUP_ABANDONED_REMINDER = "after_signup_abandoned_reminder"
+    AFTER_SUB_EXPIRES_REMINDER = "after_sub_expires_reminder"
+    BEFORE_CC_EXPIRES_REMINDER = "before_cc_expires_reminder"
+    BEFORE_SUB_EXPIRES_REMINDER = "before_sub_expires_reminder"
+    BEFORE_SUB_RENEWS_REMINDER = "before_sub_renews_reminder"
+    BEFORE_SUB_TRIAL_ENDS = "before_sub_trial_ends"
+    LOGIN = "login"
+    MEMBER_ACCOUNT_UPDATED = "member_account_updated"
+    MEMBER_ADDED = "member_added"
+    MEMBER_DELETED = "member_deleted"
+    MEMBER_SIGNUP_COMPLETED = "member_signup_completed"
+    MPCA_COURSE_COMPLETED = "mpca_course_completed"
+    MPCA_COURSE_STARTED = "mpca_course_started"
+    MPCA_LESSON_COMPLETED = "mpca_lesson_completed"
+    MPCA_LESSON_STARTED = "mpca_lesson_started"
+    MPCA_QUIZ_ATTEMPT_COMPLETED = "mpca_quiz_attempt_completed"
+    NON_RECURRING_TRANSACTION_COMPLETED = "non_recurring_transaction_completed"
+    NON_RECURRING_TRANSACTION_EXPIRED = "non_recurring_transaction_expired"
+    OFFLINE_PAYMENT_COMPLETE = "offline_payment_complete"
+    OFFLINE_PAYMENT_PENDING = "offline_payment_pending"
+    OFFLINE_PAYMENT_REFUNDED = "offline_payment_refunded"
+    RECURRING_TRANSACTION_COMPLETED = "recurring_transaction_completed"
+    RECURRING_TRANSACTION_EXPIRED = "recurring_transaction_expired"
+    RECURRING_TRANSACTION_FAILED = "recurring_transaction_failed"
+    RENEWAL_TRANSACTION_COMPLETED = "renewal_transaction_completed"
+    SUB_ACCOUNT_ADDED = "sub_account_added"
+    SUB_ACCOUNT_REMOVED = "sub_account_removed"
+    SUBSCRIPTION_CREATED = "subscription_created"
+    SUBSCRIPTION_DOWNGRADED_TO_ONE_TIME = "subscription_downgraded_to_one_time"
+    SUBSCRIPTION_DOWNGRADED_TO_RECURRING = "subscription_downgraded_to_recurring"
+    SUBSCRIPTION_DOWNGRADED = "subscription_downgraded"
+    SUBSCRIPTION_EXPIRED = "subscription_expired"
+    SUBSCRIPTION_PAUSED = "subscription_paused"
+    SUBSCRIPTION_RESUMED = "subscription_resumed"
+    SUBSCRIPTION_STOPPED = "subscription_stopped"
+    SUBSCRIPTION_UPGRADED_TO_ONE_TIME = "subscription_upgraded_to_one_time"
+    SUBSCRIPTION_UPGRADED_TO_RECURRING = "subscription_upgraded_to_recurring"
+    SUBSCRIPTION_UPGRADED = "subscription_upgraded"
+    TRANSACTION_COMPLETED = "transaction_completed"
+    TRANSACTION_EXPIRED = "transaction_expired"
+    TRANSACTION_FAILED = "transaction_failed"
+    TRANSACTION_REFUNDED = "transaction_refunded"
+    UNIDENTIFIED_EVENT = "unidentified_event"
+
+
 MEMBERPRESS_EVENTS = (
-    ("after-cc-expires-reminder", "after-cc-expires-reminder"),
-    ("after-member-signup-reminder", "after-member-signup-reminder"),
-    ("after-signup-abandoned-reminder", "after-signup-abandoned-reminder"),
-    ("after-sub-expires-reminder", "after-sub-expires-reminder"),
-    ("before-cc-expires-reminder", "before-cc-expires-reminder"),
-    ("before-sub-expires-reminder", "before-sub-expires-reminder"),
-    ("before-sub-renews-reminder", "before-sub-renews-reminder"),
-    ("before-sub-trial-ends", "before-sub-trial-ends"),
-    ("login", "login"),
-    ("member-account-updated", "member-account-updated"),
-    ("member-added", "member-added"),
-    ("member-deleted", "member-deleted"),
-    ("member-signup-completed", "member-signup-completed"),
-    ("mpca-course-completed", "mpca-course-completed"),
-    ("mpca-course-started", "mpca-course-started"),
-    ("mpca-lesson-completed", "mpca-lesson-completed"),
-    ("mpca-lesson-started", "mpca-lesson-started"),
-    ("mpca-quiz-attempt-completed", "mpca-quiz-attempt-completed"),
-    ("non-recurring-transaction-completed", "non-recurring-transaction-completed"),
-    ("non-recurring-transaction-expired", "non-recurring-transaction-expired"),
-    ("offline-payment-complete", "offline-payment-complete"),
-    ("offline-payment-pending", "offline-payment-pending"),
-    ("offline-payment-refunded", "offline-payment-refunded"),
-    ("recurring-transaction-completed", "recurring-transaction-completed"),
-    ("recurring-transaction-expired", "recurring-transaction-expired"),
-    ("recurring-transaction-failed", "recurring-transaction-failed"),
-    ("renewal-transaction-completed", "renewal-transaction-completed"),
-    ("sub-account-added", "sub-account-added"),
-    ("sub-account-removed", "sub-account-removed"),
-    ("subscription-created", "subscription-created"),
-    ("subscription-downgraded-to-one-time", "subscription-downgraded-to-one-time"),
-    ("subscription-downgraded-to-recurring", "subscription-downgraded-to-recurring"),
-    ("subscription-downgraded", "subscription-downgraded"),
-    ("subscription-expired", "subscription-expired"),
-    ("subscription-paused", "subscription-paused"),
-    ("subscription-resumed", "subscription-resumed"),
-    ("subscription-stopped", "subscription-stopped"),
-    ("subscription-upgraded-to-one-time", "subscription-upgraded-to-one-time"),
-    ("subscription-upgraded-to-recurring", "subscription-upgraded-to-recurring"),
-    ("subscription-upgraded", "subscription-upgraded"),
-    ("transaction-completed", "transaction-completed"),
-    ("transaction-expired", "transaction-expired"),
-    ("transaction-failed", "transaction-failed"),
-    ("transaction-refunded", "transaction-refunded"),
-    ("unidentified-event", "unidentified-event"),
+    (MemberpressEvents.AFTER_CC_EXPIRES_REMINDER, MemberpressEvents.AFTER_CC_EXPIRES_REMINDER),
+    (MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER, MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER),
+    (MemberpressEvents.AFTER_SIGNUP_ABANDONED_REMINDER, MemberpressEvents.AFTER_SIGNUP_ABANDONED_REMINDER),
+    (MemberpressEvents.AFTER_SUB_EXPIRES_REMINDER, MemberpressEvents.AFTER_SUB_EXPIRES_REMINDER),
+    (MemberpressEvents.BEFORE_CC_EXPIRES_REMINDER, MemberpressEvents.BEFORE_CC_EXPIRES_REMINDER),
+    (MemberpressEvents.BEFORE_SUB_EXPIRES_REMINDER, MemberpressEvents.BEFORE_SUB_EXPIRES_REMINDER),
+    (MemberpressEvents.BEFORE_SUB_RENEWS_REMINDER, MemberpressEvents.BEFORE_SUB_RENEWS_REMINDER),
+    (MemberpressEvents.BEFORE_SUB_TRIAL_ENDS, MemberpressEvents.BEFORE_SUB_TRIAL_ENDS),
+    (MemberpressEvents.LOGIN, MemberpressEvents.LOGIN),
+    (MemberpressEvents.MEMBER_ACCOUNT_UPDATED, MemberpressEvents.MEMBER_ACCOUNT_UPDATED),
+    (MemberpressEvents.MEMBER_ADDED, MemberpressEvents.MEMBER_ADDED),
+    (MemberpressEvents.MEMBER_DELETED, MemberpressEvents.MEMBER_DELETED),
+    (MemberpressEvents.MEMBER_SIGNUP_COMPLETED, MemberpressEvents.MEMBER_SIGNUP_COMPLETED),
+    (MemberpressEvents.MPCA_COURSE_COMPLETED, MemberpressEvents.MPCA_COURSE_COMPLETED),
+    (MemberpressEvents.MPCA_COURSE_STARTED, MemberpressEvents.MPCA_COURSE_STARTED),
+    (MemberpressEvents.MPCA_LESSON_COMPLETED, MemberpressEvents.MPCA_LESSON_COMPLETED),
+    (MemberpressEvents.MPCA_LESSON_STARTED, MemberpressEvents.MPCA_LESSON_STARTED),
+    (MemberpressEvents.MPCA_QUIZ_ATTEMPT_COMPLETED, MemberpressEvents.MPCA_QUIZ_ATTEMPT_COMPLETED),
+    (MemberpressEvents.NON_RECURRING_TRANSACTION_COMPLETED, MemberpressEvents.NON_RECURRING_TRANSACTION_COMPLETED),
+    (MemberpressEvents.NON_RECURRING_TRANSACTION_EXPIRED, MemberpressEvents.NON_RECURRING_TRANSACTION_EXPIRED),
+    (MemberpressEvents.OFFLINE_PAYMENT_COMPLETE, MemberpressEvents.OFFLINE_PAYMENT_COMPLETE),
+    (MemberpressEvents.OFFLINE_PAYMENT_PENDING, MemberpressEvents.OFFLINE_PAYMENT_PENDING),
+    (MemberpressEvents.OFFLINE_PAYMENT_REFUNDED, MemberpressEvents.OFFLINE_PAYMENT_REFUNDED),
+    (MemberpressEvents.RECURRING_TRANSACTION_COMPLETED, MemberpressEvents.RECURRING_TRANSACTION_COMPLETED),
+    (MemberpressEvents.RECURRING_TRANSACTION_EXPIRED, MemberpressEvents.RECURRING_TRANSACTION_EXPIRED),
+    (MemberpressEvents.RECURRING_TRANSACTION_FAILED, MemberpressEvents.RECURRING_TRANSACTION_FAILED),
+    (MemberpressEvents.RENEWAL_TRANSACTION_COMPLETED, MemberpressEvents.RENEWAL_TRANSACTION_COMPLETED),
+    (MemberpressEvents.SUB_ACCOUNT_ADDED, MemberpressEvents.SUB_ACCOUNT_ADDED),
+    (MemberpressEvents.SUB_ACCOUNT_REMOVED, MemberpressEvents.SUB_ACCOUNT_REMOVED),
+    (MemberpressEvents.SUBSCRIPTION_CREATED, MemberpressEvents.SUBSCRIPTION_CREATED),
+    (MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_ONE_TIME, MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_ONE_TIME),
+    (MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_RECURRING, MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_RECURRING),
+    (MemberpressEvents.SUBSCRIPTION_DOWNGRADED, MemberpressEvents.SUBSCRIPTION_DOWNGRADED),
+    (MemberpressEvents.SUBSCRIPTION_EXPIRED, MemberpressEvents.SUBSCRIPTION_EXPIRED),
+    (MemberpressEvents.SUBSCRIPTION_PAUSED, MemberpressEvents.SUBSCRIPTION_PAUSED),
+    (MemberpressEvents.SUBSCRIPTION_RESUMED, MemberpressEvents.SUBSCRIPTION_RESUMED),
+    (MemberpressEvents.SUBSCRIPTION_STOPPED, MemberpressEvents.SUBSCRIPTION_STOPPED),
+    (MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_ONE_TIME, MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_ONE_TIME),
+    (MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING, MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING),
+    (MemberpressEvents.SUBSCRIPTION_UPGRADED, MemberpressEvents.SUBSCRIPTION_UPGRADED),
+    (MemberpressEvents.TRANSACTION_COMPLETED, MemberpressEvents.TRANSACTION_COMPLETED),
+    (MemberpressEvents.TRANSACTION_EXPIRED, MemberpressEvents.TRANSACTION_EXPIRED),
+    (MemberpressEvents.TRANSACTION_FAILED, MemberpressEvents.TRANSACTION_FAILED),
+    (MemberpressEvents.TRANSACTION_REFUNDED, MemberpressEvents.TRANSACTION_REFUNDED),
+    (MemberpressEvents.UNIDENTIFIED_EVENT, MemberpressEvents.UNIDENTIFIED_EVENT),
 )
 
 

@@ -16,7 +16,6 @@ import environ
 import os
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# blank_django/
 APPS_DIR = ROOT_DIR / "memberpress_client"
 env = environ.Env()
 
@@ -204,7 +203,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "blank_django.users.context_processors.allauth_settings",
             ],
         },
     }

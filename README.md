@@ -58,6 +58,10 @@ member = Member(response=memberpress_response_json)
 You can setup this plugin to receive webhooks from your memberpress Wordpress site. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
 ![memberpress webhooks](doc/memberpress-api-webhook.png "memberpress webhooks")
 
+urls:
+
+- https://yourdomain.com/mp/api/v1/webhook/
+- https://yourdomain.com/mp/api/v1/webhook/log/
 
 ## Local development
 

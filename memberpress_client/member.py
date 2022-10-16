@@ -1,3 +1,10 @@
+"""
+Lawrence McDaniel - https://lawrencemcdaniel.com
+Oct-2022
+
+memberpress REST API Client plugin for Django - Member class
+"""
+
 # Python stuff
 import validators
 import logging

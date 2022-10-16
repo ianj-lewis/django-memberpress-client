@@ -8,6 +8,55 @@ memberpress REST API Client plugin for Django - plugin constants
 # django stuff
 from django.conf import settings
 
+MEMBERPRESS_EVENTS = (
+    ("after-cc-expires-reminder", "after-cc-expires-reminder"),
+    ("after-member-signup-reminder", "after-member-signup-reminder"),
+    ("after-signup-abandoned-reminder", "after-signup-abandoned-reminder"),
+    ("after-sub-expires-reminder", "after-sub-expires-reminder"),
+    ("before-cc-expires-reminder", "before-cc-expires-reminder"),
+    ("before-sub-expires-reminder", "before-sub-expires-reminder"),
+    ("before-sub-renews-reminder", "before-sub-renews-reminder"),
+    ("before-sub-trial-ends", "before-sub-trial-ends"),
+    ("login", "login"),
+    ("member-account-updated", "member-account-updated"),
+    ("member-added", "member-added"),
+    ("member-deleted", "member-deleted"),
+    ("member-signup-completed", "member-signup-completed"),
+    ("mpca-course-completed", "mpca-course-completed"),
+    ("mpca-course-started", "mpca-course-started"),
+    ("mpca-lesson-completed", "mpca-lesson-completed"),
+    ("mpca-lesson-started", "mpca-lesson-started"),
+    ("mpca-quiz-attempt-completed", "mpca-quiz-attempt-completed"),
+    ("non-recurring-transaction-completed", "non-recurring-transaction-completed"),
+    ("non-recurring-transaction-expired", "non-recurring-transaction-expired"),
+    ("offline-payment-complete", "offline-payment-complete"),
+    ("offline-payment-pending", "offline-payment-pending"),
+    ("offline-payment-refunded", "offline-payment-refunded"),
+    ("recurring-transaction-completed", "recurring-transaction-completed"),
+    ("recurring-transaction-expired", "recurring-transaction-expired"),
+    ("recurring-transaction-failed", "recurring-transaction-failed"),
+    ("renewal-transaction-completed", "renewal-transaction-completed"),
+    ("sub-account-added", "sub-account-added"),
+    ("sub-account-removed", "sub-account-removed"),
+    ("subscription-created", "subscription-created"),
+    ("subscription-downgraded-to-one-time", "subscription-downgraded-to-one-time"),
+    ("subscription-downgraded-to-recurring", "subscription-downgraded-to-recurring"),
+    ("subscription-downgraded", "subscription-downgraded"),
+    ("subscription-expired", "subscription-expired"),
+    ("subscription-paused", "subscription-paused"),
+    ("subscription-resumed", "subscription-resumed"),
+    ("subscription-stopped", "subscription-stopped"),
+    ("subscription-upgraded-to-one-time", "subscription-upgraded-to-one-time"),
+    ("subscription-upgraded-to-recurring", "subscription-upgraded-to-recurring"),
+    ("subscription-upgraded", "subscription-upgraded"),
+    ("transaction-completed", "transaction-completed"),
+    ("transaction-expired", "transaction-expired"),
+    ("transaction-failed", "transaction-failed"),
+    ("transaction-refunded", "transaction-refunded"),
+    ("unidentified-event", "unidentified-event"),
+)
+
+
 MEMBERPRESS_OPERATION_PREFIX = "memberpress_api_operation_"
 OPERATION_GET_MEMBER = MEMBERPRESS_OPERATION_PREFIX + "get_member"
 

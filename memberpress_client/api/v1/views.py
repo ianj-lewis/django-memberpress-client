@@ -17,38 +17,15 @@ class WebhookView(APIView):
     def put(self, request):
         user = request.user
         data = request.POST
-        self.process_webhook(method="put", user=user, date=data)
+        method = "put"
+
+        user = user
+        data = data
+        method = method
         return HttpResponse(status=201)
-
-    @app_logger
-    def patch(self, request):
-        user = request.user
-        data = request.POST
-        self.process_webhook(method="put", user=user, date=data)
-        return HttpResponse(status=201)
-
-    @app_logger
-    def get(self, request):
-        return HttpResponseNotFound
-
-    @app_logger
-    def delete(self, request):
-        return HttpResponseNotFound
 
 
 class WebhookLogView(APIView):
     @app_logger
     def get(self, request):
         return HttpResponse("log view")
-
-    @app_logger
-    def put(self, request):
-        return HttpResponseNotFound
-
-    @app_logger
-    def patch(self, request):
-        return HttpResponseNotFound
-
-    @app_logger
-    def delete(self, request):
-        return HttpResponseNotFound

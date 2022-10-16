@@ -2,7 +2,8 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Django - rest api client implementation
+memberpress REST API Client plugin for Django - rest api client implementation.
+This is the base class for memberpress Classes.
 """
 # Python stuff
 import logging

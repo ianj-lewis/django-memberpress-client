@@ -20,6 +20,7 @@
 django-environ                  # used in stepwise_grades for overrides to memberpress_client API
 djangorestframework
 validators
+django-jsonfield
 
 # Cookiecutter Django (minus stuff that's already required by Open edX)
 # =============================================================================

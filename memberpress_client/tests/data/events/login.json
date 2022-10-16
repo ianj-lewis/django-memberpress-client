@@ -1,0 +1,33 @@
+{
+    "event": "login",
+    "type": "member",
+    "data": {
+      "id": 6,
+      "email": "lpm0073@gmail.com",
+      "username": "mcdaniel",
+      "nicename": "mcdaniel",
+      "url": "https://lawrencemcdaniel.com",
+      "message": "",
+      "registered_at": "2022-10-04 00:46:37",
+      "first_name": "Lawrence",
+      "last_name": "McDaniel",
+      "display_name": "Lawrence McDaniel",
+      "active_memberships": [],
+      "active_txn_count": "0",
+      "expired_txn_count": "0",
+      "trial_txn_count": "0",
+      "sub_count": null,
+      "login_count": "25",
+      "address": {
+        "mepr-address-one": "",
+        "mepr-address-two": "",
+        "mepr-address-city": "",
+        "mepr-address-state": "",
+        "mepr-address-zip": "",
+        "mepr-address-country": ""
+      },
+      "profile": {},
+      "recent_transactions": [],
+      "recent_subscriptions": []
+    }
+  }

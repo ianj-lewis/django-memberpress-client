@@ -1,0 +1,33 @@
+{
+    "event": "member-account-updated",
+    "type": "member",
+    "data": {
+      "id": 9,
+      "email": "support@memberpress.com",
+      "username": "memberpress_support",
+      "nicename": "memberpress_support",
+      "url": "https://memberpress.com/support/",
+      "message": "",
+      "registered_at": "2022-10-13 18:32:59",
+      "first_name": "Memberpress",
+      "last_name": "Support",
+      "display_name": "Memberpress Support",
+      "active_memberships": [],
+      "active_txn_count": "0",
+      "expired_txn_count": "0",
+      "trial_txn_count": "0",
+      "sub_count": null,
+      "login_count": "1",
+      "address": {
+        "mepr-address-one": "",
+        "mepr-address-two": "",
+        "mepr-address-city": "",
+        "mepr-address-state": "",
+        "mepr-address-zip": "",
+        "mepr-address-country": ""
+      },
+      "profile": {},
+      "recent_transactions": [],
+      "recent_subscriptions": []
+    }
+  }

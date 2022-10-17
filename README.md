@@ -55,65 +55,32 @@ member = Member(response=memberpress_response_json)
 
 ### Webhooks
 
-You can setup this plugin to receive webhooks from your memberpress Wordpress site. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
+You can setup this plugin to receive events via memberpress' webhooks framework, a Pro 'developer tools' premium option of memberpress. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
 ![memberpress webhooks](doc/memberpress-api-webhook.png "memberpress webhooks")
 
 urls:
 
-- https://yourdomain.com/mp/api/v1/webhook/
-- https://yourdomain.com/mp/api/v1/webhook/log/
+- https://yourdomain.com/mp/api/v1/events/
+- https://yourdomain.com/mp/api/v1/events/log/
 
-## Local development
 
-* Use the same virtual environment that you use for edx-platform
-* Set your Python interpreter to 3.8x
-* install black: https://pypi.org/project/black/
-* install flake8: https://flake8.pycqa.org/en/latest/
+## Developers
 
-```bash
-# Run these from within your edx-platform virtual environment
-pip3 install pre-commit
-pre-commit install
-pip3 install black
-python3 -m pip install flake8
+### class hierarchy
+
+```python
+class Memberpress:
+
+    class MemberpressEvent(Memberpress):
+
+    class MemberpressAPIClient(Memberpress):
+        class Member(MemberpressAPIClient):
+        class Membership(MemberpressAPIClient):
+        class Subscriber(MemberpressAPIClient):
+        class Transaction(MemberpressAPIClient):
 ```
 
-### Local development good practices
+### constants
 
-* run `black` on modified code before committing.
-* run `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics`
-* run `flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics`
-* run `pre-commit run --all-files` before pushing. see: https://pre-commit.com/
-
-#### edx-platform dependencies
-
-To avoid freaky version conflicts in prod it's a good idea to install all of the edx-platform requirements to your local dev virtual environment.
-
-* requirements/edx/base.txt
-* requirements/edx/develop.txt,
-* requirements/edx/testing.txt
-
-At a minimum this will give you the full benefit of your IDE's linter.
-
-#### Notes regarding development with macOS M1
-
-1. To avoid problems with installing the edx-platform requirements, create your virtual environment with Python >= 3.9.x using the native installer from https://www.python.org/. `which python` should return `/Library/Frameworks/Python.framework/Versions/3.9/bin/python3`. Ignoring this advise will lead to very weird side effects. Note that this is true even though Lilac actually runs on Python 3.8.x
-
-2. Best to install openssl, openblas, zstd, mysql, and mysql-client with Brew. Using brew helps you avoid problems with gcc compilations and linking that have proven problematic on early releases of macOS 11 on M1. If you run into problems while pip installing mysql-client / MongoDBProxy / mongoengine/ pymongo /numpy / scipy / matplotlib then analyze the stack trace for any other straggling dependencies that I might have ommitted here that might also break due to the gcc compiler or linker, and try installing these instead with Brew.
-
-3. In addition to launching your virtual environment it also helps to set the following environment variables in your terminal window. Make sure you pay attention to any further suggestions echoed in Brew installation output:
-
-```bash
-export OPENBLAS=/opt/homebrew/opt/openblas/lib/
-export LDFLAGS="-L/opt/homebrew/opt/openblas/lib -L/opt/homebrew/opt/mysql-client/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/openblas/include -I/opt/homebrew/opt/mysql-client/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/openblas/lib/pkgconfig /opt/homebrew/opt/mysql-client/lib/pkgconfig"
-```
-
-### Shell Plus and iPython
-
-The stepwise_edxapi module adds ipython and django-extensions to the stack.  It is then possible to get an enhanced shell via:
-
-```bash
-tutor local exec lms ./manage.py lms shell_plus
-```
+- MemberpressEvents: discrete list of memberpress event types. The str value exactly matches the event dict key "event".
+- MemberpressEventTypes: discrete list of memberpress event_types

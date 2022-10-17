@@ -3,8 +3,9 @@ Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
 memberpress REST API Client plugin for Django - events classes. A collection of
-higher-order classes, all descended from MemberpressEvent, that consist of
-varying combinations of member, membership, transaction, subscription objects.
+strongly-typed, higher-order classes, all descended from MemberpressEvent, that
+consist of varying combinations of Member, Membership, Transaction,
+and Subscription objects.
 
 This is part of the webhooks implmentation. memberpress webhooks
 post events to the "/mp/events" URL endpoint. the body of the request object
@@ -12,7 +13,6 @@ from memberpress contains a dict who's structure should match one of the
 four dozen child classes of MemberpressEvent found in this module.
 
 Usage:
-from memberpress_client.constants import MemberpressEvents
 from memberpress_client.events import get_event
 
 memberpress_event = get_event(dict["event"])

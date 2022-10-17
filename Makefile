@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------
 # build a package for PyPi
 # -------------------------------------------------------------------------
-.PHONY: build
+.PHONY: build, requirements
 
 db:
 	mysql -uroot -p < memberpress_client/scripts/init-db.sql
@@ -21,6 +21,12 @@ migrate:
 	./manage.py migrate
 	./manage.py makemigrations memberpress_client
 	./manage.py migrate memberpress_client
+
+requirements:
+	pip-compile requirements/common.in
+	pip-compile requirements/local.in
+	pip install -r requirements/common.txt
+	pip install -r requirements/local.txt
 
 test:
 	py.test

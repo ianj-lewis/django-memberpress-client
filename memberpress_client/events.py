@@ -1,3 +1,28 @@
+"""
+Lawrence McDaniel - https://lawrencemcdaniel.com
+Oct-2022
+
+memberpress REST API Client plugin for Django - events classes. A collection of
+higher-order classes, all descended from MemberpressEvent, that consist of
+varying combinations of member, membership, transaction, subscription objects.
+
+This is part of the webhooks implmentation. memberpress webhooks
+post events to the "/mp/events" URL endpoint. the body of the request object
+from memberpress contains a dict who's structure should match one of the
+four dozen child classes of MemberpressEvent found in this module.
+
+Usage:
+from memberpress_client.constants import MemberpressEvents
+from memberpress_client.events import get_event
+
+memberpress_event = get_event(dict["event"])
+
+Notes:
+- **DO NOT** import MemberpressEvent nor its child classes.  Instead, use
+  get_event(). This is intended to help avoid having to import dozens of child
+  class into your module, not only for the sake of sanity but also better
+  memory management.
+"""
 import logging
 from typing import TypeVar, Generic, Type
 
@@ -5,7 +30,7 @@ from memberpress_client.constants import (
     COMPLETE_TRANSACTION_DICT,
     COMPLETE_MEMBER_DICT,
     MemberpressEvents,
-    MemberpressEventsTypes,
+    MemberpressEventTypes,
 )
 from memberpress_client.memberpress import Memberpress
 from memberpress_client.member import Member
@@ -49,7 +74,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     def init(self):
         super().init()
-        self._json = None
         self._event = None
         self._event_type = None
         self._data = None
@@ -65,14 +89,23 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         self.has_subscription = False
 
     def validate(self):
+        """
+        - parent class validations
+        - integrity checks inside the event dict
+        - structural integrity of the event dict
+        """
+        super().validate()
+        if not self.is_valid:
+            return
+
         if self.event != self.json.get("event", "missing event"):
             self._is_valid = False
-            logger.warning("received a dict with no 'event' key.")
+            logger.warning("received a dict with inconsistent or missing 'event' key.")
             return
 
         if self.event_type != self.json.get("type", "missing event type"):
             self._is_valid = False
-            logger.warning("received a dict with no 'type' key.")
+            logger.warning("received a dict with inconsistent or missing 'type' key.")
             return
 
         # this is the outer dict structure that all events share
@@ -91,12 +124,21 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
         self._is_valid = True
 
-        # set property flags. if False then the corresponding property
-        # will always return None.
-        self.has_member = MemberpressEventsTypes.MEMBER in self.qc_keys
-        self.has_membership = MemberpressEventsTypes.MEMBERSHIP in self.qc_keys
-        self.has_transaction = MemberpressEventsTypes.TRANSACTION in self.qc_keys
-        self.has_subscription = MemberpressEventsTypes.SUBSCRIPTION in self.qc_keys
+    @property
+    def has_member(self):
+        return MemberpressEventTypes.MEMBER in self.qc_keys
+
+    @property
+    def has_membership(self):
+        return MemberpressEventTypes.MEMBERSHIP in self.qc_keys
+
+    @property
+    def has_transaction(self):
+        return MemberpressEventTypes.TRANSACTION in self.qc_keys
+
+    @property
+    def has_subscription(self):
+        return MemberpressEventTypes.SUBSCRIPTION in self.qc_keys
 
     @property
     def event(self):
@@ -127,25 +169,28 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     @property
     def membership(self):
         if self.has_membership and not self._membership:
-            membership_dict = self.data.get(MemberpressEventsTypes.MEMBERSHIP, {})
+            membership_dict = self.data.get(MemberpressEventTypes.MEMBERSHIP, {})
             self._membership = Membership(membership=membership_dict)
         return self._membership
 
     @property
     def member(self):
         if self.has_member and not self._member:
-            if self.event_type == MemberpressEventsTypes.MEMBER:
-                member_dict = (
-                    self.data
-                    if self.event_type == MemberpressEventsTypes.MEMBER
-                    else self.data.get(MemberpressEventsTypes.MEMBER, {})
-                )
+            # note that the member dict resides in either of two locations
+            # depending on the kind of event we received.
+            member_dict = (
+                self.data
+                if self.event_type == MemberpressEventTypes.MEMBER
+                else self.data.get(MemberpressEventTypes.MEMBER, {})
+            )
             self._member = Member(response=member_dict)
         return self._member
 
     @property
     def transaction(self):
         if self.has_transaction and not self._transaction:
+            # note that the transaction object resides inside the body of the
+            # of the data dict.
             transaction_dict = self.data
             self._transaction = Transaction(transaction=transaction_dict)
         return self._transaction
@@ -153,7 +198,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     @property
     def subscription(self):
         if self.has_subscription and not self._subscription:
-            subscription_dict = self.data.get(MemberpressEventsTypes.SUBSCRIPTION, {})
+            subscription_dict = self.data.get(MemberpressEventTypes.SUBSCRIPTION, {})
             self._subscription = Subscription(subscription=subscription_dict)
         return self._subscription
 
@@ -162,10 +207,10 @@ class MEAfterCCExpiresReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.AFTER_CC_EXPIRES_REMINDER
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -174,11 +219,11 @@ class MEAfterMemberSignupReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -187,11 +232,11 @@ class MEAfterSignupAbandonedReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.AFTER_SIGNUP_ABANDONED_REMINDER
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -200,11 +245,11 @@ class MEAfterSubExpiresReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.AFTER_SUB_EXPIRES_REMINDER
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -213,8 +258,8 @@ class MEBeforeCCExpiresReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.BEFORE_CC_EXPIRES_REMINDER
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -222,11 +267,11 @@ class MEBeforeSubExpiresReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.BEFORE_SUB_EXPIRES_REMINDER
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -235,11 +280,11 @@ class MEBeforeSubRenewsReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.BEFORE_SUB_RENEWS_REMINDER
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -248,8 +293,8 @@ class MEBeforeSubTrialEnds(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.BEFORE_SUB_TRIAL_ENDS
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -257,7 +302,7 @@ class MELogin(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.LOGIN
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -266,7 +311,7 @@ class MEMemberAccountUpdated(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_ACCOUNT_UPDATED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -275,7 +320,7 @@ class MEMemberAdded(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_ADDED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -284,7 +329,7 @@ class MEMemberDeleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_DELETED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -293,7 +338,7 @@ class MEMemberSignupCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_SIGNUP_COMPLETED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -302,7 +347,7 @@ class MEMPCACourseCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_COURSE_COMPLETED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -311,7 +356,7 @@ class MEMPCACourseStarted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_COURSE_STARTED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -320,7 +365,7 @@ class MEMPCALessonCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_LESSON_COMPLETED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -329,7 +374,7 @@ class MEMPCALessonStarted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_LESSON_STARTED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -338,7 +383,7 @@ class MEMPCALQuizAttemptCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_QUIZ_ATTEMPT_COMPLETED
-        self.event_type = MemberpressEventsTypes.MEMBER
+        self.event_type = MemberpressEventTypes.MEMBER
         self.qc_keys = [] + COMPLETE_MEMBER_DICT
         self.validate()
 
@@ -347,11 +392,11 @@ class MENonRecurringTransactionCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.NON_RECURRING_TRANSACTION_COMPLETED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -360,11 +405,11 @@ class MENonRecurringTransactionExpired(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.NON_RECURRING_TRANSACTION_EXPIRED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -373,11 +418,11 @@ class MEOfflinePaymentComplete(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.OFFLINE_PAYMENT_COMPLETE
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -386,11 +431,11 @@ class MEOfflinePaymentPending(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.OFFLINE_PAYMENT_PENDING
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -399,11 +444,11 @@ class MEOfflinePaymentRefunded(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.OFFLINE_PAYMENT_REFUNDED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -412,11 +457,11 @@ class MERecurringTransactionCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.RECURRING_TRANSACTION_COMPLETED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -425,11 +470,11 @@ class MERecurringTransactionExpired(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.RECURRING_TRANSACTION_EXPIRED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -438,11 +483,11 @@ class MERecurringTransactionFailed(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.RECURRING_TRANSACTION_FAILED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -451,11 +496,11 @@ class MERenewalTransactionCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.RENEWAL_TRANSACTION_COMPLETED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -464,11 +509,11 @@ class MESubAccountAdded(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUB_ACCOUNT_ADDED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -477,11 +522,11 @@ class MESubAccountRemoved(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUB_ACCOUNT_REMOVED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -490,8 +535,8 @@ class MESubscriptionCreated(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_CREATED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -499,11 +544,11 @@ class MESubscriptionDowngradedToOneTime(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_ONE_TIME
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -512,8 +557,8 @@ class MESubscriptionDowngradedToRecurring(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_RECURRING
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -521,8 +566,8 @@ class MESubscriptionDowngraded(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_DOWNGRADED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -530,8 +575,8 @@ class MESubscriptionExpired(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_EXPIRED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -539,8 +584,8 @@ class MESubscriptionPaused(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_PAUSED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -548,8 +593,8 @@ class MESubscriptionResumed(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_RESUMED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -557,8 +602,8 @@ class MESubscriptionStopped(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_STOPPED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -566,11 +611,11 @@ class MESubscriptionUpgradedToOneTime(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_ONE_TIME
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -579,8 +624,8 @@ class MESubscriptionUpgradedToRecurring(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -588,8 +633,8 @@ class MESubscriptionUpgraded(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED
-        self.event_type = MemberpressEventsTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventsTypes.MEMBERSHIP, MemberpressEventsTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.event_type = MemberpressEventTypes.SUBSCRIPTION
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
 
@@ -597,11 +642,11 @@ class METransactionCompleted(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.TRANSACTION_COMPLETED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -610,11 +655,11 @@ class METransactionExpired(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.TRANSACTION_EXPIRED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -623,11 +668,11 @@ class METransactionFailed(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.TRANSACTION_FAILED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 
@@ -636,11 +681,11 @@ class METransactionRefunded(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.event = MemberpressEvents.TRANSACTION_REFUNDED
-        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.event_type = MemberpressEventTypes.TRANSACTION
         self.qc_keys = [
-            MemberpressEventsTypes.MEMBERSHIP,
-            MemberpressEventsTypes.MEMBER,
-            MemberpressEventsTypes.SUBSCRIPTION,
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+            MemberpressEventTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
 

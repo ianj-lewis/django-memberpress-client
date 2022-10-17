@@ -9,7 +9,7 @@ memberpress REST API Client plugin for Django - plugin constants
 from django.conf import settings
 
 
-class MemberpressEventsTypes:
+class MemberpressEventTypes:
     TRANSACTION = "transaction"
     SUBSCRIPTION = "subscription"
     MEMBER = "member"

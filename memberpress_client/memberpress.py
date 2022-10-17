@@ -16,6 +16,16 @@ class Memberpress:
         self._locked = False
         self._json = None
 
+    def validate(self):
+        if self.json is not None and type(self.json) != dict:
+            self._is_valid = False
+            return
+
+        # validate more stuff here
+
+        # if everything passed then return True
+        self._is_valid = True
+
     def is_valid_dict(self, response, qc_keys) -> bool:
         if not type(response) == dict:
             logger.warning(

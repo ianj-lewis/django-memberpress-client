@@ -143,6 +143,8 @@ flake8==4.0.1
     #   flake8-isort
 flake8-isort==5.0.0
     # via -r requirements/local.in
+hiredis==2.0.0
+    # via -r requirements/local.in
 identify==2.5.1
     # via pre-commit
 idna==3.4
@@ -285,6 +287,7 @@ pyrsistent==0.18.1
     # via jsonschema
 pytest==7.1.3
     # via
+    #   -r requirements/local.in
     #   pytest-django
     #   pytest-sugar
 pytest-django==4.5.2

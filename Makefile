@@ -1,7 +1,8 @@
 # -------------------------------------------------------------------------
 # build a package for PyPi
 # -------------------------------------------------------------------------
-.PHONY: build, requirements
+.PHONY: build
+.PHONY: requirements
 
 db:
 	mysql -uroot -p < memberpress_client/scripts/init-db.sql

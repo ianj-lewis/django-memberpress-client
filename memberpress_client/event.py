@@ -1,4 +1,5 @@
 import logging
+from typing import TypeVar, Generic, Type
 
 from memberpress_client.constants import (
     COMPLETE_TRANSACTION_DICT,
@@ -14,7 +15,10 @@ from memberpress_client.subscription import Subscription
 logger = logging.getLogger(__name__)
 
 
-class MemberpressEvent:
+T = TypeVar("T", bound="MemberpressEvent")
+
+
+class MemberpressEvent(Generic[T]):
     """
     Event base class
     """
@@ -39,6 +43,10 @@ class MemberpressEvent:
         self.init()
         self.json = data
         pass
+
+    @classmethod
+    def factory(cls: Type[T], data: dict) -> T:
+        return cls(data=data)
 
     def init(self):
         self._json = None
@@ -707,7 +715,7 @@ MEMBERPRESS_EVENT_CLASSES = {
 }
 
 
-def get_event(data: dict) -> object:
+def get_event(data: dict) -> T:
     """
     introspect a data dict received by a memberpress webhook event, determine the event type
     and return an instance the corresponding class.
@@ -715,4 +723,4 @@ def get_event(data: dict) -> object:
     event = data.get("event", None)
     if event:
         cls = MEMBERPRESS_EVENT_CLASSES[event]
-        return cls(data)
+        return cls.factory(data=data)

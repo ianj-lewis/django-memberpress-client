@@ -91,6 +91,18 @@ Use these built-in constants rather than working directly the dict key string va
 - MemberpressEvents: discrete list of memberpress event types. The str value exactly matches the event dict key "event".
 - MemberpressEventTypes: discrete list of memberpress event_types
 
+```python
+print(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)
+print(MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER)
+print(MemberpressEvents.LOGIN)
+print(MemberpressEvents.MEMBER_ACCOUNT_UPDATED)
+print(MemberpressEvents.SUBSCRIPTION_EXPIRED)
+# ...
+# ectetera, etcetera, etcetera ...
+# ...
+print(MemberpressEvents.TRANSACTION_COMPLETED)
+```
+
 ### developer getting started guide
 
 Keep in mind that this code package is intended to install as an add-on to your existing Django project. Therefore,

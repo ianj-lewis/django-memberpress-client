@@ -132,4 +132,4 @@ consists of the following:
 - ./manage.py runserver. see 'make server'
 - ./manage.py createsuperuser. see 'make server'
 
-Note that the Makefile is specific to macOS environments (my sincerest apologies), and it assumes that you've installed mysql and redis using homebrew.
+Common dev chores are automated in the Makefile, noting however that all syntax is specific to macOS environments (my sincerest apologies), plus, it assumes that you've installed mysql and redis using homebrew.

@@ -92,15 +92,27 @@ Use these built-in constants rather than working directly the dict key string va
 - MemberpressEventTypes: discrete list of memberpress event_types
 
 ```python
+from memberpress_client.constants import MemberpressEvents
+
 print(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)
+after-cc-expires-reminder
+
 print(MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER)
+after-member-signup-reminder
+
 print(MemberpressEvents.LOGIN)
+login
+
 print(MemberpressEvents.MEMBER_ACCOUNT_UPDATED)
+member-account-updated
+
 print(MemberpressEvents.SUBSCRIPTION_EXPIRED)
+subscription-expired
 # ...
 # ectetera, etcetera, etcetera ...
 # ...
 print(MemberpressEvents.TRANSACTION_COMPLETED)
+transaction-completed
 ```
 
 ### developer getting started guide

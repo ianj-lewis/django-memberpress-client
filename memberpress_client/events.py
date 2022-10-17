@@ -28,8 +28,10 @@ from typing import TypeVar, Generic, Type
 
 from memberpress_client.constants import (
     COMPLETE_TRANSACTION_DICT,
-    COMPLETE_MEMBER_DICT,
     COMPLETE_EVENT_DICT,
+    PARTIAL_MEMBER_DICT,
+    COMPLETE_SUBSCRIPTION_EVENT1,
+    COMPLETE_SUBSCRIPTION_EVENT2,
     MemberpressEvents,
     MemberpressEventTypes,
 )
@@ -260,7 +262,7 @@ class MEBeforeCCExpiresReminder(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.BEFORE_CC_EXPIRES_REMINDER
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_EVENT_DICT
         self.validate()
 
 
@@ -295,7 +297,7 @@ class MEBeforeSubTrialEnds(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.BEFORE_SUB_TRIAL_ENDS
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_EVENT_DICT
         self.validate()
 
 
@@ -304,7 +306,7 @@ class MELogin(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.LOGIN
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -313,7 +315,7 @@ class MEMemberAccountUpdated(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_ACCOUNT_UPDATED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -322,7 +324,7 @@ class MEMemberAdded(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_ADDED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -331,7 +333,7 @@ class MEMemberDeleted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_DELETED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -340,7 +342,7 @@ class MEMemberSignupCompleted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MEMBER_SIGNUP_COMPLETED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -349,7 +351,7 @@ class MEMPCACourseCompleted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_COURSE_COMPLETED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -358,7 +360,7 @@ class MEMPCACourseStarted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_COURSE_STARTED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -367,7 +369,7 @@ class MEMPCALessonCompleted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_LESSON_COMPLETED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -376,7 +378,7 @@ class MEMPCALessonStarted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_LESSON_STARTED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -385,7 +387,7 @@ class MEMPCALQuizAttemptCompleted(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.MPCA_QUIZ_ATTEMPT_COMPLETED
         self.event_type = MemberpressEventTypes.MEMBER
-        self.qc_keys = [] + COMPLETE_MEMBER_DICT
+        self.qc_keys = [] + PARTIAL_MEMBER_DICT
         self.validate()
 
 
@@ -537,7 +539,7 @@ class MESubscriptionCreated(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_CREATED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_EVENT_DICT
         self.validate()
 
 
@@ -550,7 +552,7 @@ class MESubscriptionDowngradedToOneTime(MemberpressEvent):
             MemberpressEventTypes.MEMBERSHIP,
             MemberpressEventTypes.MEMBER,
             MemberpressEventTypes.SUBSCRIPTION,
-        ] + COMPLETE_TRANSACTION_DICT
+        ] + COMPLETE_SUBSCRIPTION_EVENT1
         self.validate()
 
 
@@ -559,7 +561,7 @@ class MESubscriptionDowngradedToRecurring(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_RECURRING
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_EVENT_DICT
         self.validate()
 
 
@@ -568,7 +570,7 @@ class MESubscriptionDowngraded(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_DOWNGRADED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 
@@ -577,7 +579,7 @@ class MESubscriptionExpired(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_EXPIRED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 
@@ -586,7 +588,7 @@ class MESubscriptionPaused(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_PAUSED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 
@@ -595,7 +597,7 @@ class MESubscriptionResumed(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_RESUMED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 
@@ -604,7 +606,7 @@ class MESubscriptionStopped(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_STOPPED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 
@@ -626,7 +628,7 @@ class MESubscriptionUpgradedToRecurring(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 
@@ -635,7 +637,7 @@ class MESubscriptionUpgraded(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_TRANSACTION_DICT
+        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
         self.validate()
 
 

@@ -79,4 +79,3 @@ class TestMember(unittest.TestCase):
         validate(MemberpressEvents.TRANSACTION_EXPIRED)
         validate(MemberpressEvents.TRANSACTION_FAILED)
         validate(MemberpressEvents.TRANSACTION_REFUNDED)
-        validate(MemberpressEvents.UNIDENTIFIED_EVENT)

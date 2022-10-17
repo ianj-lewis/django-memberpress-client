@@ -8,7 +8,7 @@ import json
 # our testing code starts here
 # -----------------------------------------------------------------------------
 from memberpress_client.constants import MemberpressEvents
-from memberpress_client.event import get_event
+from memberpress_client.event import get_event, MEMBERPRESS_EVENT_CLASSES
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -23,10 +23,16 @@ def load_json(test_file):
 class TestMember(unittest.TestCase):
     def test_1_valid_dicts(self):
         def validate(event_str: str):
+            # load a json dict from a test file
             data_dict = load_json(event_str)
+
+            # instantiate the object
             event = get_event(data_dict)
+
+            # tests
             self.assertEqual(event.is_valid, True)
             self.assertEqual(event.event, event_str)
+            self.assertEqual(type(event), MEMBERPRESS_EVENT_CLASSES[event_str])
 
         validate(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)
         validate(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)

@@ -11,7 +11,7 @@ import os
 env = environ.Env(
     # set casting, default value
     MEMBERPRESS_API_KEY=(str, "set-me-please"),
-    MEMBERPRESS_API_BASE_URL=(str, "https://yourdomain.com")
+    MEMBERPRESS_API_BASE_URL=(str, "https://yourdomain.com"),
 )
 
 # path to this file.

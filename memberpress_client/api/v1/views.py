@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 
 from memberpress_client.decorators import app_logger
-from memberpress_client.event import get_event
+from memberpress_client.events import get_event
 from memberpress_client.models import MemberpressEvents
 
 logger = logging.getLogger(__name__)

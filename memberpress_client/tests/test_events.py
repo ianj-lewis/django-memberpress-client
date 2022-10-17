@@ -8,7 +8,7 @@ import json
 # our testing code starts here
 # -----------------------------------------------------------------------------
 from memberpress_client.constants import MemberpressEvents
-from memberpress_client.event import get_event, MEMBERPRESS_EVENT_CLASSES
+from memberpress_client.events import get_event, MEMBERPRESS_EVENT_CLASSES
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))

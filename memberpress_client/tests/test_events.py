@@ -35,7 +35,9 @@ class TestMember(unittest.TestCase):
     def test_1_valid_dicts(self):
         def validate(data_dict: dict):
             event = get_event(data_dict)
+            event_str = data_dict.get("event")
             self.assertEqual(event.is_valid, True)
+            self.assertEqual(event.event, event_str)
 
         validate(load_json_file(self.PATH + MemberpressEvents.AFTER_CC_EXPIRES_REMINDER))
         validate(load_json_file(self.PATH + MemberpressEvents.AFTER_CC_EXPIRES_REMINDER))

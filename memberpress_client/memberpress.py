@@ -1,7 +1,9 @@
 """
 base class
 """
+from datetime import datetime
 import logging
+import validators
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,45 @@ class Memberpress:
 
         # if everything passed then return True
         self._is_valid = True
+
+    def str2bool(self, value):
+        try:
+            v = str(value).lower()
+            return True if v == "true" else False
+        except Exception:
+            return False
+
+    def str2datetime(self, value):
+        if type(value) != str:
+            return None
+
+        date_str = value[0:19]
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            pass
+
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d")
+        except ValueError:
+            pass
+
+        logger.warning("Cannot convert datetime string {value}".format(value=value))
+
+    def str2int(self, value):
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+    def str2float(self, value):
+        try:
+            return float(value)
+        except ValueError:
+            pass
+
+    def str2email(self, value):
+        return value if validators.email(value) else None
 
     def is_valid_dict(self, response, qc_keys) -> bool:
         if not type(response) == dict:

@@ -26,7 +26,6 @@ Notes:
 from curses import intrflush
 from datetime import datetime
 import string
-import validators
 import logging
 from typing import TypeVar, Generic, Type
 
@@ -216,11 +215,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     # -------------------------------------------------------------------------
     @property
     def active_memberships(self) -> int:
-        return self.data.get("active_memberships", 0)
+        return self.str2int(self.data.get("active_memberships"))
 
     @property
     def active_txn_count(self) -> int:
-        return self.data.get("active_txn_count", 0)
+        return self.str2int(self.data.get("active_txn_count"))
 
     @property
     def address(self) -> dict:
@@ -228,36 +227,31 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def amount(self) -> float:
-        return self.data.get("amount", 0.00)
+        return self.str2float(self.data.get("amount", 0.00))
 
     @property
     def cc_exp_month(self) -> int:
-        return self.data.get("cc_exp_month", None)
+        return self.str2int(self.data.get("cc_exp_month"))
 
     @property
     def cc_exp_year(self) -> int:
-        return self.data.get("cc_exp_year", None)
+        return self.str2int(self.data.get("cc_exp_year"))
 
     @property
     def cc_last4(self) -> int:
-        return self.data.get("cc_last4", None)
+        return self.str2int(self.data.get("cc_last4"))
 
     @property
     def corporate_account_id(self) -> int:
-        return self.data.get("corporate_account_id", None)
+        return self.str2int(self.data.get("corporate_account_id"))
 
     @property
     def coupon(self) -> int:
-        return self.data.get("coupon", None)
+        return self.str2int(self.data.get("coupon"))
 
     @property
     def created_at(self) -> datetime:
-        date_str = self.json.get("created_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read created_at for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("created_at"))
 
     @property
     def display_name(self) -> str:
@@ -265,27 +259,15 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def email(self) -> str:
-        if not self.username:
-            return None
-
-        email_str = self.member.get("email", "")
-        if validators.email(email_str):
-            return email_str
-        logger.warning("invalid email address for username {username}".format(username=self.username))
-        return None
+        return self.str2email(self.member.get("email"))
 
     @property
     def expired_txn_count(self) -> int:
-        return self.data.get("expired_txn_count", 0)
+        return self.str2int(self.data.get("expired_txn_count"))
 
     @property
     def expires_at(self) -> datetime:
-        date_str = self.json.get("expires_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read expires_at for id {id}".format(id=self.id))
-            return None
+        return str2datetime(self.json.get("expires_at"))
 
     @property
     def first_name(self) -> str:
@@ -297,7 +279,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def id(self) -> int:
-        return self.data.get("id")
+        return self.str2int(self.data.get("id"))
 
     @property
     def last_name(self) -> str:
@@ -305,11 +287,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def limit_cycles(self) -> bool:
-        try:
-            v = str(self.json.get("limit_cycles", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.data.get("limit_cycles", "false"))
 
     @property
     def limit_cycles_action(self) -> str:
@@ -317,7 +295,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def limit_cycles_expires_after(self) -> int:
-        return self.data.get("limit_cycles_expires_after")
+        return self.str2int(self.data.get("limit_cycles_expires_after"))
 
     @property
     def limit_cycles_expires_type(self) -> str:
@@ -325,11 +303,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def limit_cycles_num(self) -> int:
-        return self.data.get("limit_cycles_num")
+        return self.str2int(self.data.get("limit_cycles_num"))
 
     @property
     def login_count(self) -> int:
-        return self.data.get("login_count")
+        return self.str2int(self.data.get("login_count"))
 
     @property
     def message(self) -> str:
@@ -341,11 +319,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def parent_transaction_id(self) -> int:
-        return self.data.get("parent_transaction_id")
+        return self.str2int(self.data.get("parent_transaction_id"))
 
     @property
     def period(self) -> int:
-        return self.data.get("period")
+        return self.str2int(self.data.get("period"))
 
     @property
     def period_type(self) -> str:
@@ -353,7 +331,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def price(self) -> float:
-        return self.data.get("price")
+        return self.str2float(self.data.get("price"))
 
     @property
     def profile(self) -> dict:
@@ -361,19 +339,15 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def prorated(self) -> int:
-        return self.data.get("prorated")
+        return self.str2int(self.data.get("prorated"))
 
     @property
     def prorated_trial(self) -> int:
-        return self.data.get("prorated_trial")
+        return self.str2int(self.data.get("prorated_trial"))
 
     @property
     def rebill(self) -> bool:
-        try:
-            v = str(self.json.get("rebill", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("rebill"))
 
     @property
     def recent_subscriptions(self) -> list:
@@ -399,15 +373,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def registered_at(self) -> datetime:
-        if not self.username:
-            return None
-
-        date_str = self.data.get("registered_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read registered_at for username {username}".format(username=self.username))
-            return None
+        return self.str2datetime(self.data.get("registered_at")) if self.username else None
 
     @property
     def response(self):
@@ -418,8 +384,8 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         return self.data.get("status")
 
     @property
-    def sub_count(self):
-        return self.data.get("sub_count")
+    def sub_count(self) -> int:
+        return self.str2int(self.data.get("sub_count"))
 
     @property
     def subscr_id(self) -> str:
@@ -427,15 +393,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def subscription_payment_index(self) -> bool:
-        try:
-            v = str(self.json.get("subscription_payment_index", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("subscription_payment_index"))
 
     @property
     def tax_amount(self) -> float:
-        return self.data.get("tax_amount")
+        return self.str2float(self.data.get("tax_amount"))
 
     @property
     def tax_class(self) -> str:
@@ -443,7 +405,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def tax_compound(self) -> int:
-        return self.data.get("tax_compound")
+        return self.str2int(self.data.get("tax_compound"))
 
     @property
     def tax_desc(self) -> str:
@@ -451,11 +413,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def tax_rate(self) -> float:
-        return self.data.get("tax_rate")
+        return self.str2float(self.data.get("tax_rate"))
 
     @property
     def tax_shipping(self) -> int:
-        return self.data.get("tax_shipping")
+        return self.str2int(self.data.get("tax_shipping"))
 
     @property
     def token(self) -> str:
@@ -463,7 +425,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def total(self) -> float:
-        return self.data.get("total")
+        return self.str2float(self.data.get("total"))
 
     @property
     def trans_num(self) -> str:
@@ -471,30 +433,30 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def trial(self) -> int:
-        return self.data.get("trial")
+        return self.str2int(self.data.get("trial"))
 
     @property
     def trial_amount(self) -> float:
-        return self.data.get("trial_amount")
+        return self.str2float(self.data.get("trial_amount"))
 
     @property
     def trial_days(self) -> int:
-        return self.data.get("trial_days")
+        return self.str2int(self.data.get("trial_days"))
 
     @property
     def trial_tax_amount(self) -> float:
-        return self.data.get("trial_tax_amount")
+        return self.str2float(self.data.get("trial_tax_amount"))
 
     @property
     def trial_total(self) -> float:
-        return self.data.get("trial_total")
+        return self.str2float(self.data.get("trial_total"))
 
     @property
     def trial_txn_count(self) -> int:
         return self.data.get("trial_txn_count")
 
     @property
-    def txn_type(self) -> string:
+    def txn_type(self) -> str:
         return self.data.get("txn_type")
 
     @property

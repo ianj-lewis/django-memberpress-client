@@ -69,6 +69,9 @@ class Memberpress:
         logger.warning("Cannot convert datetime string {value}".format(value=value))
 
     def str2int(self, value):
+        if type(value) == str and value == "":
+            return None
+
         if type(value) in (str, int, float):
             try:
                 return int(value)

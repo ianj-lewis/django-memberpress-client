@@ -16,10 +16,10 @@ from memberpress_client.subscription import Subscription
 logger = logging.getLogger(__name__)
 
 
-T = TypeVar("T", bound="MemberpressEvent")
+MemberpressEventChild = TypeVar("MemberpressEventChild", bound="MemberpressEvent")
 
 
-class MemberpressEvent(Generic[T], Memberpress):
+class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     """
     Event base class
     """
@@ -44,7 +44,7 @@ class MemberpressEvent(Generic[T], Memberpress):
         self.json = data
 
     @classmethod
-    def factory(cls: Type[T], data: dict) -> T:
+    def factory(cls: Type[MemberpressEventChild], data: dict) -> MemberpressEventChild:
         return cls(data=data)
 
     def init(self):
@@ -703,12 +703,11 @@ MEMBERPRESS_EVENT_CLASSES = {
 }
 
 
-def get_event(data: dict) -> T:
+def get_event(data: dict) -> MemberpressEventChild:
     """
     introspect a data dict received by a memberpress webhook event, determine the event type
-    and return an instance the corresponding class.
+    and return an instance of the corresponding class.
     """
-    event = data.get("event", None)
-    if event:
-        cls = MEMBERPRESS_EVENT_CLASSES[event]
-        return cls.factory(data=data)
+    event = data.get("event", None) or MemberpressEvents.UNIDENTIFIED_EVENT
+    cls = MEMBERPRESS_EVENT_CLASSES[event]
+    return cls.factory(data=data)

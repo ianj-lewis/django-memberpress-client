@@ -123,11 +123,6 @@ consists of the following:
 - install all service-level dependencies on your local dev machine. This includes MySQL and Redis.
 - clone this repo
 - create and activate a Python virtual environment
-- run pre-commit install
-- run make db
-- run make requirements
-- run make migrate
-- run manage.py createsuperuser
-- run make server
+- run make quickstart
 
 Other common dev chores are automated in the Makefile, noting however that some syntax is specific to macOS environments (my sincerest apologies), plus, it assumes that you've installed mysql and redis using homebrew.

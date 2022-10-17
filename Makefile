@@ -28,6 +28,15 @@ requirements:
 	pip install -r requirements/common.txt
 	pip install -r requirements/local.txt
 
+quickstart:
+	pre-commit install
+	make requirements
+	make up
+	make db
+	make migrate
+	./manage.py createsuperuser
+	make server
+
 test:
 	py.test
 

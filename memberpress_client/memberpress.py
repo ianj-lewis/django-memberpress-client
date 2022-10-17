@@ -10,18 +10,22 @@ class Memberpress:
     _json = None  # the dict passed in the body of the webhook request object
     _is_valid = False  # set in validate()
     _locked = False
-    qc_keys = []  # set in __init__() of the child object. the data dict keys to validate
+    _qc_keys = []  # set in __init__() of the child object. the data dict keys to validate
 
     def init(self):
         self._locked = False
         self._json = None
+        self._qc_keys = []
+        logger.info("initialized {t}".format(t=type(self)))
 
     def validate(self):
-        if self.json is not None and type(self.json) != dict:
+        if not self.json:
             self._is_valid = False
             return
 
-        # validate more stuff here
+        if not self.qc_keys:
+            self._is_valid = False
+            return
 
         # if everything passed then return True
         self._is_valid = True
@@ -34,6 +38,7 @@ class Memberpress:
                 )
             )
             return False
+
         return all(key in response for key in qc_keys)
 
     def lock(self):
@@ -43,7 +48,18 @@ class Memberpress:
         self._locked = False
 
     @property
-    def json(self):
+    def qc_keys(self):
+        return self._qc_keys
+
+    @qc_keys.setter
+    def qc_keys(self, value):
+        if type(value) == list:
+            self._qc_keys = list(set(value))
+        else:
+            logger.warning("qc_keys.setter received an invalid value: {v}".format(v=value))
+
+    @property
+    def json(self) -> dict:
         return self._json or {}
 
     @json.setter
@@ -55,13 +71,13 @@ class Memberpress:
             logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
 
     @property
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self._is_valid
 
     @property
-    def locked(self):
+    def locked(self) -> bool:
         return self._locked
 
     @property
-    def ready(self):
+    def ready(self) -> bool:
         return True if not self.locked and self.json and len(self.json) > 0 else False

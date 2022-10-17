@@ -29,6 +29,7 @@ from typing import TypeVar, Generic, Type
 from memberpress_client.constants import (
     COMPLETE_TRANSACTION_DICT,
     COMPLETE_MEMBER_DICT,
+    COMPLETE_EVENT_DICT,
     MemberpressEvents,
     MemberpressEventTypes,
 )
@@ -58,8 +59,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     _subscription = None  # a subscription object
     _is_valid = False  # set in validate()
 
-    qc_keys = []  # set in __init__() of the child object. the data dict keys to validate
-
     def __init__(self, data: dict) -> None:
         self.init()
         self.json = data
@@ -78,7 +77,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         self._transaction = None
         self._subscription = None
         self._is_valid = False
-        self.qc_keys = []
 
     def validate(self):
         """
@@ -101,20 +99,31 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
             return
 
         # this is the outer dict structure that all events share
-        base_keys = ["event", "type", "data"]
-        if not self.is_valid_dict(self.json, qc_keys=base_keys):
+        if not self.valid_base_keys:
             self._is_valid = False
             logger.warning("received a dict with no 'data' key.")
             return
 
-        # self.qc_keys is set in __init__() in the child classes
-        # and contains the event-specific objects contained in
-        # json["data"]
-        if not self.is_valid_dict(self.data, qc_keys=self.qc_keys):
+        if not self.valid_event_keys:
             self._is_valid = False
             return
 
         self._is_valid = True
+
+    @property
+    def valid_base_keys(self):
+        # all events have these three keys
+        base_keys = ["event", "type", "data"]
+        return self.is_valid_dict(self.json, qc_keys=base_keys)
+
+    @property
+    def valid_event_keys(self):
+        # self.qc_keys is set in __init__() in the child classes
+        # and contains the event-specific objects contained in
+        # json["data"]
+        if not self.qc_keys:
+            return False
+        return self.is_valid_dict(self.data, qc_keys=self.qc_keys)
 
     @property
     def has_member(self) -> bool:
@@ -203,7 +212,7 @@ class MEAfterCCExpiresReminder(MemberpressEvent):
         self.qc_keys = [
             MemberpressEventTypes.MEMBERSHIP,
             MemberpressEventTypes.MEMBER,
-        ] + COMPLETE_TRANSACTION_DICT
+        ] + COMPLETE_EVENT_DICT
         self.validate()
 
 

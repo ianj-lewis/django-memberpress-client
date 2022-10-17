@@ -66,6 +66,10 @@ urls:
 
 ## Developers
 
+Use these class objects rather than working directly with the memberpress
+json dicts returned by the api. These class objects include structural and type-checking validations,
+plus they strongly type all of the dict key values for you.
+
 ### class hierarchy
 
 ```python
@@ -82,5 +86,26 @@ class Memberpress:
 
 ### constants
 
+Use these built-in constants rather than working directly the dict key string values:
+
 - MemberpressEvents: discrete list of memberpress event types. The str value exactly matches the event dict key "event".
 - MemberpressEventTypes: discrete list of memberpress event_types
+
+### developer getting started guide
+
+Keep in mind that this code package is intended to install as an add-on to your existing Django project. Therefore,
+the 'production' settings and requirements intentionally ommit all Django and Django support packages
+other than those that are unique to this repo. The 'local' settings and requirements compensate for this by including all of the settings and requirements that you'd typically find in 'common' and/or 'production'.
+
+You should be able to follow the normal workflow for setting up a Django project for local development. This substantially
+consists of the following:
+
+- install all service-level dependencies on your local dev machine. This includes MySQL and Redis.
+- clone this repo
+- pre-commit install
+- create a mysql database. see 'make db'
+- ./manage.py migrate. see 'make migrate'
+- ./manage.py runserver. see 'make server'
+- ./manage.py createsuperuser. see 'make server'
+
+Note that the Makefile is specific to macOS environments (my sincerest apologies), and it assumes that you've installed mysql and redis using homebrew.

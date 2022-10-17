@@ -260,7 +260,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def created_at(self) -> datetime:
-        return self.str2datetime(self.json.get("created_at"))
+        return self.str2datetime(self.data.get("created_at"))
 
     @property
     def display_name(self) -> str:
@@ -276,7 +276,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def expires_at(self) -> datetime:
-        return self.str2datetime(self.json.get("expires_at"))
+        return self.str2datetime(self.data.get("expires_at"))
 
     @property
     def first_name(self) -> str:

@@ -35,8 +35,8 @@ class MemberpressEvents(TimeStampedModel):
 
     json = jsonfield.JSONField(
         blank=True,
-        help_text=_("A json dict sent by the webhook in the request body."),
+        help_text=_("A json dict sent by the webhook event in the request body."),
     )
 
     def __str__(self):
-        return str(self.created) + "-" + self.webhook
+        return str(self.created) + "-" + self.event

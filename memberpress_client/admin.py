@@ -13,7 +13,7 @@ class MemberpressEventsAdmin(admin.ModelAdmin):
     search_fields = ()
     list_display = (
         "sender",
-        "webhook",
+        "event",
         "json",
         "created",
         "modified",

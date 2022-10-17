@@ -709,7 +709,7 @@ MEMBERPRESS_EVENT_CLASSES = {
 
 def get_event(data: dict) -> object:
     """
-    introspect a data dict received by a webhook, determine the event type
+    introspect a data dict received by a memberpress webhook event, determine the event type
     and return an instance the corresponding class.
     """
     event = data.get("event", None)

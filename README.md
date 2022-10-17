@@ -51,13 +51,13 @@ print(member.active_memberships[0].pricing_title)
 
 ### Webhooks
 
-You can setup this plugin to receive events via memberpress' webhooks framework, a Pro 'developer tools' premium option of memberpress. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
+This plugin listens for events from memberpress' webhooks framework, a Pro 'developer tools' premium option of memberpress. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
 ![memberpress webhooks](doc/memberpress-api-webhook.png "memberpress webhooks")
 
 urls:
 
-- https://yourdomain.com/mp/api/v1/events/
-- https://yourdomain.com/mp/api/v1/events/log/
+- receive http POST requests: https://your-django-project.com/mp/api/v1/events/
+- view the event log: https://your-django-project.com/mp/api/v1/events/log/
 
 
 ## Developers

@@ -9,6 +9,11 @@ memberpress REST API Client plugin for Django - plugin constants
 from django.conf import settings
 
 
+class MemberpressTransactionTypes:
+    SUBSCRIPTION_CONFIRMATION = "subscription_confirmation"
+    PAYMENT = "payment"
+
+
 class MemberpressEventTypes:
     TRANSACTION = "transaction"
     SUBSCRIPTION = "subscription"
@@ -356,7 +361,7 @@ COMPLETE_MEMBERSHIP_DICT = [
     "cannot_purchase_message",
 ]
 
-COMPLETE_SUBSCRIPTION_EVENT1 = [
+COMPLETE_FINANCIAL_SUBSCRIPTION_EVENT = [
     "coupon",
     "id",
     "amount",
@@ -381,7 +386,7 @@ COMPLETE_SUBSCRIPTION_EVENT1 = [
     "subscription_payment_index",
 ]
 
-COMPLETE_SUBSCRIPTION_EVENT2 = [
+COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT = [
     "coupon",
     "id",
     "subscr_id",

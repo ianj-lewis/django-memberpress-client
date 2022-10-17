@@ -23,6 +23,10 @@ Notes:
   class into your module, not only for the sake of sanity but also better
   memory management.
 """
+from curses import intrflush
+from datetime import datetime
+import string
+import validators
 import logging
 from typing import TypeVar, Generic, Type
 
@@ -30,8 +34,8 @@ from memberpress_client.constants import (
     COMPLETE_TRANSACTION_DICT,
     COMPLETE_EVENT_DICT,
     PARTIAL_MEMBER_DICT,
-    COMPLETE_SUBSCRIPTION_EVENT1,
-    COMPLETE_SUBSCRIPTION_EVENT2,
+    COMPLETE_FINANCIAL_SUBSCRIPTION_EVENT,
+    COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT,
     MemberpressEvents,
     MemberpressEventTypes,
 )
@@ -40,6 +44,8 @@ from memberpress_client.member import Member
 from memberpress_client.membership import Membership
 from memberpress_client.transaction import Transaction
 from memberpress_client.subscription import Subscription
+from memberpress_client.utils import str2datetime
+
 
 logger = logging.getLogger(__name__)
 
@@ -204,6 +210,300 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
             subscription_dict = self.data.get(MemberpressEventTypes.SUBSCRIPTION, {})
             self._subscription = Subscription(subscription=subscription_dict)
         return self._subscription
+
+    # -------------------------------------------------------------------------
+    # Event attributes
+    # -------------------------------------------------------------------------
+    @property
+    def active_memberships(self) -> int:
+        return self.data.get("active_memberships", 0)
+
+    @property
+    def active_txn_count(self) -> int:
+        return self.data.get("active_txn_count", 0)
+
+    @property
+    def address(self) -> dict:
+        return self.data.get("address", {})
+
+    @property
+    def amount(self) -> float:
+        return self.data.get("amount", 0.00)
+
+    @property
+    def cc_exp_month(self) -> int:
+        return self.data.get("cc_exp_month", None)
+
+    @property
+    def cc_exp_year(self) -> int:
+        return self.data.get("cc_exp_year", None)
+
+    @property
+    def cc_last4(self) -> int:
+        return self.data.get("cc_last4", None)
+
+    @property
+    def corporate_account_id(self) -> int:
+        return self.data.get("corporate_account_id", None)
+
+    @property
+    def coupon(self) -> int:
+        return self.data.get("coupon", None)
+
+    @property
+    def created_at(self) -> datetime:
+        date_str = self.json.get("created_at", "")
+        try:
+            return str2datetime(date_str)
+        except Exception:
+            logger.warning("Cannot read created_at for id {id}".format(id=self.id))
+            return None
+
+    @property
+    def display_name(self) -> str:
+        return self.data.get("display_name", "")
+
+    @property
+    def email(self) -> str:
+        if not self.username:
+            return None
+
+        email_str = self.member.get("email", "")
+        if validators.email(email_str):
+            return email_str
+        logger.warning("invalid email address for username {username}".format(username=self.username))
+        return None
+
+    @property
+    def expired_txn_count(self) -> int:
+        return self.data.get("expired_txn_count", 0)
+
+    @property
+    def expires_at(self) -> datetime:
+        date_str = self.json.get("expires_at", "")
+        try:
+            return str2datetime(date_str)
+        except Exception:
+            logger.warning("Cannot read expires_at for id {id}".format(id=self.id))
+            return None
+
+    @property
+    def first_name(self) -> str:
+        return self.data.get("first_name")
+
+    @property
+    def gateway(self) -> str:
+        return self.data.get("gateway")
+
+    @property
+    def id(self) -> int:
+        return self.data.get("id")
+
+    @property
+    def last_name(self) -> str:
+        return self.data.get("last_name")
+
+    @property
+    def limit_cycles(self) -> bool:
+        try:
+            v = str(self.json.get("limit_cycles", "false")).lower()
+            return True if v == "true" else False
+        except Exception:
+            return False
+
+    @property
+    def limit_cycles_action(self) -> str:
+        return self.data.get("limit_cycles_action")
+
+    @property
+    def limit_cycles_expires_after(self) -> int:
+        return self.data.get("limit_cycles_expires_after")
+
+    @property
+    def limit_cycles_expires_type(self) -> str:
+        return self.data.get("limit_cycles_expires_type")
+
+    @property
+    def limit_cycles_num(self) -> int:
+        return self.data.get("limit_cycles_num")
+
+    @property
+    def login_count(self) -> int:
+        return self.data.get("login_count")
+
+    @property
+    def message(self) -> str:
+        return self.data.get("message")
+
+    @property
+    def nicename(self) -> str:
+        return self.data.get("nicename")
+
+    @property
+    def parent_transaction_id(self) -> int:
+        return self.data.get("parent_transaction_id")
+
+    @property
+    def period(self) -> int:
+        return self.data.get("period")
+
+    @property
+    def period_type(self) -> str:
+        return self.data.get("period_type")
+
+    @property
+    def price(self) -> float:
+        return self.data.get("price")
+
+    @property
+    def profile(self) -> dict:
+        return self.data.get("profile", {})
+
+    @property
+    def prorated(self) -> int:
+        return self.data.get("prorated")
+
+    @property
+    def prorated_trial(self) -> int:
+        return self.data.get("prorated_trial")
+
+    @property
+    def rebill(self) -> bool:
+        try:
+            v = str(self.json.get("rebill", "false")).lower()
+            return True if v == "true" else False
+        except Exception:
+            return False
+
+    @property
+    def recent_subscriptions(self) -> list:
+        if not self._recent_subscriptions and self.is_validated_member:
+            recent_subscriptions = self.data.get("recent_subscriptions", [])
+            retval = []
+            for subscription_json in recent_subscriptions:
+                subscription = Subscription(subscription_json)
+                retval.append(subscription)
+            self._recent_subscriptions = retval
+        return self._recent_subscriptions
+
+    @property
+    def recent_transactions(self) -> list:
+        if not self._recent_transactions and self.is_validated_member:
+            transactions = self.data.get("recent_transactions", [])
+            retval = []
+            for transaction_json in transactions:
+                transaction = Transaction(transaction_json)
+                retval.append(transaction)
+            self._recent_transactions = retval
+        return self._recent_transactions
+
+    @property
+    def registered_at(self) -> datetime:
+        if not self.username:
+            return None
+
+        date_str = self.data.get("registered_at", "")
+        try:
+            return str2datetime(date_str)
+        except Exception:
+            logger.warning("Cannot read registered_at for username {username}".format(username=self.username))
+            return None
+
+    @property
+    def response(self):
+        return self.data.get("response")
+
+    @property
+    def status(self) -> str:
+        return self.data.get("status")
+
+    @property
+    def sub_count(self):
+        return self.data.get("sub_count")
+
+    @property
+    def subscr_id(self) -> str:
+        return self.data.get("subscr_id")
+
+    @property
+    def subscription_payment_index(self) -> bool:
+        try:
+            v = str(self.json.get("subscription_payment_index", "false")).lower()
+            return True if v == "true" else False
+        except Exception:
+            return False
+
+    @property
+    def tax_amount(self) -> float:
+        return self.data.get("tax_amount")
+
+    @property
+    def tax_class(self) -> str:
+        return self.data.get("tax_class")
+
+    @property
+    def tax_compound(self) -> int:
+        return self.data.get("tax_compound")
+
+    @property
+    def tax_desc(self) -> str:
+        return self.data.get("tax_desc")
+
+    @property
+    def tax_rate(self) -> float:
+        return self.data.get("tax_rate")
+
+    @property
+    def tax_shipping(self) -> int:
+        return self.data.get("tax_shipping")
+
+    @property
+    def token(self) -> str:
+        return self.data.get("token")
+
+    @property
+    def total(self) -> float:
+        return self.data.get("total")
+
+    @property
+    def trans_num(self) -> str:
+        return self.data.get("trans_num")
+
+    @property
+    def trial(self) -> int:
+        return self.data.get("trial")
+
+    @property
+    def trial_amount(self) -> float:
+        return self.data.get("trial_amount")
+
+    @property
+    def trial_days(self) -> int:
+        return self.data.get("trial_days")
+
+    @property
+    def trial_tax_amount(self) -> float:
+        return self.data.get("trial_tax_amount")
+
+    @property
+    def trial_total(self) -> float:
+        return self.data.get("trial_total")
+
+    @property
+    def trial_txn_count(self) -> int:
+        return self.data.get("trial_txn_count")
+
+    @property
+    def txn_type(self) -> string:
+        return self.data.get("txn_type")
+
+    @property
+    def url(self) -> str:
+        return self.data.get("url")
+
+    @property
+    def username(self) -> str:
+        return self.data.get("username")
 
 
 class MEAfterCCExpiresReminder(MemberpressEvent):
@@ -552,7 +852,7 @@ class MESubscriptionDowngradedToOneTime(MemberpressEvent):
             MemberpressEventTypes.MEMBERSHIP,
             MemberpressEventTypes.MEMBER,
             MemberpressEventTypes.SUBSCRIPTION,
-        ] + COMPLETE_SUBSCRIPTION_EVENT1
+        ] + COMPLETE_FINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -570,7 +870,10 @@ class MESubscriptionDowngraded(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_DOWNGRADED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -579,7 +882,10 @@ class MESubscriptionExpired(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_EXPIRED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -588,7 +894,10 @@ class MESubscriptionPaused(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_PAUSED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -597,7 +906,10 @@ class MESubscriptionResumed(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_RESUMED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -606,7 +918,10 @@ class MESubscriptionStopped(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_STOPPED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -628,7 +943,10 @@ class MESubscriptionUpgradedToRecurring(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 
@@ -637,7 +955,10 @@ class MESubscriptionUpgraded(MemberpressEvent):
         super().__init__(data)
         self.event = MemberpressEvents.SUBSCRIPTION_UPGRADED
         self.event_type = MemberpressEventTypes.SUBSCRIPTION
-        self.qc_keys = [MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBER] + COMPLETE_SUBSCRIPTION_EVENT2
+        self.qc_keys = [
+            MemberpressEventTypes.MEMBERSHIP,
+            MemberpressEventTypes.MEMBER,
+        ] + COMPLETE_NONFINANCIAL_SUBSCRIPTION_EVENT
         self.validate()
 
 

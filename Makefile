@@ -28,6 +28,10 @@ requirements:
 	pip install -r requirements/common.txt
 	pip install -r requirements/local.txt
 
+shell:
+	./manage.py shell_plus
+
+
 quickstart:
 	pre-commit install
 	make requirements
@@ -38,7 +42,7 @@ quickstart:
 	make server
 
 test:
-	py.test
+	./manage.py test
 
 build:
 	python3 -m pip install --upgrade setuptools wheel twine

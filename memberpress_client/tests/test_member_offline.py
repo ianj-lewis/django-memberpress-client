@@ -19,7 +19,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def load_test_member(test_file):
-    with io.open(os.path.join(HERE, "data", test_file), "rt", encoding="utf8") as f:
+    with io.open(os.path.join(HERE, "data", "api", test_file), "rt", encoding="utf8") as f:
         return f.read()
 
 

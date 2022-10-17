@@ -22,7 +22,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def load_test_member(test_file):
-    with io.open(os.path.join(HERE, "data", test_file), "rt", encoding="utf8") as f:
+    with io.open(os.path.join(HERE, "data", "api", test_file), "rt", encoding="utf8") as f:
         return f.read()
 
 
@@ -68,7 +68,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.active_txn_count, 0)
         self.assertEqual(member.expired_txn_count, 0)
         self.assertEqual(member.trial_txn_count, 0)
-        self.assertEqual(member.login_count, 0)
+        self.assertGreater(member.login_count, 0)
 
         # dict structural integrity
         self.assertEqual(member.is_complete_dict, False)

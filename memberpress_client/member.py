@@ -159,23 +159,20 @@ class Member(MemberpressAPIClient):
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(username=self._username)
             retval = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
 
-            if type(retval) == list:
-                if len(retval) > 1:
-                    logger.warning(
-                        "member() was expecting to receive a list with 1 item from REST api, but actually received {n}.".format(
-                            n=len(retval)
-                        )
-                    )
-                    retval = None
+            if type(retval) == list and len(retval) == 1:
+                retval = retval[0]
 
-                if len(retval) == 1:
-                    retval = retval[0]
-                    if not self.is_valid(retval):
-                        logger.warning(
-                            "member() was expecting a return type of dict but received {t}.".format(t=type(retval))
-                        )
-                        retval = None
-                self.json = retval
+            if type(retval) == list and len(retval) > 1:
+                for d in retval:
+                    if d.get("username") == self.username:
+                        retval = d
+                        break
+
+            if not self.is_valid(retval):
+                logger.warning("member() was expecting a return type of dict but received {t}.".format(t=type(retval)))
+                retval = None
+
+            self.json = retval
         # convert NoneType to a dict so that other class properties
         # can safely use the form, val = self.member.get("blah")
         return self.json or {}
@@ -183,13 +180,16 @@ class Member(MemberpressAPIClient):
     @property
     def id(self) -> int:
         try:
-            return int(self.member.get("id", ""))
+            return int(self.member.get("id", "")) if self.username else None
         except ValueError:
             logger.warning("Cannot read id for username {username}".format(username=self.username))
             return None
 
     @property
     def email(self) -> str:
+        if not self.username:
+            return None
+
         email_str = self.member.get("email", None)
         if validators.email(email_str):
             return email_str
@@ -220,6 +220,9 @@ class Member(MemberpressAPIClient):
 
     @property
     def registered_at(self) -> datetime:
+        if not self.username:
+            return None
+
         date_str = self.member.get("registered_at", "")
         try:
             return str2datetime(date_str)
@@ -246,7 +249,7 @@ class Member(MemberpressAPIClient):
         that exist for this member.
         """
         try:
-            return int(self.member.get("active_txn_count", ""))
+            return int(self.member.get("active_txn_count", "")) if self.username else 0
         except Exception:
             logger.warning("Cannot read active_txn_count for username {username}".format(username=self.username))
             return 0
@@ -258,7 +261,7 @@ class Member(MemberpressAPIClient):
         that exist for this member with an expiration date in the past.
         """
         try:
-            return int(self.member.get("expired_txn_count", ""))
+            return int(self.member.get("expired_txn_count", "")) if self.username else 0
         except Exception:
             logger.warning("Cannot read expired_txn_count for username {username}".format(username=self.username))
             return 0
@@ -269,7 +272,7 @@ class Member(MemberpressAPIClient):
         the number of free trials that exist for this member.
         """
         try:
-            return int(self.member.get("trial_txn_count", ""))
+            return int(self.member.get("trial_txn_count", "")) if self.username else 0
         except Exception:
             logger.warning("Cannot read trial_txn_count for username {username}".format(username=self.username))
             return 0
@@ -281,7 +284,7 @@ class Member(MemberpressAPIClient):
         Wordpress site hosting the memberpress REST API plugin.
         """
         try:
-            return int(self.member.get("login_count", ""))
+            return int(self.member.get("login_count", "")) if self.username else 0
         except Exception:
             logger.warning("Cannot read login_count for username {username}".format(username=self.username))
             return 0

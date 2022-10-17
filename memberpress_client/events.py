@@ -59,10 +59,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     _is_valid = False  # set in validate()
 
     qc_keys = []  # set in __init__() of the child object. the data dict keys to validate
-    has_member = False  # true if the child class has a Member
-    has_membership = False  # true if the child class has a Membership
-    has_transaction = False  # true if the child class has a Transaction
-    has_subscription = False  # true if the child class has a Subscription
 
     def __init__(self, data: dict) -> None:
         self.init()
@@ -83,10 +79,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         self._subscription = None
         self._is_valid = False
         self.qc_keys = []
-        self.has_member = False
-        self.has_membership = False
-        self.has_transaction = False
-        self.has_subscription = False
 
     def validate(self):
         """

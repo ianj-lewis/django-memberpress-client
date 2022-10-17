@@ -448,7 +448,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def url(self) -> str:
-        return self.data.get("url")
+        return self.str2url(self.data.get("url"))
 
     @property
     def username(self) -> str:

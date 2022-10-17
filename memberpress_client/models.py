@@ -26,11 +26,11 @@ class MemberpressEvents(TimeStampedModel):
         help_text=_("The site referrer. Example: https://wordpress-site.com/mb/webhooks/"),
     )
 
-    webhook = models.CharField(
+    event = models.CharField(
         blank=False,
         choices=MEMBERPRESS_EVENTS,
         max_length=50,
-        help_text=_("The kind of webhook. Examples: "),
+        help_text=_("The kind of memberpress event. Examples: "),
     )
 
     json = jsonfield.JSONField(

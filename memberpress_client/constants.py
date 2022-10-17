@@ -20,7 +20,9 @@ class MemberpressEvents:
     AFTER_CC_EXPIRES_REMINDER = "after_cc_expires_reminder"
     AFTER_MEMBER_SIGNUP_REMINDER = "after_member_signup_reminder"
     AFTER_SIGNUP_ABANDONED_REMINDER = "after_signup_abandoned_reminder"
+
     AFTER_SUB_EXPIRES_REMINDER = "after_sub_expires_reminder"
+
     BEFORE_CC_EXPIRES_REMINDER = "before_cc_expires_reminder"
     BEFORE_SUB_EXPIRES_REMINDER = "before_sub_expires_reminder"
     BEFORE_SUB_RENEWS_REMINDER = "before_sub_renews_reminder"

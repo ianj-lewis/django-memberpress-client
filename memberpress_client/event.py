@@ -200,6 +200,19 @@ class MEAfterSignupAbandonedReminder(MemberpressEvent):
         self.validate()
 
 
+class MEAfterSubExpiresReminder(MemberpressEvent):
+    def __init__(self, data: dict) -> None:
+        super().__init__(data)
+        self.event = MemberpressEvents.AFTER_SUB_EXPIRES_REMINDER
+        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.qc_keys = [
+            MemberpressEventsTypes.MEMBERSHIP,
+            MemberpressEventsTypes.MEMBER,
+            MemberpressEventsTypes.SUBSCRIPTION,
+        ] + COMPLETE_TRANSACTION_DICT
+        self.validate()
+
+
 class MEBeforeCCExpiresReminder(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
@@ -464,6 +477,19 @@ class MESubAccountAdded(MemberpressEvent):
         self.validate()
 
 
+class MESubAccountRemoved(MemberpressEvent):
+    def __init__(self, data: dict) -> None:
+        super().__init__(data)
+        self.event = MemberpressEvents.SUB_ACCOUNT_REMOVED
+        self.event_type = MemberpressEventsTypes.TRANSACTION
+        self.qc_keys = [
+            MemberpressEventsTypes.MEMBERSHIP,
+            MemberpressEventsTypes.MEMBER,
+            MemberpressEventsTypes.SUBSCRIPTION,
+        ] + COMPLETE_TRANSACTION_DICT
+        self.validate()
+
+
 class MESubscriptionCreated(MemberpressEvent):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
@@ -621,3 +647,72 @@ class METransactionRefunded(MemberpressEvent):
             MemberpressEventsTypes.SUBSCRIPTION,
         ] + COMPLETE_TRANSACTION_DICT
         self.validate()
+
+
+class MEUnidentifiedEvent(MemberpressEvent):
+    def __init__(self, data: dict) -> None:
+        super().__init__(data)
+        self.event = MemberpressEvents.UNIDENTIFIED_EVENT
+        self.event_type = ""
+        self.qc_keys = []
+        self.validate()
+
+
+MEMBERPRESS_EVENT_CLASSES = {
+    MemberpressEvents.AFTER_CC_EXPIRES_REMINDER: MEAfterCCExpiresReminder,
+    MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER: MEAfterMemberSignupReminder,
+    MemberpressEvents.AFTER_SIGNUP_ABANDONED_REMINDER: MEAfterSignupAbandonedReminder,
+    MemberpressEvents.AFTER_SUB_EXPIRES_REMINDER: MEAfterSubExpiresReminder,
+    MemberpressEvents.BEFORE_CC_EXPIRES_REMINDER: MEBeforeCCExpiresReminder,
+    MemberpressEvents.BEFORE_SUB_EXPIRES_REMINDER: MEBeforeSubExpiresReminder,
+    MemberpressEvents.BEFORE_SUB_RENEWS_REMINDER: MEBeforeSubRenewsReminder,
+    MemberpressEvents.BEFORE_SUB_TRIAL_ENDS: MEBeforeSubTrialEnds,
+    MemberpressEvents.LOGIN: MELogin,
+    MemberpressEvents.MEMBER_ACCOUNT_UPDATED: MEMemberAccountUpdated,
+    MemberpressEvents.MEMBER_ADDED: MEMemberAdded,
+    MemberpressEvents.MEMBER_DELETED: MEMemberDeleted,
+    MemberpressEvents.MEMBER_SIGNUP_COMPLETED: MEMemberSignupCompleted,
+    MemberpressEvents.MPCA_COURSE_COMPLETED: MEMPCACourseCompleted,
+    MemberpressEvents.MPCA_COURSE_STARTED: MEMPCACourseStarted,
+    MemberpressEvents.MPCA_LESSON_COMPLETED: MEMPCALessonCompleted,
+    MemberpressEvents.MPCA_LESSON_STARTED: MEMPCALessonStarted,
+    MemberpressEvents.MPCA_QUIZ_ATTEMPT_COMPLETED: MEMPCALQuizAttemptCompleted,
+    MemberpressEvents.NON_RECURRING_TRANSACTION_COMPLETED: MENonRecurringTransactionCompleted,
+    MemberpressEvents.NON_RECURRING_TRANSACTION_EXPIRED: MENonRecurringTransactionExpired,
+    MemberpressEvents.OFFLINE_PAYMENT_COMPLETE: MEOfflinePaymentComplete,
+    MemberpressEvents.OFFLINE_PAYMENT_PENDING: MEOfflinePaymentPending,
+    MemberpressEvents.OFFLINE_PAYMENT_REFUNDED: MEOfflinePaymentRefunded,
+    MemberpressEvents.RECURRING_TRANSACTION_COMPLETED: MERecurringTransactionCompleted,
+    MemberpressEvents.RECURRING_TRANSACTION_EXPIRED: MERecurringTransactionExpired,
+    MemberpressEvents.RECURRING_TRANSACTION_FAILED: MERecurringTransactionFailed,
+    MemberpressEvents.RENEWAL_TRANSACTION_COMPLETED: MERenewalTransactionCompleted,
+    MemberpressEvents.SUB_ACCOUNT_ADDED: MESubAccountAdded,
+    MemberpressEvents.SUB_ACCOUNT_REMOVED: MESubAccountRemoved,
+    MemberpressEvents.SUBSCRIPTION_CREATED: MESubscriptionCreated,
+    MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_ONE_TIME: MESubscriptionDowngradedToOneTime,
+    MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_RECURRING: MESubscriptionDowngradedToRecurring,
+    MemberpressEvents.SUBSCRIPTION_DOWNGRADED: MESubscriptionDowngraded,
+    MemberpressEvents.SUBSCRIPTION_EXPIRED: MESubscriptionExpired,
+    MemberpressEvents.SUBSCRIPTION_PAUSED: MESubscriptionPaused,
+    MemberpressEvents.SUBSCRIPTION_RESUMED: MESubscriptionResumed,
+    MemberpressEvents.SUBSCRIPTION_STOPPED: MESubscriptionStopped,
+    MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_ONE_TIME: MESubscriptionUpgradedToOneTime,
+    MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING: MESubscriptionUpgradedToRecurring,
+    MemberpressEvents.SUBSCRIPTION_UPGRADED: MESubscriptionUpgraded,
+    MemberpressEvents.TRANSACTION_COMPLETED: METransactionCompleted,
+    MemberpressEvents.TRANSACTION_EXPIRED: METransactionExpired,
+    MemberpressEvents.TRANSACTION_FAILED: METransactionFailed,
+    MemberpressEvents.TRANSACTION_REFUNDED: METransactionRefunded,
+    MemberpressEvents.UNIDENTIFIED_EVENT: MEUnidentifiedEvent,
+}
+
+
+def get_event(data: dict) -> object:
+    """
+    introspect a data dict received by a webhook, determine the event type
+    and return an instance the corresponding class.
+    """
+    event = data.get("event", None)
+    if event:
+        cls = MEMBERPRESS_EVENT_CLASSES[event]
+        return cls(data)

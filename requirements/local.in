@@ -12,6 +12,15 @@ wheel
 twine
 python-dotenv
 
+# moved from common.in
+djangorestframework
+jsonfield
+pytz                            # https://github.com/stub42/pytz
+python-slugify                  # https://github.com/un33k/python-slugify
+Pillow                          # https://github.com/python-pillow/Pillow
+argon2-cffi                     # https://github.com/hynek/argon2_cffi
+django-model-utils              # https://github.com/jazzband/django-model-utils
+
 # Cookiecutter Django (minus stuff that's already required by Open edX)
 # =============================================================================
 Werkzeug[watchdog]==2.2.2           # https://github.com/pallets/werkzeug

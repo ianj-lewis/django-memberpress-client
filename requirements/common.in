@@ -17,17 +17,12 @@
 
 -c ./constraints.txt
 
-django-environ                  # used in stepwise_grades for overrides to memberpress_client API
-djangorestframework
-validators
-django-jsonfield
+django-environ                  # used in common to set API key and base url
+validators                      # used to validate email address, etc.
+
 
 # Cookiecutter Django (minus stuff that's already required by Open edX)
 # =============================================================================
-pytz                            # https://github.com/stub42/pytz
-python-slugify                  # https://github.com/un33k/python-slugify
-Pillow                          # https://github.com/python-pillow/Pillow
-argon2-cffi                     # https://github.com/hynek/argon2_cffi
 #redis==4.3.4                   # https://github.com/redis/redis-py
 #hiredis==2.0.0                 # https://github.com/redis/hiredis-py
 
@@ -36,10 +31,7 @@ argon2-cffi                     # https://github.com/hynek/argon2_cffi
 #django==3.2.15                 # pyup: < 4.0  # https://www.djangoproject.com/
 #django-environ==0.9.0          # https://github.com/joke2k/django-environ
 
-django-model-utils              # https://github.com/jazzband/django-model-utils
 django-allauth                  # https://github.com/pennersr/django-allauth
-django-crispy-forms             # https://github.com/django-crispy-forms/django-crispy-forms
-crispy-bootstrap5               # https://github.com/django-crispy-forms/crispy-bootstrap5
 #django-redis==5.2.0  # https://github.com/jazzband/django-redis
 # Django REST Framework
 #djangorestframework==3.14.0    # https://github.com/encode/django-rest-framework

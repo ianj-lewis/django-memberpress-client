@@ -201,6 +201,27 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
             self._subscription = Subscription(subscription=subscription_dict)
         return self._subscription
 
+    @property
+    def recent_subscriptions(self) -> list:
+        if not self._recent_subscriptions and self.is_valid:
+            recent_subscriptions = self.data.get("recent_subscriptions", [])
+            self._recent_subscriptions = self.list_factory(recent_subscriptions, Subscription)
+        return self._recent_subscriptions
+
+    @property
+    def recent_transactions(self) -> list:
+        if not self._recent_transactions and self.is_valid:
+            transactions = self.data.get("recent_transactions", [])
+            self._recent_transactions = self.list_factory(transactions, Transaction)
+        return self._recent_transactions
+
+    @property
+    def active_memberships(self) -> list:
+        if not self._active_memberships and self.is_valid:
+            memberships = self.data.get("active_memberships", [])
+            self._active_memberships = self.list_factory(memberships, Membership)
+        return self._active_memberships
+
     # -------------------------------------------------------------------------
     # Event attributes
     # -------------------------------------------------------------------------
@@ -247,7 +268,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def email(self) -> str:
-        return self.str2email(self.member.get("email"))
+        return self.str2email(self.data.get("email"))
 
     @property
     def expired_txn_count(self) -> int:
@@ -419,7 +440,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def trial_txn_count(self) -> int:
-        return self.data.get("trial_txn_count")
+        return self.str2int(self.data.get("trial_txn_count"))
 
     @property
     def txn_type(self) -> str:

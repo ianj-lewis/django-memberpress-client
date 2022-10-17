@@ -3,7 +3,7 @@ import os
 import io
 import unittest
 import json
-
+from datetime import datetime
 
 # our testing code starts here
 # -----------------------------------------------------------------------------
@@ -79,3 +79,35 @@ class TestMember(unittest.TestCase):
         validate(MemberpressEvents.TRANSACTION_EXPIRED)
         validate(MemberpressEvents.TRANSACTION_FAILED)
         validate(MemberpressEvents.TRANSACTION_REFUNDED)
+
+    def test_2_valid_login_event(self):
+        event_str = MemberpressEvents.LOGIN
+        data_dict = load_json(event_str)
+        event = get_event(data_dict)
+
+        # tests
+        self.assertEqual(event.is_valid, True)
+        self.assertEqual(event.event, event_str)
+        self.assertEqual(type(event), MEMBERPRESS_EVENT_CLASSES[event_str])
+
+        self.assertEqual(event.id, 6)
+        self.assertEqual(event.email, "lpm0073@gmail.com")
+        self.assertEqual(event.username, "mcdaniel")
+        self.assertEqual(event.nicename, "mcdaniel")
+        self.assertEqual(event.url, "https://lawrencemcdaniel.com")
+        self.assertEqual(event.message, "")
+        self.assertEqual(event.registered_at, datetime.strptime("2022-10-04 00:46:37", "%Y-%m-%d %H:%M:%S"))
+        self.assertEqual(event.first_name, "Lawrence")
+        self.assertEqual(event.last_name, "McDaniel")
+        self.assertEqual(event.active_memberships, [])
+        self.assertEqual(event.active_txn_count, 0)
+        self.assertEqual(event.expired_txn_count, 0)
+        self.assertEqual(event.trial_txn_count, 0)
+        self.assertEqual(event.sub_count, None)
+        self.assertEqual(event.login_count, 25)
+        self.assertEqual(type(event.address), dict)
+        self.assertEqual(len(event.address.keys()), 6)
+        self.assertEqual(type(event.profile), dict)
+        self.assertEqual(event.profile, {})
+        self.assertEqual(event.recent_transactions, [])
+        self.assertEqual(event.recent_subscriptions, [])

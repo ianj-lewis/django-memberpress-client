@@ -1,5 +1,10 @@
 # CHANGE LOG
 
+## Version 0.0.5 (2022-10-17)
+
+- Add webhook event classes and listener
+- Create base class Membership() and refactor
+
 ## Version 0.0.4 (2022-10-14)
 
 - Operational but experimental plugin. Do not use in production.

@@ -6,7 +6,6 @@ from datetime import datetime
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.constants import COMPLETE_SUBSCRIPTION_DICT
-from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ class Subscription(MemberpressAPIClient):
     def __init__(self, subscription=None) -> None:
         super().__init__()
         self.init()
-        if self.is_valid(subscription):
+        if type(subscription) == dict:
             self.json = subscription
         else:
             logger.warning("received an invalid subscription object: {o}".format(o=subscription))
@@ -35,31 +34,19 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def coupon(self) -> int:
-        try:
-            return int(self.json["coupon"])
-        except Exception:
-            return None
+        return self.str2int(self.json["coupon"])
 
     @property
     def membership(self) -> int:
-        try:
-            return int(self.json["membership"])
-        except Exception:
-            return None
+        return self.str2int(self.json["membership"])
 
     @property
     def member(self) -> int:
-        try:
-            return int(self.json["member"])
-        except Exception:
-            return None
+        return self.str2int(self.json["member"])
 
     @property
     def id(self) -> int:
-        try:
-            return int(self.json["id"])
-        except Exception:
-            return None
+        return self.str2int(self.json["id"])
 
     @property
     def subscriber_id(self) -> str:
@@ -71,35 +58,23 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def price(self) -> float:
-        try:
-            return float(self.json["price"])
-        except Exception:
-            return None
+        return self.str2float(self.json["price"])
 
     @property
     def period(self) -> int:
-        try:
-            return int(self.json["period"])
-        except Exception:
-            return None
+        return self.str2int(self.json["period"])
 
     @property
     def period_type(self) -> str:
         return self.json.get("period_type", None)
 
     @property
-    def limit_cycles(self) -> int:
-        try:
-            return int(self.json["limit_cycles"])
-        except Exception:
-            return None
+    def limit_cycles(self) -> bool:
+        return self.str2bool(self.json["limit_cycles"])
 
     @property
     def limit_cycles_num(self) -> int:
-        try:
-            return int(self.json["limit_cycles_num"])
-        except Exception:
-            return None
+        return self.str2int(self.json["limit_cycles_num"])
 
     @property
     def limit_cycles_action(self) -> str:
@@ -107,10 +82,7 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def limit_cycles_expires_after(self) -> int:
-        try:
-            return int(self.json["limit_cycles_expires_after"])
-        except Exception:
-            return None
+        return self.str2int(self.json["limit_cycles_expires_after"])
 
     @property
     def limit_cycles_expires_type(self) -> str:
@@ -118,45 +90,27 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def prorated_trial(self) -> int:
-        try:
-            return int(self.json["prorated_trial"])
-        except Exception:
-            return None
+        return self.str2int(self.json["prorated_trial"])
 
     @property
     def trial(self) -> int:
-        try:
-            return int(self.json["trial"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial"])
 
     @property
     def trial_days(self) -> int:
-        try:
-            return int(self.json["trial_days"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial_days"])
 
     @property
     def trial_amount(self) -> float:
-        try:
-            return float(self.json["trial_amount"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial_amount"])
 
     @property
     def trial_tax_amount(self) -> float:
-        try:
-            return float(self.json["trial_tax_amount"])
-        except Exception:
-            return None
+        return self.str2float(self.json["trial_tax_amount"])
 
     @property
     def trial_total(self) -> float:
-        try:
-            return float(self.json["trial_total"])
-        except Exception:
-            return None
+        return self.str2float(self.json["trial_total"])
 
     @property
     def status(self) -> str:
@@ -164,33 +118,19 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def created_at(self) -> datetime:
-        date_str = self.json.get("created_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read created_at for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("created_at"))
 
     @property
     def total(self) -> float:
-        try:
-            return float(self.json["total"])
-        except Exception:
-            return None
+        return self.str2float(self.json["total"])
 
     @property
     def tax_rate(self) -> float:
-        try:
-            return float(self.json["tax_rate"])
-        except Exception:
-            return None
+        return self.str2float(self.json["tax_rate"])
 
     @property
     def tax_amount(self) -> float:
-        try:
-            return float(self.json["tax_amount"])
-        except Exception:
-            return None
+        return self.str2float(self.json["tax_amount"])
 
     @property
     def tax_desc(self) -> str:
@@ -202,24 +142,15 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def cc_last4(self) -> int:
-        try:
-            return int(self.json["cc_last4"])
-        except Exception:
-            return None
+        return self.str2int(self.json["cc_last4"])
 
     @property
     def cc_exp_month(self) -> int:
-        try:
-            return int(self.json["cc_exp_month"])
-        except Exception:
-            return None
+        return self.str2int(self.json["cc_exp_month"])
 
     @property
     def cc_exp_year(self) -> int:
-        try:
-            return int(self.json["cc_exp_year"])
-        except Exception:
-            return None
+        return self.str2int(self.json["cc_exp_year"])
 
     @property
     def token(self) -> str:
@@ -227,17 +158,11 @@ class Subscription(MemberpressAPIClient):
 
     @property
     def tax_compound(self) -> int:
-        try:
-            return int(self.json["tax_compound"])
-        except Exception:
-            return None
+        return self.str2int(self.json["tax_compound"])
 
     @property
     def tax_shipping(self) -> int:
-        try:
-            return int(self.json["tax_shipping"])
-        except Exception:
-            return None
+        return self.str2int(self.json["tax_shipping"])
 
     @property
     def response(self) -> str:

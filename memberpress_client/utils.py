@@ -8,8 +8,6 @@ memberpress REST API Client plugin for Django - utility and helper functions.
 import json
 import logging
 import pytz
-from datetime import datetime
-from dateutil.parser import parse, ParserError
 from unittest.mock import MagicMock
 from requests import Response
 
@@ -79,21 +77,6 @@ class MPJSONEncoder(json.JSONEncoder):
         except Exception:
             # obj probably is not json serializable.
             return ""
-
-
-def str2datetime(date_str):
-    date_str = date_str[0:19]
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-    except ValueError:
-        pass
-
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d")
-    except ValueError:
-        pass
-
-    logger.warning("Cannot convert string date {dt}".format(dt=date_str))
 
 
 def get_user(username):

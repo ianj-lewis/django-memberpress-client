@@ -13,11 +13,17 @@ class Memberpress:
     _is_valid = False  # set in validate()
     _locked = False
     _qc_keys = []  # set in __init__() of the child object. the data dict keys to validate
+    _recent_subscriptions = None
+    _recent_transactions = None
+    _active_memberships = None
 
     def init(self):
         self._locked = False
         self._json = None
         self._qc_keys = []
+        self._recent_subscriptions = None
+        self._recent_transactions = None
+        self._active_memberships = None
         logger.info("initialized {t}".format(t=type(self)))
 
     def validate(self):
@@ -33,11 +39,17 @@ class Memberpress:
         self._is_valid = True
 
     def str2bool(self, value):
-        try:
-            v = str(value).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        if type(value) == bool:
+            return value
+
+        if type(value) in [int, float]:
+            value = int(value)
+            return True if value == 1 else False
+
+        if type(value) == str:
+            return True if str(value).lower() == "true" else False
+
+        return False
 
     def str2datetime(self, value):
         if type(value) != str:
@@ -57,19 +69,27 @@ class Memberpress:
         logger.warning("Cannot convert datetime string {value}".format(value=value))
 
     def str2int(self, value):
-        try:
-            return int(value)
-        except ValueError:
-            pass
+        if type(value) in (str, int, float):
+            try:
+                return int(value)
+            except ValueError:
+                pass
 
     def str2float(self, value):
-        try:
-            return float(value)
-        except ValueError:
-            pass
+        if type(value) in (str, int, float):
+            try:
+                return float(value)
+            except ValueError:
+                pass
 
     def str2email(self, value):
         return value if validators.email(value) else None
+
+    def str2url(self, value):
+        try:
+            return value if validators.url(value) else None
+        except Exception:
+            return None
 
     def is_valid_dict(self, response, qc_keys) -> bool:
         if not type(response) == dict:
@@ -87,6 +107,13 @@ class Memberpress:
 
     def unlock(self):
         self._locked = False
+
+    def list_factory(self, list_data: list, ListClass):
+        retval = []
+        for dict_json in list_data:
+            obj = ListClass(dict_json)
+            retval.append(obj)
+        return retval
 
     @property
     def qc_keys(self):
@@ -110,6 +137,13 @@ class Memberpress:
             self._json = value
         else:
             logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
+
+    @property
+    def data(self) -> dict:
+        # return the json["data"] dict if it exists.
+        # otherwise revert to self.json
+        retval = self.json.get("data")
+        return retval if retval else self.json
 
     @property
     def is_valid(self) -> bool:

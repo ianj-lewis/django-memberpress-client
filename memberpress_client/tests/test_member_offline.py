@@ -57,15 +57,15 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.first_name, None)
         self.assertEqual(member.last_name, None)
         self.assertEqual(member.display_name, None)
-        self.assertEqual(member.active_txn_count, 0)
-        self.assertEqual(member.expired_txn_count, 0)
-        self.assertEqual(member.trial_txn_count, 0)
-        self.assertEqual(member.login_count, 0)
+        self.assertEqual(member.active_txn_count, None)
+        self.assertEqual(member.expired_txn_count, None)
+        self.assertEqual(member.trial_txn_count, None)
+        self.assertEqual(member.login_count, None)
 
         # dict structural integrity
         self.assertEqual(member.is_complete_dict, False)
         self.assertEqual(member.is_minimum_member_dict, False)
-        self.assertEqual(member.is_validated_member, False)
+        self.assertEqual(member.is_valid, False)
         self.assertEqual(member.active_memberships, None)
         self.assertEqual(member.recent_subscriptions, None)
         self.assertEqual(member.recent_transactions, None)
@@ -105,7 +105,7 @@ class TestMember(unittest.TestCase):
         # dict structural integrity
         self.assertEqual(member.is_complete_dict, True)
         self.assertEqual(member.is_minimum_member_dict, True)
-        self.assertEqual(member.is_validated_member, True)
+        self.assertEqual(member.is_valid, True)
 
         self.assertEqual(type(member.active_memberships), list)
         self.assertEqual(type(member.recent_subscriptions), list)
@@ -141,7 +141,6 @@ class TestMember(unittest.TestCase):
         member = Member(request=None, response=valid_member_response)
         trx = member.first_transaction
 
-        self.assertEqual(trx.is_valid(trx.json), True)
         self.assertEqual(trx.is_complete_dict, True)
         self.assertEqual(type(trx.json), dict)
         self.assertEqual(trx.membership, 2420)
@@ -193,7 +192,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(scr.prorated_trial, 0)
         self.assertEqual(scr.trial, 1)
         self.assertEqual(scr.trial_days, 7)
-        self.assertEqual(scr.trial_amount, 0.00)
+        self.assertEqual(scr.trial_amount, None)
         self.assertEqual(scr.trial_tax_amount, 0.00)
         self.assertEqual(scr.trial_total, 0.00)
         self.assertEqual(scr.status, "active")

@@ -73,11 +73,11 @@ class TestMember(unittest.TestCase):
         # dict structural integrity
         self.assertEqual(member.is_complete_dict, False)
         self.assertEqual(member.is_minimum_member_dict, True)
-        self.assertEqual(member.is_validated_member, False)
+        self.assertEqual(member.is_valid, True)
 
-        self.assertEqual(member.active_memberships, None)
-        self.assertEqual(member.recent_subscriptions, None)
-        self.assertEqual(member.recent_transactions, None)
+        self.assertEqual(member.active_memberships, [])
+        self.assertEqual(member.recent_subscriptions, [])
+        self.assertEqual(member.recent_transactions, [])
         self.assertEqual(member.first_transaction, None)
         self.assertEqual(member.latest_transaction, None)
 

@@ -6,7 +6,6 @@ memberpress REST API Client plugin for Django - Member class
 """
 
 # Python stuff
-import validators
 import logging
 from datetime import datetime
 import requests
@@ -22,7 +21,6 @@ from memberpress_client.constants import (
     COMPLETE_MEMBER_DICT,
     MINIMUM_MEMBER_DICT,
 )
-from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +32,6 @@ class Member(MemberpressAPIClient):
 
     _request = None
     _username = None
-    _is_validated_member = False
 
     _recent_subscriptions = None
     _recent_transactions = None
@@ -53,9 +50,6 @@ class Member(MemberpressAPIClient):
         self.init()
         self.request = request
         self.json = response
-
-        if response:
-            self.validate_response_object()
 
         # 4th priority username
         if response:
@@ -82,6 +76,8 @@ class Member(MemberpressAPIClient):
         if username:
             self._username = username
 
+        self.validate()
+
         if self.username:
             # invoke the getter
             self.member
@@ -90,17 +86,27 @@ class Member(MemberpressAPIClient):
         super().init()
         self._request = None
         self._username = None
-        self._is_validated_member = False
+        self._is_valid = False
         self._recent_subscriptions = None
         self._recent_transactions = None
         self._first_transaction = None
         self._latest_transaction = None
         self._active_memberships = None
 
-    def validate_response_object(self) -> None:
+    def validate(self) -> None:
+        super().validate()
+
+        def list_diff(list_1: list, list_2: list) -> list:
+            diff = list(set(list_2) - set(list_1))
+            return ",".join(diff)
+
+        if not self.username:
+            self._is_valid = False
+            return
+
         if not self.member:
             logger.error("member property is not set for username {username}".format(username=self.username))
-            self._is_validated_member = False
+            self._is_valid = False
 
         if type(self.member) != dict:
             logger.error(
@@ -108,25 +114,23 @@ class Member(MemberpressAPIClient):
                     t=type(self.member)
                 )
             )
-            self._is_validated_member = False
-        self._is_validated_member = True
-
-    def validate_dict_keys(self) -> None:
-        def list_diff(self, list_1: list, list_2: list) -> list:
-            diff = list(set(list_2) - set(list_1))
-            return ",".join(diff)
+            self._is_valid = False
 
         if self.is_complete_dict:
             logger.info("validated member response object for username {username}.".format(username=self.username))
+            self._is_valid = True
             return
 
-        if not self.is_minimum_member_dict:
-            missing = list_diff(MINIMUM_MEMBER_DICT, self.member.keys())
-            logger.warning(
-                "member response object for username {username} is missing the following required keys: {missing}".format(
-                    username=self.username, missing=missing
-                )
+        if self.is_minimum_member_dict:
+            self._is_valid = True
+            return
+
+        missing = list_diff(MINIMUM_MEMBER_DICT, self.member.keys())
+        logger.warning(
+            "member response object for username {username} is missing the following required keys: {missing}".format(
+                username=self.username, missing=missing
             )
+        )
 
     @property
     def request(self):
@@ -137,8 +141,7 @@ class Member(MemberpressAPIClient):
         if type(value) == requests.request or value is None:
             self.init()
             self._request = value
-            if value and self.validate_response_object():
-                self.validate_dict_keys()
+            self.validate()
         else:
             raise TypeError("Was expecting value of type request but received object of type {t}".format(t=type(value)))
 
@@ -168,7 +171,7 @@ class Member(MemberpressAPIClient):
                         retval = d
                         break
 
-            if not self.is_valid(retval):
+            if type(retval) != dict:
                 logger.warning("member() was expecting a return type of dict but received {t}.".format(t=type(retval)))
                 retval = None
 
@@ -179,22 +182,11 @@ class Member(MemberpressAPIClient):
 
     @property
     def id(self) -> int:
-        try:
-            return int(self.member.get("id", "")) if self.username else None
-        except ValueError:
-            logger.warning("Cannot read id for username {username}".format(username=self.username))
-            return None
+        return self.str2int(self.member.get("id"))
 
     @property
     def email(self) -> str:
-        if not self.username:
-            return None
-
-        email_str = self.member.get("email", None)
-        if validators.email(email_str):
-            return email_str
-        logger.warning("invalid email address for username {username}".format(username=self.username))
-        return None
+        return self.str2email(self.member.get("email"))
 
     @property
     def username(self) -> str:
@@ -208,11 +200,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def url(self) -> str:
-        _url = self.member.get("url", None)
-        try:
-            return _url if validators.url(_url) else None
-        except Exception:
-            return None
+        return self.str2url(self.member.get("url"))
 
     @property
     def message(self) -> str:
@@ -220,15 +208,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def registered_at(self) -> datetime:
-        if not self.username:
-            return None
-
-        date_str = self.member.get("registered_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read registered_at for username {username}".format(username=self.username))
-            return None
+        return self.str2datetime(self.member.get("registered_at"))
 
     @property
     def first_name(self) -> str:
@@ -248,11 +228,7 @@ class Member(MemberpressAPIClient):
         the number of historical financial transactions (ie Stripe, PayPal, etc.)
         that exist for this member.
         """
-        try:
-            return int(self.member.get("active_txn_count", "")) if self.username else 0
-        except Exception:
-            logger.warning("Cannot read active_txn_count for username {username}".format(username=self.username))
-            return 0
+        return self.str2int(self.member.get("active_txn_count"))
 
     @property
     def expired_txn_count(self) -> int:
@@ -260,22 +236,14 @@ class Member(MemberpressAPIClient):
         the number of historical financial transactions (ie Stripe, PayPal, etc.)
         that exist for this member with an expiration date in the past.
         """
-        try:
-            return int(self.member.get("expired_txn_count", "")) if self.username else 0
-        except Exception:
-            logger.warning("Cannot read expired_txn_count for username {username}".format(username=self.username))
-            return 0
+        return self.str2int(self.member.get("expired_txn_count"))
 
     @property
     def trial_txn_count(self) -> int:
         """
         the number of free trials that exist for this member.
         """
-        try:
-            return int(self.member.get("trial_txn_count", "")) if self.username else 0
-        except Exception:
-            logger.warning("Cannot read trial_txn_count for username {username}".format(username=self.username))
-            return 0
+        return self.str2int(self.member.get("trial_txn_count"))
 
     @property
     def login_count(self) -> int:
@@ -283,11 +251,28 @@ class Member(MemberpressAPIClient):
         the number of times that this member has logged in to the
         Wordpress site hosting the memberpress REST API plugin.
         """
-        try:
-            return int(self.member.get("login_count", "")) if self.username else 0
-        except Exception:
-            logger.warning("Cannot read login_count for username {username}".format(username=self.username))
-            return 0
+        return self.str2int(self.member.get("login_count"))
+
+    @property
+    def recent_subscriptions(self) -> list:
+        if not self._recent_subscriptions and self.is_valid:
+            recent_subscriptions = self.data.get("recent_subscriptions", [])
+            self._recent_subscriptions = self.list_factory(recent_subscriptions, Subscription)
+        return self._recent_subscriptions
+
+    @property
+    def recent_transactions(self) -> list:
+        if not self._recent_transactions and self.is_valid:
+            transactions = self.data.get("recent_transactions", [])
+            self._recent_transactions = self.list_factory(transactions, Transaction)
+        return self._recent_transactions
+
+    @property
+    def active_memberships(self) -> list:
+        if not self._active_memberships and self.is_valid:
+            memberships = self.data.get("active_memberships", [])
+            self._active_memberships = self.list_factory(memberships, Membership)
+        return self._active_memberships
 
     """
     ---------------------------------------------------------------------------
@@ -317,63 +302,26 @@ class Member(MemberpressAPIClient):
         return self.is_valid_dict(self.member, qc_keys)
 
     @property
-    def is_validated_member(self) -> bool:
-        return self._is_validated_member
-
-    @property
-    def active_memberships(self) -> list:
-        if not self._active_memberships and self.is_validated_member:
-            active_memberships = self.member.get("active_memberships", [])
-            retval = []
-            for membership_json in active_memberships:
-                membership = Membership(membership_json)
-                retval.append(membership)
-            self._active_memberships = retval
-        return self._active_memberships
-
-    @property
-    def recent_subscriptions(self) -> list:
-        if not self._recent_subscriptions and self.is_validated_member:
-            recent_subscriptions = self.member.get("recent_subscriptions", [])
-            retval = []
-            for subscription_json in recent_subscriptions:
-                subscription = Subscription(subscription_json)
-                retval.append(subscription)
-            self._recent_subscriptions = retval
-        return self._recent_subscriptions
-
-    @property
-    def recent_transactions(self) -> list:
-        if not self._recent_transactions and self.is_validated_member:
-            transactions = self.member.get("recent_transactions", [])
-            retval = []
-            for transaction_json in transactions:
-                transaction = Transaction(transaction_json)
-                retval.append(transaction)
-            self._recent_transactions = retval
-        return self._recent_transactions
-
-    @property
     def first_transaction(self) -> Transaction:
         transaction_json = self.member.get("first_txn", None)
-        if not self._first_transaction and transaction_json and self.is_validated_member:
+        if not self._first_transaction and transaction_json and self.is_valid:
             self._first_transaction = Transaction(transaction_json)
         return self._first_transaction
 
     @property
     def latest_transaction(self) -> Transaction:
         transaction_json = self.member.get("latest_txn", None)
-        if not self._latest_transaction and transaction_json and self.is_validated_member:
+        if not self._latest_transaction and transaction_json and self.is_valid:
             self._latest_transaction = Transaction(transaction_json)
         return self._latest_transaction
 
     @property
     def address(self) -> dict:
-        return self.member.get("address", {}) if self.is_validated_member else {}
+        return self.member.get("address", {}) if self.is_valid else {}
 
     @property
     def profile(self) -> dict:
-        return self.member.get("profile", {}) if self.is_validated_member else {}
+        return self.member.get("profile", {}) if self.is_valid else {}
 
     """
     ---------------------------------------------------------------------------
@@ -383,7 +331,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def is_active_subscription(self) -> bool:
-        if not self.is_validated_member:
+        if not self.is_valid:
             return False
 
         for subscription in self.recent_subscriptions:
@@ -394,7 +342,7 @@ class Member(MemberpressAPIClient):
 
     @property
     def is_trial_subscription(self) -> bool:
-        if not self.is_validated_member:
+        if not self.is_valid:
             return False
 
         now = datetime.now()

@@ -23,9 +23,7 @@ Notes:
   class into your module, not only for the sake of sanity but also better
   memory management.
 """
-from curses import intrflush
 from datetime import datetime
-import string
 import logging
 from typing import TypeVar, Generic, Type
 
@@ -43,7 +41,6 @@ from memberpress_client.member import Member
 from memberpress_client.membership import Membership
 from memberpress_client.transaction import Transaction
 from memberpress_client.subscription import Subscription
-from memberpress_client.utils import str2datetime
 
 
 logger = logging.getLogger(__name__)
@@ -59,7 +56,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     _event = None  # a string. example: "after-cc-expires-reminder"
     _event_type = None  # a string. example: "subscription"
-    _data = None  # validated contents of json["data"]
     _member = None  # a member object
     _membership = None  # a membership object
     _transaction = None  # a transaction object
@@ -78,7 +74,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         super().init()
         self._event = None
         self._event_type = None
-        self._data = None
         self._member = None
         self._membership = None
         self._transaction = None
@@ -171,10 +166,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
             logger.warning("was expecting a value of type str but received type {t}".format(t=type(value)))
 
     @property
-    def data(self) -> dict:
-        return self.json.get("data", {})
-
-    @property
     def membership(self) -> Membership:
         if self.has_membership and not self._membership:
             membership_dict = self.data.get(MemberpressEventTypes.MEMBERSHIP, {})
@@ -213,9 +204,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     # -------------------------------------------------------------------------
     # Event attributes
     # -------------------------------------------------------------------------
-    @property
-    def active_memberships(self) -> int:
-        return self.str2int(self.data.get("active_memberships"))
 
     @property
     def active_txn_count(self) -> int:
@@ -267,7 +255,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @property
     def expires_at(self) -> datetime:
-        return str2datetime(self.json.get("expires_at"))
+        return self.str2datetime(self.json.get("expires_at"))
 
     @property
     def first_name(self) -> str:
@@ -348,28 +336,6 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     @property
     def rebill(self) -> bool:
         return self.str2bool(self.json.get("rebill"))
-
-    @property
-    def recent_subscriptions(self) -> list:
-        if not self._recent_subscriptions and self.is_validated_member:
-            recent_subscriptions = self.data.get("recent_subscriptions", [])
-            retval = []
-            for subscription_json in recent_subscriptions:
-                subscription = Subscription(subscription_json)
-                retval.append(subscription)
-            self._recent_subscriptions = retval
-        return self._recent_subscriptions
-
-    @property
-    def recent_transactions(self) -> list:
-        if not self._recent_transactions and self.is_validated_member:
-            transactions = self.data.get("recent_transactions", [])
-            retval = []
-            for transaction_json in transactions:
-                transaction = Transaction(transaction_json)
-                retval.append(transaction)
-            self._recent_transactions = retval
-        return self._recent_transactions
 
     @property
     def registered_at(self) -> datetime:

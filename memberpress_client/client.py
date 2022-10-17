@@ -36,11 +36,6 @@ class MemberpressAPIClient(Memberpress):
     def init(self):
         super().init()
 
-    def is_valid(self, value) -> bool:
-        if type(value) != dict:
-            return False
-        return True
-
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)
 

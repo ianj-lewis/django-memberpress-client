@@ -10,7 +10,7 @@ from django.db import models
 from model_utils.models import TimeStampedModel
 
 # To do: remove this when Open edX moves to Django 3.x
-import jsonfield
+from jsonfield import JSONField
 
 from memberpress_client.constants import MEMBERPRESS_EVENTS
 
@@ -33,8 +33,9 @@ class MemberpressEvents(TimeStampedModel):
         help_text=_("The kind of memberpress event. Examples: "),
     )
 
-    json = jsonfield.JSONField(
+    json = JSONField(
         blank=True,
+        default={},
         help_text=_("A json dict sent by the webhook event in the request body."),
     )
 

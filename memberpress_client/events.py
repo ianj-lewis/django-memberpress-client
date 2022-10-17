@@ -125,23 +125,23 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         self._is_valid = True
 
     @property
-    def has_member(self):
+    def has_member(self) -> bool:
         return MemberpressEventTypes.MEMBER in self.qc_keys
 
     @property
-    def has_membership(self):
+    def has_membership(self) -> bool:
         return MemberpressEventTypes.MEMBERSHIP in self.qc_keys
 
     @property
-    def has_transaction(self):
+    def has_transaction(self) -> bool:
         return MemberpressEventTypes.TRANSACTION in self.qc_keys
 
     @property
-    def has_subscription(self):
+    def has_subscription(self) -> bool:
         return MemberpressEventTypes.SUBSCRIPTION in self.qc_keys
 
     @property
-    def event(self):
+    def event(self) -> str:
         return self._event
 
     @event.setter
@@ -152,7 +152,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
             logger.warning("was expecting a value of type str but received type {t}".format(t=type(value)))
 
     @property
-    def event_type(self):
+    def event_type(self) -> str:
         return self._event_type
 
     @event_type.setter
@@ -163,18 +163,18 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
             logger.warning("was expecting a value of type str but received type {t}".format(t=type(value)))
 
     @property
-    def data(self):
+    def data(self) -> dict:
         return self.json.get("data", {})
 
     @property
-    def membership(self):
+    def membership(self) -> Membership:
         if self.has_membership and not self._membership:
             membership_dict = self.data.get(MemberpressEventTypes.MEMBERSHIP, {})
             self._membership = Membership(membership=membership_dict)
         return self._membership
 
     @property
-    def member(self):
+    def member(self) -> Member:
         if self.has_member and not self._member:
             # note that the member dict resides in either of two locations
             # depending on the kind of event we received.
@@ -187,7 +187,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         return self._member
 
     @property
-    def transaction(self):
+    def transaction(self) -> Transaction:
         if self.has_transaction and not self._transaction:
             # note that the transaction object resides inside the body of the
             # of the data dict.
@@ -196,7 +196,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
         return self._transaction
 
     @property
-    def subscription(self):
+    def subscription(self) -> Subscription:
         if self.has_subscription and not self._subscription:
             subscription_dict = self.data.get(MemberpressEventTypes.SUBSCRIPTION, {})
             self._subscription = Subscription(subscription=subscription_dict)

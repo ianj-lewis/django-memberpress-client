@@ -6,23 +6,33 @@
 -c ./constraints.txt
 -r ./common.txt
 
-ipython             # ditto
+# build-deploy tools
+# ------------------------------------------------------------------------------
 setuptools
 wheel
 twine
+
+# TO DO: WHAT ARE THESE?
+# came from cookiecutter-django
+# ------------------------------------------------------------------------------
+argon2-cffi                     # https://github.com/hynek/argon2_cffi
+hiredis                         # https://github.com/redis/hiredis-py
+
+# dev environment
+# ------------------------------------------------------------------------------
+ipython
 python-dotenv
 
-# moved from common.in
-djangorestframework
+# requirements that already exist in edx-platform
+# Cookiecutter Django (minus stuff that's already required by Open edX)
+# ------------------------------------------------------------------------------
 jsonfield
 pytz                            # https://github.com/stub42/pytz
 python-slugify                  # https://github.com/un33k/python-slugify
 Pillow                          # https://github.com/python-pillow/Pillow
-argon2-cffi                     # https://github.com/hynek/argon2_cffi
 django-model-utils              # https://github.com/jazzband/django-model-utils
+django-environ                  # https://github.com/joke2k/django-environ
 
-# Cookiecutter Django (minus stuff that's already required by Open edX)
-# =============================================================================
 Werkzeug[watchdog]==2.2.2           # https://github.com/pallets/werkzeug
 ipdb                                # https://github.com/gotcha/ipdb
 mysqlclient                         # https://github.com/PyMySQL/mysqlclient
@@ -31,7 +41,7 @@ mysqlclient                         # https://github.com/PyMySQL/mysqlclient
 # ------------------------------------------------------------------------------
 mypy                                # https://github.com/python/mypy
 django-stubs                        # https://github.com/typeddjango/django-stubs
-#pytest                              # https://github.com/pytest-dev/pytest
+pytest                              # https://github.com/pytest-dev/pytest
 pytest-sugar                        # https://github.com/Frozenball/pytest-sugar
 djangorestframework-stubs           # https://github.com/typeddjango/djangorestframework-stubs
 
@@ -51,8 +61,19 @@ pre-commit                          # https://github.com/pre-commit/pre-commit
 
 # Django
 # ------------------------------------------------------------------------------
+django                              # https://www.djangoproject.com/
+django-redis                        # https://github.com/jazzband/django-redis
+django-allauth                      # https://github.com/pennersr/django-allauth
 factory-boy                         # https://github.com/FactoryBoy/factory_boy
 django-debug-toolbar                # https://github.com/jazzband/django-debug-toolbar
 django-extensions                   # https://github.com/django-extensions/django-extensions
 django-coverage-plugin              # https://github.com/nedbat/django_coverage_plugin
 pytest-django                       # https://github.com/pytest-dev/pytest-django
+
+
+# Django REST Framework
+djangorestframework                 # https://github.com/encode/django-rest-framework
+django-cors-headers                 # https://github.com/adamchainz/django-cors-headers
+
+# DRF-spectacular for api documentation
+drf-spectacular                     # https://github.com/tfranzel/drf-spectacular

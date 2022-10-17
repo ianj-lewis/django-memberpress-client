@@ -64,7 +64,7 @@ urls:
 
 Use these class objects rather than working directly with the memberpress
 json dicts returned by the api. These class objects include structural and type-checking validations,
-plus they strongly type all of the dict key values for you.
+plus they handle dict value data type conversations for you.
 
 ### class hierarchy
 
@@ -82,7 +82,7 @@ class Memberpress:
 
 ### constants
 
-Use these built-in constants rather than working directly the dict key string values:
+Use these built-in constants rather than working directly with memberpress' dict key string values:
 
 - MemberpressEvents: discrete list of memberpress event types. The str value exactly matches the event dict key "event".
 - MemberpressEventTypes: discrete list of memberpress event_types
@@ -125,7 +125,7 @@ consists of the following:
 - pre-commit install
 - create a mysql database. see 'make db'
 - ./manage.py migrate. see 'make migrate'
-- ./manage.py runserver. see 'make server'
 - ./manage.py createsuperuser. see 'make server'
+- ./manage.py runserver. see 'make server'
 
 Common dev chores are automated in the Makefile, noting however that all syntax is specific to macOS environments (my sincerest apologies), plus, it assumes that you've installed mysql and redis using homebrew.

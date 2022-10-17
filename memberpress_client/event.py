@@ -7,6 +7,7 @@ from memberpress_client.constants import (
     MemberpressEvents,
     MemberpressEventsTypes,
 )
+from memberpress_client.memberpress import Memberpress
 from memberpress_client.member import Member
 from memberpress_client.membership import Membership
 from memberpress_client.transaction import Transaction
@@ -18,37 +19,36 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T", bound="MemberpressEvent")
 
 
-class MemberpressEvent(Generic[T]):
+class MemberpressEvent(Generic[T], Memberpress):
     """
     Event base class
     """
 
-    _json = None
-    _event = None
-    _event_type = None
-    _data = None
-    _member = None
-    _membership = None
-    _transaction = None
-    _subscription = None
-    _is_valid = False
+    _event = None  # a string. example: "after-cc-expires-reminder"
+    _event_type = None  # a string. example: "subscription"
+    _data = None  # validated contents of json["data"]
+    _member = None  # a member object
+    _membership = None  # a membership object
+    _transaction = None  # a transaction object
+    _subscription = None  # a subscription object
+    _is_valid = False  # set in validate()
 
-    qc_keys = []
-    has_member = False
-    has_membership = False
-    has_transaction = False
-    has_subscription = False
+    qc_keys = []  # set in __init__() of the child object. the data dict keys to validate
+    has_member = False  # true if the child class has a Member
+    has_membership = False  # true if the child class has a Membership
+    has_transaction = False  # true if the child class has a Transaction
+    has_subscription = False  # true if the child class has a Subscription
 
     def __init__(self, data: dict) -> None:
         self.init()
         self.json = data
-        pass
 
     @classmethod
     def factory(cls: Type[T], data: dict) -> T:
         return cls(data=data)
 
     def init(self):
+        super().init()
         self._json = None
         self._event = None
         self._event_type = None
@@ -57,6 +57,12 @@ class MemberpressEvent(Generic[T]):
         self._membership = None
         self._transaction = None
         self._subscription = None
+        self._is_valid = False
+        self.qc_keys = []
+        self.has_member = False
+        self.has_membership = False
+        self.has_transaction = False
+        self.has_subscription = False
 
     def validate(self):
         if self.event != self.json.get("event", "missing event"):
@@ -69,46 +75,28 @@ class MemberpressEvent(Generic[T]):
             logger.warning("received a dict with no 'type' key.")
             return
 
+        # this is the outer dict structure that all events share
         base_keys = ["event", "type", "data"]
         if not self.is_valid_dict(self.json, qc_keys=base_keys):
             self._is_valid = False
             logger.warning("received a dict with no 'data' key.")
             return
 
-        if not self.is_valid_dict(self.json, qc_keys=self.qc_keys):
+        # self.qc_keys is set in __init__() in the child classes
+        # and contains the event-specific objects contained in
+        # json["data"]
+        if not self.is_valid_dict(self.data, qc_keys=self.qc_keys):
             self._is_valid = False
             return
 
+        self._is_valid = True
+
+        # set property flags. if False then the corresponding property
+        # will always return None.
         self.has_member = MemberpressEventsTypes.MEMBER in self.qc_keys
         self.has_membership = MemberpressEventsTypes.MEMBERSHIP in self.qc_keys
         self.has_transaction = MemberpressEventsTypes.TRANSACTION in self.qc_keys
         self.has_subscription = MemberpressEventsTypes.SUBSCRIPTION in self.qc_keys
-
-    def is_valid_dict(self, response, qc_keys) -> bool:
-        if not type(response) == dict:
-            logger.warning(
-                "is_valid_dict() was expecting a dict but received an object of type: {type}".format(
-                    type=type(response)
-                )
-            )
-            return False
-        return all(key in response for key in qc_keys)
-
-    @property
-    def json(self):
-        return self._json or {}
-
-    @json.setter
-    def json(self, value):
-        if type(value) == dict or value is None:
-            self.init()
-            self._json = value
-        else:
-            logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
-
-    @property
-    def is_valid(self):
-        return self._is_valid
 
     @property
     def event(self):

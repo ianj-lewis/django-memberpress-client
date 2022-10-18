@@ -1,9 +1,11 @@
 # CHANGE LOG
 
-## Version 0.0.6 (????)
+## Version 0.0.6 (2022-10-17)
 
 - validate event.setter against MemberpressEvents.all_events()
 - validate event_type.setter against MemberpressEventTypes.all_event_types()
+- add more event tests
+- createe .env-sample for local and production
 
 ## Version 0.0.5 (2022-10-17)
 

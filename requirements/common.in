@@ -17,7 +17,5 @@
 
 -c ./constraints.txt
 
-django-environ                  # used in stepwise_grades for overrides to memberpress_client API
-django-extensions               # harel's recommended dev tools
-djangorestframework
-validators
+django-environ                  # used in common to set API key and base url
+validators                      # used to validate email address, etc.

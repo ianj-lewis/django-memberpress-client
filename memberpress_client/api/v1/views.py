@@ -1,35 +1,35 @@
 import logging
 
 from rest_framework.views import APIView
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 
 from memberpress_client.decorators import app_logger
+from memberpress_client.events import get_event
+from memberpress_client.models import MemberpressEvents
+from memberpress_client.utils import get_user
 
 logger = logging.getLogger(__name__)
 
 
-class WebhookView(APIView):
-    def process_webhook(self, user, data):
-        logger.info("received user: {user}, data: {data}".format(user=user, data=data))
-
+class EventView(APIView):
     @app_logger
     def put(self, request):
-        user = request.user
         data = request.POST
-        self.process_webhook(user, data)
+        method = request.REQUEST_METHOD
+
+        method = method
+        event = get_event(data=data)
+        try:
+            username = event.username or request.user.username
+        except Exception:
+            username = "missing"
+
+        MemberpressEvents(
+            sender=request.REMOTE_HOST,
+            username=username,
+            event=event.event,
+            event_type=event.event_type,
+            is_valid=event.is_valid,
+            json=event.json,
+        ).save()
         return HttpResponse(status=201)
-
-    @app_logger
-    def patch(self, request):
-        user = request.user
-        data = request.POST
-        self.process_webhook(user, data)
-        return HttpResponse(status=201)
-
-    @app_logger
-    def get(self, request):
-        return HttpResponseNotFound
-
-    @app_logger
-    def delete(self, request):
-        return HttpResponseNotFound

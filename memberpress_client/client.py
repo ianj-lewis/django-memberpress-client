@@ -2,7 +2,8 @@
 Lawrence McDaniel - https://lawrencemcdaniel.com
 Oct-2022
 
-memberpress REST API Client plugin for Django - rest api client implementation
+memberpress REST API Client plugin for Django - rest api client implementation.
+This is the base class for memberpress Classes.
 """
 # Python stuff
 import logging
@@ -17,6 +18,7 @@ from django.conf import settings
 from django.core.cache import cache
 
 # our stuff
+from memberpress_client.memberpress import Memberpress
 from memberpress_client.utils import log_pretrip, log_postrip
 from memberpress_client.decorators import request_manager
 
@@ -30,44 +32,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logger = logging.getLogger(__name__)
 
 
-class MemberpressAPIClient:
-    _locked = False
-    _json = None
-
+class MemberpressAPIClient(Memberpress):
     def init(self):
-        self._locked = False
-        self._json = None
-
-    def lock(self):
-        self._locked = True
-
-    def unlock(self):
-        self._locked = False
-
-    @property
-    def locked(self):
-        return self._locked
-
-    @property
-    def json(self):
-        return self._json
-
-    @json.setter
-    def json(self, value):
-        if type(value) == dict or value is None:
-            self.init()
-            self._json = value
-        else:
-            logger.warning("was expecting a value of type dict but receive type {t}".format(t=type(value)))
-
-    @property
-    def ready(self):
-        return True if not self.locked and self.json and len(self.json) > 0 else False
-
-    def is_valid(self, value) -> bool:
-        if type(value) != dict:
-            return False
-        return True
+        super().init()
 
     def get_url(self, path) -> str:
         return urljoin(settings.MEMBERPRESS_API_BASE_URL, path)

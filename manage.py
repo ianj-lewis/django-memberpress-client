@@ -24,8 +24,8 @@ if __name__ == "__main__":
         raise
 
     # This allows easy placement of apps within the interior
-    # sponsors directory.
+    # memberpress_client directory.
     current_path = Path(__file__).parent.resolve()
-    sys.path.append(str(current_path / "sponsors"))
+    sys.path.append(str(current_path / "memberpress_client"))
 
     execute_from_command_line(sys.argv)

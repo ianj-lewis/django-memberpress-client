@@ -8,14 +8,13 @@ memberpress REST API Client plugin for Django - utility and helper functions.
 import json
 import logging
 import pytz
-from datetime import datetime
-from dateutil.parser import parse, ParserError
 from unittest.mock import MagicMock
 from requests import Response
 
 # django stuff
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # our  stuff
@@ -81,26 +80,11 @@ class MPJSONEncoder(json.JSONEncoder):
             return ""
 
 
-def str2datetime(date_str):
-    date_str = date_str[0:19]
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-    except ValueError:
-        pass
-
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d")
-    except ValueError:
-        pass
-
-    logger.warning("Cannot convert string date {dt}".format(dt=date_str))
-
-
 def get_user(username):
     try:
         return User.objects.get(username=username)
-    except Exception:
-        pass
+    except ObjectDoesNotExist:
+        logger.warning("could not find a User object for username {username}".format(username=username))
 
 
 def log_trace(caller: str, path: str, data: dict) -> None:

@@ -1,6 +1,8 @@
 .venv
 .env
 django_cache
+__pycache__
+
 
 # .gitignore for edx-platform.
 # There's a lot here, please try to keep it organized.

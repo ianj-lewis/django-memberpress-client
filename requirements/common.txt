@@ -4,22 +4,9 @@
 #
 #    pip-compile requirements/common.in
 #
-asgiref==3.5.2
-    # via django
 decorator==5.1.1
     # via validators
-django==3.2.13
-    # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
-    #   -c requirements/./constraints.txt
-    #   django-extensions
 django-environ==0.9.0
     # via -r requirements/common.in
-django-extensions==3.1.5
-    # via -r requirements/common.in
-pytz==2022.1
-    # via django
-sqlparse==0.4.2
-    # via django
 validators==0.20.0
     # via -r requirements/common.in

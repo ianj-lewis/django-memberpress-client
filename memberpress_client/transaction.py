@@ -6,7 +6,6 @@ from datetime import datetime
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.constants import COMPLETE_TRANSACTION_DICT
-from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ class Transaction(MemberpressAPIClient):
     def __init__(self, transaction=None) -> None:
         super().__init__()
         self.init()
-        if self.is_valid(transaction):
+        if type(transaction) == dict:
             self.json = transaction
         else:
             logger.warning("received an invalid transaction object: {o}".format(o=transaction))
@@ -35,73 +34,43 @@ class Transaction(MemberpressAPIClient):
 
     @property
     def membership(self) -> int:
-        try:
-            return int(self.json["membership"])
-        except Exception:
-            return None
+        return self.str2int(self.json["membership"])
 
     @property
     def member(self) -> int:
-        try:
-            return int(self.json["member"])
-        except Exception:
-            return None
+        return self.str2int(self.json["member"])
 
     @property
     def coupon(self) -> int:
-        try:
-            return int(self.json["coupon"])
-        except Exception:
-            return None
+        return self.str2int(self.json["coupon"])
 
     @property
     def subscription(self) -> int:
-        try:
-            return int(self.json["subscription"])
-        except Exception:
-            return None
+        return self.str2int(self.json["subscription"])
 
     @property
     def transaction(self) -> int:
-        try:
-            return int(self.json["transaction"])
-        except Exception:
-            return None
+        return self.str2int(self.json["transaction"])
 
     @property
     def id(self) -> int:
-        try:
-            return int(self.json["id"])
-        except Exception:
-            return None
+        return self.str2int(self.json["id"])
 
     @property
     def amount(self) -> float:
-        try:
-            return float(self.json["amount"])
-        except Exception:
-            return None
+        return self.str2float(self.json["amount"])
 
     @property
     def total(self) -> float:
-        try:
-            return float(self.json["total"])
-        except Exception:
-            return None
+        return self.str2float(self.json["total"])
 
     @property
     def tax_amount(self) -> float:
-        try:
-            return float(self.json["tax_amount"])
-        except Exception:
-            return None
+        return self.str2float(self.json["tax_amount"])
 
     @property
     def tax_rate(self) -> float:
-        try:
-            return float(self.json["tax_rate"])
-        except Exception:
-            return None
+        return self.str2float(self.json["tax_rate"])
 
     @property
     def tax_desc(self) -> str:
@@ -129,56 +98,31 @@ class Transaction(MemberpressAPIClient):
 
     @property
     def prorated(self) -> int:
-        try:
-            return int(self.json["prorated"])
-        except Exception:
-            return None
+        return self.str2int(self.json["prorated"])
 
     @property
     def created_at(self) -> datetime:
-        date_str = self.json.get("created_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read created_at for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("created_at"))
 
     @property
     def expires_at(self) -> datetime:
-        date_str = self.json.get("expires_at", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read expires_at for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("expires_at"))
 
     @property
     def corporate_account_id(self) -> int:
-        try:
-            return int(self.json["corporate_account_id"])
-        except Exception:
-            return None
+        return self.str2int(self.json["corporate_account_id"])
 
     @property
     def parent_transaction_id(self) -> int:
-        try:
-            return int(self.json["parent_transaction_id"])
-        except Exception:
-            return None
+        return self.str2int(self.json["parent_transaction_id"])
 
     @property
     def tax_compound(self) -> int:
-        try:
-            return int(self.json["tax_compound"])
-        except Exception:
-            return None
+        return self.str2int(self.json["tax_compound"])
 
     @property
     def tax_shipping(self) -> int:
-        try:
-            return int(self.json["tax_shipping"])
-        except Exception:
-            return None
+        return self.str2int(self.json["tax_shipping"])
 
     @property
     def response(self) -> str:

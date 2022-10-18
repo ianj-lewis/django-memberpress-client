@@ -16,7 +16,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def load_test_member(test_file):
-    with io.open(os.path.join(HERE, "data", test_file), "rt", encoding="utf8") as f:
+    with io.open(os.path.join(HERE, "data", "api", test_file), "rt", encoding="utf8") as f:
         return f.read()
 
 
@@ -56,7 +56,7 @@ class TestMember(unittest.TestCase):
         # dict structural integrity
         self.assertEqual(member.is_complete_dict, False)
         self.assertEqual(member.is_minimum_member_dict, True)
-        self.assertEqual(member.is_validated_member, True)
+        self.assertEqual(member.is_valid, True)
 
         self.assertEqual(type(member.active_memberships), list)
         self.assertEqual(type(member.recent_subscriptions), list)

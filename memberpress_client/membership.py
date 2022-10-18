@@ -6,7 +6,6 @@ from datetime import datetime
 # our stuff
 from memberpress_client.client import MemberpressAPIClient
 from memberpress_client.constants import COMPLETE_MEMBERSHIP_DICT
-from memberpress_client.utils import str2datetime
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ class Membership(MemberpressAPIClient):
     def __init__(self, membership=None) -> None:
         super().__init__()
         self.init()
-        if self.is_valid(membership):
+        if type(membership) == dict:
             self.json = membership
         else:
             logger.warning("received an invalid membership object: {o}".format(o=membership))
@@ -42,353 +41,245 @@ class Membership(MemberpressAPIClient):
 
     @property
     def title(self) -> str:
-        return self.json.get("title", None)
+        return self.json.get("title")
 
     @property
     def content(self) -> str:
-        return self.json.get("content", None)
+        return self.json.get("content")
 
     @property
     def excerpt(self) -> str:
-        return self.json.get("excerpt", None)
+        return self.json.get("excerpt")
 
     @property
     def date(self) -> datetime:
-        date_str = self.json.get("date", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read date for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("date", ""))
 
     @property
     def status(self) -> str:
-        return self.json.get("status", None)
+        return self.json.get("status")
 
     @property
     def author(self) -> int:
-        try:
-            return int(self.json["author"])
-        except Exception:
-            return None
+        return self.str2int(self.json["author"])
 
     @property
     def date_gmt(self) -> datetime:
-        date_str = self.json.get("date_gmt", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read date_gmt for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("date_gmt"))
 
     @property
     def modified(self) -> datetime:
-        date_str = self.json.get("modified", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read modified for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("modified"))
 
     @property
     def modified_gmt(self) -> datetime:
-        date_str = self.json.get("modified_gmt", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read modified_gmt for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("modified_gmt", ""))
 
     @property
     def group(self) -> int:
-        try:
-            return int(self.json["group"])
-        except Exception:
-            return None
+        return self.str2int(self.json["group"])
 
     @property
     def price(self) -> float:
-        try:
-            return float(self.json["price"])
-        except Exception:
-            return None
+        return self.str2float(self.json["price"])
 
     @property
     def period(self) -> int:
-        try:
-            return int(self.json["period"])
-        except Exception:
-            return None
+        return self.str2int(self.json["period"])
 
     @property
     def period_type(self) -> str:
-        return self.json.get("period_type", None)
+        return self.json.get("period_type")
 
     @property
     def signup_button_text(self) -> str:
-        return self.json.get("signup_button_text", None)
+        return self.json.get("signup_button_text")
 
     @property
     def limit_cycles(self) -> bool:
-        try:
-            v = str(self.json.get("limit_cycles", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("limit_cycles"))
 
     @property
     def limit_cycles_num(self) -> int:
-        try:
-            return int(self.json["limit_cycles_num"])
-        except Exception:
-            return None
+        return self.str2int(self.json["limit_cycles_num"])
 
     @property
     def limit_cycles_action(self) -> str:
-        return self.json.get("limit_cycles_action", None)
+        return self.json.get("limit_cycles_action")
 
     @property
     def limit_cycles_expires_after(self) -> int:
-        try:
-            return int(self.json["limit_cycles_expires_after"])
-        except Exception:
-            return None
+        return self.str2int(self.json["limit_cycles_expires_after"])
 
     @property
     def limit_cycles_expires_type(self) -> str:
-        return self.json.get("limit_cycles_expires_type", None)
+        return self.json.get("limit_cycles_expires_type")
 
     @property
     def trial(self) -> int:
-        try:
-            return int(self.json["trial"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial"])
 
     @property
     def trial_days(self) -> int:
-        try:
-            return int(self.json["trial_days"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial_days"])
 
     @property
     def trial_amount(self) -> int:
-        try:
-            return int(self.json["trial_amount"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial_amount"])
 
     @property
     def trial_once(self) -> int:
-        try:
-            return int(self.json["trial_once"])
-        except Exception:
-            return None
+        return self.str2int(self.json["trial_once"])
 
     @property
     def group_order(self) -> int:
-        try:
-            return int(self.json["group_order"])
-        except Exception:
-            return None
+        return self.str2int(self.json["group_order"])
 
     @property
-    def is_highlighted(self) -> int:
-        try:
-            return int(self.json["is_highlighted"])
-        except Exception:
-            return None
+    def is_highlighted(self) -> bool:
+        retval = self.str2int(self.json["is_highlighted"])
+        return True if retval == 1 else False
 
     @property
     def plan_code(self) -> str:
-        return self.json.get("plan_code", None)
+        return self.json.get("plan_code")
 
     @property
     def pricing_title(self) -> str:
-        return self.json.get("pricing_title", None)
+        return self.json.get("pricing_title")
 
     @property
     def pricing_show_price(self) -> bool:
-        try:
-            v = str(self.json.get("pricing_show_price", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("pricing_show_price"))
 
     @property
     def pricing_display(self) -> str:
-        return self.json.get("pricing_display", None)
+        return self.json.get("pricing_display")
 
     @property
     def custom_price(self) -> str:
-        return self.json.get("custom_price", None)
+        return self.json.get("custom_price")
 
     @property
     def pricing_heading_txt(self) -> str:
-        return self.json.get("pricing_heading_txt", None)
+        return self.json.get("pricing_heading_txt")
 
     @property
     def pricing_footer_txt(self) -> str:
-        return self.json.get("pricing_footer_txt", None)
+        return self.json.get("pricing_footer_txt")
 
     @property
     def pricing_button_txt(self) -> str:
-        return self.json.get("pricing_button_txt", None)
+        return self.json.get("pricing_button_txt")
 
     @property
     def pricing_button_position(self) -> str:
-        return self.json.get("pricing_button_position", None)
+        return self.json.get("pricing_button_position")
 
     @property
     def pricing_benefits(self) -> list:
-        return self.json.get("pricing_benefits", None)
+        return self.json.get("pricing_benefits")
 
     @property
     def register_price_action(self) -> str:
-        return self.json.get("register_price_action", None)
+        return self.json.get("register_price_action")
 
     @property
     def register_price(self) -> str:
-        return self.json.get("register_price", None)
+        return self.json.get("register_price")
 
     @property
     def thank_you_page_enabled(self) -> bool:
-        try:
-            v = str(self.json.get("thank_you_page_enabled", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("thank_you_page_enabled"))
 
     @property
     def thank_you_page_type(self) -> str:
-        return self.json.get("thank_you_page_type", None)
+        return self.json.get("thank_you_page_type")
 
     @property
     def thank_you_message(self) -> str:
-        return self.json.get("thank_you_message", None)
+        return self.json.get("thank_you_message")
 
     @property
     def thank_you_page_id(self) -> int:
-        try:
-            return int(self.json["thank_you_page_id"])
-        except Exception:
-            return None
+        return self.str2int(self.json["thank_you_page_id"])
 
     @property
     def custom_login_urls_enabled(self) -> int:
-        try:
-            return int(self.json["custom_login_urls_enabled"])
-        except Exception:
-            return None
+        return self.str2int(self.json["custom_login_urls_enabled"])
 
     @property
     def custom_login_urls_default(self) -> str:
-        return self.json.get("custom_login_urls_default", None)
+        return self.json.get("custom_login_urls_default")
 
     @property
     def custom_login_urls(self) -> list:
-        return self.json.get("custom_login_urls", None)
+        return self.json.get("custom_login_urls")
 
     @property
     def expire_type(self) -> str:
-        return self.json.get("expire_type", None)
+        return self.json.get("expire_type")
 
     @property
     def expire_after(self) -> int:
-        try:
-            return int(self.json["expire_after"])
-        except Exception:
-            return None
+        return self.str2int(self.json["expire_after"])
 
     @property
     def expire_unit(self) -> str:
-        return self.json.get("expire_unit", None)
+        return self.json.get("expire_unit")
 
     @property
     def expire_fixed(self) -> datetime:
-        date_str = self.json.get("expire_fixed", "")
-        try:
-            return str2datetime(date_str)
-        except Exception:
-            logger.warning("Cannot read date_gmt for id {id}".format(id=self.id))
-            return None
+        return self.str2datetime(self.json.get("expire_fixed"))
 
     @property
     def tax_exempt(self) -> bool:
-        try:
-            v = str(self.json.get("tax_exempt", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("tax_exempt"))
 
     @property
     def tax_class(self) -> str:
-        return self.json.get("tax_class", None)
+        return self.json.get("tax_class")
 
     @property
     def allow_renewal(self) -> bool:
-        try:
-            v = str(self.json.get("allow_renewal", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("allow_renewal"))
 
     @property
     def access_url(self) -> str:
-        return self.json.get("access_url", None)
+        return self.json.get("access_url")
 
     @property
     def disable_address_fields(self) -> bool:
-        try:
-            v = str(self.json.get("disable_address_fields", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("disable_address_fields"))
 
     @property
     def simultaneous_subscriptions(self) -> bool:
-        try:
-            v = str(self.json.get("simultaneous_subscriptions", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("simultaneous_subscriptions"))
 
     @property
     def use_custom_template(self) -> bool:
-        try:
-            v = str(self.json.get("use_custom_template", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("use_custom_template"))
 
     @property
     def custom_template(self) -> str:
-        return self.json.get("custom_template", None)
+        return self.json.get("custom_template")
 
     @property
     def customize_payment_methods(self) -> int:
-        try:
-            return int(self.json["customize_payment_methods"])
-        except Exception:
-            return None
+        return self.str2int(self.json["customize_payment_methods"])
 
     @property
     def custom_payment_methods(self) -> list:
-        return self.json.get("custom_payment_methods", None)
+        return self.json.get("custom_payment_methods")
 
     @property
     def customize_profile_fields(self) -> bool:
-        try:
-            v = str(self.json.get("customize_profile_fields", "false")).lower()
-            return True if v == "true" else False
-        except Exception:
-            return False
+        return self.str2bool(self.json.get("customize_profile_fields"))
 
     @property
     def custom_profile_fields(self) -> list:
-        return self.json.get("custom_profile_fields", None)
+        return self.json.get("custom_profile_fields")
 
     @property
     def cannot_purchase_message(self) -> str:
-        return self.json.get("cannot_purchase_message", None)
+        return self.json.get("cannot_purchase_message")

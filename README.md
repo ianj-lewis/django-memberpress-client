@@ -29,87 +29,101 @@ You'll find the memberpress API Key in the Wordpress admin site.
 ### REST API
 
 ```python
+# from a Python module inside your existing Django project.
 from memberpress_client.member import Member
 
-# 1. passing an explicit Wordpress username
 member = Member(username="jsmith")
+
+if member.should_raise_paywall:
+    # not a member, free trial has expired, subscription expired,
+    # subscription renewal payment transaction declined, etc.
+    your_custom_paywall_code()
+
+# and, there is lots more detailed information about the member,
+# their subscription status, their recent transactions history,
+# and so on...
 print(member.is_active_subscription)
 print(member.is_trial_subscription)
-print(member.should_raise_paywall)
 print(member.latest_transaction.amount)
 print(member.recent_subscriptions[0].created_at)
 print(member.active_memberships[0].pricing_title)
-
-# 2. using with Django request object
-member = Member(request=request)
-
-# 3. passing a Django user object
-member = Member(user=user)
-
-# 4. passing a Django user object
-member = Member(user=user)
-
-# 5. passing an json return object from memberpress REST API
-member = Member(response=memberpress_response_json)
 ```
 
 ### Webhooks
 
-You can setup this plugin to receive webhooks from your memberpress Wordpress site. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
+This plugin listens for events from memberpress' webhooks framework, a Pro 'developer tools' premium option of memberpress. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
 ![memberpress webhooks](doc/memberpress-api-webhook.png "memberpress webhooks")
 
+urls:
 
-## Local development
+- receive http POST requests: https://your-django-project.com/mp/api/v1/events/
+- view the event log: https://your-django-project.com/admin/memberpress_client/memberpressevents/
 
-* Use the same virtual environment that you use for edx-platform
-* Set your Python interpreter to 3.8x
-* install black: https://pypi.org/project/black/
-* install flake8: https://flake8.pycqa.org/en/latest/
+![Django admin console](doc/memberpress-django-admin2.png "Django admin console")
 
-```bash
-# Run these from within your edx-platform virtual environment
-pip3 install pre-commit
-pre-commit install
-pip3 install black
-python3 -m pip install flake8
+## Developers
+
+Use these class objects rather than working directly with the memberpress
+json dicts returned by the api. These class objects include structural and type-checking validations,
+plus they handle dict value data type conversations for you.
+
+### class hierarchy
+
+```python
+class Memberpress:
+
+    class MemberpressEvent(Memberpress):
+
+    class MemberpressAPIClient(Memberpress):
+        class Member(MemberpressAPIClient):
+        class Membership(MemberpressAPIClient):
+        class Subscriber(MemberpressAPIClient):
+        class Transaction(MemberpressAPIClient):
 ```
 
-### Local development good practices
+### constants
 
-* run `black` on modified code before committing.
-* run `flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics`
-* run `flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics`
-* run `pre-commit run --all-files` before pushing. see: https://pre-commit.com/
+Use these built-in constants rather than working directly with memberpress' dict key string values:
 
-#### edx-platform dependencies
+- MemberpressEvents: discrete list of memberpress event types. The str value exactly matches the event dict key "event".
+- MemberpressEventTypes: discrete list of memberpress event_types
 
-To avoid freaky version conflicts in prod it's a good idea to install all of the edx-platform requirements to your local dev virtual environment.
+```python
+from memberpress_client.constants import MemberpressEvents
 
-* requirements/edx/base.txt
-* requirements/edx/develop.txt,
-* requirements/edx/testing.txt
+print(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)
+after-cc-expires-reminder
 
-At a minimum this will give you the full benefit of your IDE's linter.
+print(MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER)
+after-member-signup-reminder
 
-#### Notes regarding development with macOS M1
+print(MemberpressEvents.LOGIN)
+login
 
-1. To avoid problems with installing the edx-platform requirements, create your virtual environment with Python >= 3.9.x using the native installer from https://www.python.org/. `which python` should return `/Library/Frameworks/Python.framework/Versions/3.9/bin/python3`. Ignoring this advise will lead to very weird side effects. Note that this is true even though Lilac actually runs on Python 3.8.x
+print(MemberpressEvents.MEMBER_ACCOUNT_UPDATED)
+member-account-updated
 
-2. Best to install openssl, openblas, zstd, mysql, and mysql-client with Brew. Using brew helps you avoid problems with gcc compilations and linking that have proven problematic on early releases of macOS 11 on M1. If you run into problems while pip installing mysql-client / MongoDBProxy / mongoengine/ pymongo /numpy / scipy / matplotlib then analyze the stack trace for any other straggling dependencies that I might have ommitted here that might also break due to the gcc compiler or linker, and try installing these instead with Brew.
-
-3. In addition to launching your virtual environment it also helps to set the following environment variables in your terminal window. Make sure you pay attention to any further suggestions echoed in Brew installation output:
-
-```bash
-export OPENBLAS=/opt/homebrew/opt/openblas/lib/
-export LDFLAGS="-L/opt/homebrew/opt/openblas/lib -L/opt/homebrew/opt/mysql-client/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/openblas/include -I/opt/homebrew/opt/mysql-client/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/openblas/lib/pkgconfig /opt/homebrew/opt/mysql-client/lib/pkgconfig"
+print(MemberpressEvents.SUBSCRIPTION_EXPIRED)
+subscription-expired
+# ...
+# ectetera, etcetera, etcetera ...
+# ...
+print(MemberpressEvents.TRANSACTION_COMPLETED)
+transaction-completed
 ```
 
-### Shell Plus and iPython
+### developer getting started guide
 
-The stepwise_edxapi module adds ipython and django-extensions to the stack.  It is then possible to get an enhanced shell via:
+Keep in mind that this code package is intended to install as an add-on to your existing Django project. Therefore,
+the 'production' settings and requirements intentionally ommit all Django and Django support packages
+other than those that are unique to this repo. The 'local' settings and requirements compensate for this by including all of the settings and requirements that you'd typically find in 'common' and/or 'production'.
 
-```bash
-tutor local exec lms ./manage.py lms shell_plus
-```
+You should be able to follow the normal workflow for setting up a Django project for local development. This substantially
+consists of the following:
+
+- install all service-level dependencies on your local dev machine. This includes MySQL and Redis.
+- clone this repo
+- create and activate a Python virtual environment
+- run make quickstart
+
+Other common dev chores are automated in the Makefile, noting however that some syntax is specific to macOS environments (my sincerest apologies), plus, it assumes that you've installed mysql and redis using homebrew.

@@ -22,6 +22,16 @@ class MemberpressEventTypes:
 
 
 class MemberpressEvents:
+    @classmethod
+    def all_events(self):
+        """
+        generate a list of all class variable values
+        """
+        return [
+            getattr(self, event)
+            for event in [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")]
+        ]
+
     AFTER_CC_EXPIRES_REMINDER = "after-cc-expires-reminder"
     AFTER_MEMBER_SIGNUP_REMINDER = "after-member-signup-reminder"
     AFTER_SIGNUP_ABANDONED_REMINDER = "after-signup-abandoned-reminder"

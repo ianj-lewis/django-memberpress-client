@@ -149,7 +149,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @event.setter
     def event(self, value):
-        if type(value) == str or value is None:
+        if value is None:
+            self._event = value
+            return
+
+        if type(value) == str:
             if value in MemberpressEvents.all():
                 self._event = value
             else:
@@ -163,7 +167,11 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @event_type.setter
     def event_type(self, value):
-        if type(value) == str or value is None:
+        if value is None:
+            self._event_type = value
+            return
+
+        if type(value) == str:
             if value in MemberpressEventTypes.all():
                 self._event_type = value
             else:

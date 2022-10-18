@@ -153,7 +153,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.response, None)
 
     def test_persist_data(self):
-        def validate(event_str: str):
+        def persist(event_str: str):
             data_dict = load_json(event_str)
             event = get_event(data_dict)
 
@@ -168,4 +168,4 @@ class TestMember(unittest.TestCase):
 
         for file in os.listdir(EVENTS_FOLDER):
             if file.endswith(EXT):
-                validate(event_str=file[:-5])
+                persist(event_str=file[:-5])

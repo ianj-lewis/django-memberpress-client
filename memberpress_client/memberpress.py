@@ -24,7 +24,7 @@ class Memberpress:
         self._recent_subscriptions = None
         self._recent_transactions = None
         self._active_memberships = None
-        logger.info("initialized {t}".format(t=type(self)))
+        logger.debug("initialized {t}".format(t=type(self)))
 
     def validate(self):
         if not self.json:

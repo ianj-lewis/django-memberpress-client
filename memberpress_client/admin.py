@@ -12,11 +12,12 @@ class MemberpressEventsAdmin(admin.ModelAdmin):
 
     search_fields = ()
     list_display = (
-        "sender",
-        "event",
-        "json",
         "created",
-        "modified",
+        "event",
+        "event_type",
+        "is_valid",
+        "username",
+        "json",
     )
 
 

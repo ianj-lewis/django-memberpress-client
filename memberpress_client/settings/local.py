@@ -84,8 +84,8 @@ SITE_ID = 1
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "mp-db",
-        "USER": "mp-user",
+        "NAME": "memberpress_client",
+        "USER": "mp_user",
         "PASSWORD": "mp",
         "HOST": "127.0.0.1",
         "PORT": "3306",

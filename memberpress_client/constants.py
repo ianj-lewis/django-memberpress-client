@@ -69,6 +69,13 @@ class MemberpressEvents:
     UNIDENTIFIED_EVENT = "unidentified-event"
 
 
+MEMBERPRESS_EVENT_TYPES = (
+    (MemberpressEventTypes.MEMBER, MemberpressEventTypes.MEMBER),
+    (MemberpressEventTypes.MEMBERSHIP, MemberpressEventTypes.MEMBERSHIP),
+    (MemberpressEventTypes.SUBSCRIPTION, MemberpressEventTypes.SUBSCRIPTION),
+    (MemberpressEventTypes.TRANSACTION, MemberpressEventTypes.TRANSACTION),
+)
+
 MEMBERPRESS_EVENTS = (
     (MemberpressEvents.AFTER_CC_EXPIRES_REMINDER, MemberpressEvents.AFTER_CC_EXPIRES_REMINDER),
     (MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER, MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER),

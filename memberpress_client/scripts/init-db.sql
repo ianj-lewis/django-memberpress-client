@@ -1,7 +1,7 @@
-DROP USER IF EXISTS `mp-user`@`localhost`;
-DROP DATABASE IF EXISTS `mp-db`;
+DROP USER IF EXISTS `mp_user`@`localhost`;
+DROP DATABASE IF EXISTS `memberpress_client`;
 
-CREATE USER `mp-user`@`localhost` IDENTIFIED BY 'mp';
-CREATE DATABASE `mp-db`;
-GRANT ALL PRIVILEGES ON `mp-db`.* TO "mp-user"@"localhost";
+CREATE USER `mp_user`@`localhost` IDENTIFIED BY 'mp';
+CREATE DATABASE `memberpress_client`;
+GRANT ALL PRIVILEGES ON `memberpress_client`.* TO "mp_user"@"localhost";
 FLUSH PRIVILEGES;

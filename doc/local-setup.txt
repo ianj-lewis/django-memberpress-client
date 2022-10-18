@@ -5,9 +5,9 @@ brew services list
 brew services restart -vvv mysql
 mysql -uroot -p[my macbook pwd]
 
-CREATE USER 'mp-user'@'localhost' IDENTIFIED BY 'mp';
-CREATE DATABASE `mp-db`;
-GRANT ALL PRIVILEGES ON `mp-db`.* TO "mp-user"@"localhost";
+CREATE USER 'mp_user'@'localhost' IDENTIFIED BY 'mp';
+CREATE DATABASE `memberpress_client`;
+GRANT ALL PRIVILEGES ON `memberpress_client`.* TO "mp_user"@"localhost";
 FLUSH PRIVILEGES;
 
 
@@ -22,8 +22,8 @@ export CELERY_BROKER_URL=redis://localhost:6379/0
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mp-db',
-        'USER': 'mp-user',
+        'NAME': 'memberpress_client',
+        'USER': 'mp_user',
         'PASSWORD': 'mp',
         'HOST': '127.0.0.1',
         'PORT': '3306',

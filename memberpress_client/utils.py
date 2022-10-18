@@ -14,6 +14,7 @@ from requests import Response
 # django stuff
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # our  stuff
@@ -82,8 +83,8 @@ class MPJSONEncoder(json.JSONEncoder):
 def get_user(username):
     try:
         return User.objects.get(username=username)
-    except Exception:
-        pass
+    except ObjectDoesNotExist:
+        logger.warning("could not find a User object for username {username}".format(username=username))
 
 
 def log_trace(caller: str, path: str, data: dict) -> None:

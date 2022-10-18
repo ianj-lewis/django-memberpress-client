@@ -117,7 +117,7 @@ class Member(MemberpressAPIClient):
             self._is_valid = False
 
         if self.is_complete_dict:
-            logger.info("validated member response object for username {username}.".format(username=self.username))
+            logger.debug("validated member response object for username {username}.".format(username=self.username))
             self._is_valid = True
             return
 

@@ -35,15 +35,15 @@ settings.MEMBERPRESS_SENSITIVE_KEYS = [
 Alternatively, you can place a .env file in the root of this project, in the same folder location
 as this README.md, with the following contents:
 
-```python
+```shell
 # required settings
-MEMBERPRESS_API_KEY="set-me-please"
-MEMBERPRESS_API_BASE_URL="https://set-me-please.com"
+MEMBERPRESS_API_KEY=set-me-please
+MEMBERPRESS_API_BASE_URL=https://set-me-please.com
 
 # optional settings
 MEMBERPRESS_CACHE_EXPIRATION=3600
-MEMBERPRESS_API_KEY_NAME="MEMBERPRESS-API-KEY"
-MEMBERPRESS_SENSITIVE_KEYS="password,token,client_id,client_secret,Authorization,secret"
+MEMBERPRESS_API_KEY_NAME=MEMBERPRESS-API-KEY
+MEMBERPRESS_SENSITIVE_KEYS=password,token,client_id,client_secret,Authorization,secret
 ```
 
 

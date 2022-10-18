@@ -94,7 +94,3 @@ class TestMember(unittest.TestCase):
         self.assertEqual(member.is_active_subscription, False)
         self.assertEqual(member.is_trial_subscription, False)
         self.assertEqual(member.should_raise_paywall, True)
-
-
-if __name__ == "__main__":
-    unittest.main()

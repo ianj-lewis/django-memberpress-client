@@ -1,4 +1,5 @@
 # python stuff
+from asyncio.log import logger
 import os
 import io
 import unittest
@@ -9,78 +10,45 @@ from datetime import datetime
 # -----------------------------------------------------------------------------
 from memberpress_client.constants import MemberpressEvents, MemberpressTransactionTypes
 from memberpress_client.events import get_event, MEMBERPRESS_EVENT_CLASSES
+from memberpress_client.models import MemberpressEvents as MemberpressEventsModel
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
+EVENTS_FOLDER = os.path.join(HERE, "data", "events")
+EXT = (".json",)
 
 
 def load_json(test_file):
+    if test_file == "unidentified-event":
+        return
+
     test_file = test_file + ".json"
-    with io.open(os.path.join(HERE, "data", "events", test_file), "rt", encoding="utf8") as f:
+    with io.open(os.path.join(EVENTS_FOLDER, test_file), "rt", encoding="utf8") as f:
         return json.loads(f.read(), strict=False)
 
 
 class TestMember(unittest.TestCase):
-    def test_1_valid_dicts(self):
+    def test_valid_dicts(self):
         def validate(event_str: str):
-            # load a json dict from a test file
             data_dict = load_json(event_str)
+            if not data_dict:
+                logger.warning("no test file for {event_str}".format(event_str=event_str))
+                return
 
-            # instantiate the object
             event = get_event(data_dict)
-
-            # tests
             self.assertEqual(event.is_valid, True)
             self.assertEqual(event.event, event_str)
             self.assertEqual(type(event), MEMBERPRESS_EVENT_CLASSES[event_str])
 
-        validate(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)
-        validate(MemberpressEvents.AFTER_CC_EXPIRES_REMINDER)
-        validate(MemberpressEvents.AFTER_MEMBER_SIGNUP_REMINDER)
-        validate(MemberpressEvents.AFTER_SIGNUP_ABANDONED_REMINDER)
-        validate(MemberpressEvents.AFTER_SUB_EXPIRES_REMINDER)
-        validate(MemberpressEvents.BEFORE_CC_EXPIRES_REMINDER)
-        validate(MemberpressEvents.BEFORE_SUB_EXPIRES_REMINDER)
-        validate(MemberpressEvents.BEFORE_SUB_RENEWS_REMINDER)
-        validate(MemberpressEvents.BEFORE_SUB_TRIAL_ENDS)
-        validate(MemberpressEvents.LOGIN)
-        validate(MemberpressEvents.MEMBER_ACCOUNT_UPDATED)
-        validate(MemberpressEvents.MEMBER_ADDED)
-        validate(MemberpressEvents.MEMBER_DELETED)
-        validate(MemberpressEvents.MEMBER_SIGNUP_COMPLETED)
-        validate(MemberpressEvents.MPCA_COURSE_COMPLETED)
-        validate(MemberpressEvents.MPCA_COURSE_STARTED)
-        validate(MemberpressEvents.MPCA_LESSON_COMPLETED)
-        validate(MemberpressEvents.MPCA_LESSON_STARTED)
-        validate(MemberpressEvents.MPCA_QUIZ_ATTEMPT_COMPLETED)
-        validate(MemberpressEvents.NON_RECURRING_TRANSACTION_COMPLETED)
-        validate(MemberpressEvents.NON_RECURRING_TRANSACTION_EXPIRED)
-        validate(MemberpressEvents.OFFLINE_PAYMENT_COMPLETE)
-        validate(MemberpressEvents.OFFLINE_PAYMENT_PENDING)
-        validate(MemberpressEvents.OFFLINE_PAYMENT_REFUNDED)
-        validate(MemberpressEvents.RECURRING_TRANSACTION_COMPLETED)
-        validate(MemberpressEvents.RECURRING_TRANSACTION_EXPIRED)
-        validate(MemberpressEvents.RECURRING_TRANSACTION_FAILED)
-        validate(MemberpressEvents.RENEWAL_TRANSACTION_COMPLETED)
-        validate(MemberpressEvents.SUB_ACCOUNT_ADDED)
-        validate(MemberpressEvents.SUB_ACCOUNT_REMOVED)
-        validate(MemberpressEvents.SUBSCRIPTION_CREATED)
-        validate(MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_ONE_TIME)
-        validate(MemberpressEvents.SUBSCRIPTION_DOWNGRADED_TO_RECURRING)
-        validate(MemberpressEvents.SUBSCRIPTION_DOWNGRADED)
-        validate(MemberpressEvents.SUBSCRIPTION_EXPIRED)
-        validate(MemberpressEvents.SUBSCRIPTION_PAUSED)
-        validate(MemberpressEvents.SUBSCRIPTION_RESUMED)
-        validate(MemberpressEvents.SUBSCRIPTION_STOPPED)
-        validate(MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_ONE_TIME)
-        validate(MemberpressEvents.SUBSCRIPTION_UPGRADED_TO_RECURRING)
-        validate(MemberpressEvents.SUBSCRIPTION_UPGRADED)
-        validate(MemberpressEvents.TRANSACTION_COMPLETED)
-        validate(MemberpressEvents.TRANSACTION_EXPIRED)
-        validate(MemberpressEvents.TRANSACTION_FAILED)
-        validate(MemberpressEvents.TRANSACTION_REFUNDED)
+        for file in os.listdir(EVENTS_FOLDER):
+            if file.endswith(EXT):
+                validate(event_str=file[:-5])
 
-    def test_2_valid_login_event(self):
+        # test MemberpressEvents.all()
+        for event_str in MemberpressEvents.all():
+            validate(event_str=event_str)
+
+    def test_valid_login_event(self):
         event_str = MemberpressEvents.LOGIN
         data_dict = load_json(event_str)
         event = get_event(data_dict)
@@ -112,7 +80,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.recent_transactions, [])
         self.assertEqual(event.recent_subscriptions, [])
 
-    def test_3_valid_payment_event(self):
+    def test_valid_payment_event(self):
         event_str = MemberpressEvents.OFFLINE_PAYMENT_COMPLETE
         data_dict = load_json(event_str)
         event = get_event(data_dict)
@@ -143,7 +111,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.rebill, False)
         self.assertEqual(event.subscription_payment_index, False)
 
-    def test_4_valid_subscription_event(self):
+    def test_valid_subscription_event(self):
         event_str = MemberpressEvents.SUBSCRIPTION_CREATED
         data_dict = load_json(event_str)
         event = get_event(data_dict)
@@ -183,3 +151,21 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.tax_compound, False)
         self.assertEqual(event.tax_shipping, True)
         self.assertEqual(event.response, None)
+
+    def test_persist_data(self):
+        def validate(event_str: str):
+            data_dict = load_json(event_str)
+            event = get_event(data_dict)
+
+            MemberpressEventsModel(
+                sender="https://some-domain.com",
+                username="mcdaniel",
+                event=event.event,
+                event_type=event.event_type,
+                is_valid=event.is_valid,
+                json=event.json,
+            ).save()
+
+        for file in os.listdir(EVENTS_FOLDER):
+            if file.endswith(EXT):
+                validate(event_str=file[:-5])

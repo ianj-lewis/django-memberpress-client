@@ -149,8 +149,12 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @event.setter
     def event(self, value):
-        if type(value) == str or value is None:
-            if value in MemberpressEvents.all_events():
+        if value is None:
+            self._event = value
+            return
+
+        if type(value) == str:
+            if value in MemberpressEvents.all():
                 self._event = value
             else:
                 logger.warning("event() received an unknown event type {value}".format(value=value))
@@ -163,8 +167,12 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
 
     @event_type.setter
     def event_type(self, value):
-        if type(value) == str or value is None:
-            if value in MemberpressEventTypes.all_event_types():
+        if value is None:
+            self._event_type = value
+            return
+
+        if type(value) == str:
+            if value in MemberpressEventTypes.all():
                 self._event_type = value
             else:
                 logger.warning("event_type() received an unknown event type {value}".format(value=value))

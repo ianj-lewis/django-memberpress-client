@@ -36,8 +36,11 @@ Alternatively, you can place a .env file in the root of this project, in the sam
 as this README.md, with the following contents:
 
 ```python
+# required settings
 MEMBERPRESS_API_KEY="set-me-please"
 MEMBERPRESS_API_BASE_URL="https://set-me-please.com"
+
+# optional settings
 MEMBERPRESS_CACHE_EXPIRATION = 60*60*24
 MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
 MEMBERPRESS_SENSITIVE_KEYS = [

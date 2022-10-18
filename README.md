@@ -157,3 +157,6 @@ subscription-expired
 print(MemberpressEvents.TRANSACTION_COMPLETED)
 transaction-completed
 ```
+
+Additionally, note that many of the constants include helper functions.
+![memberpress_client constants](https://raw.githubusercontent.com/lpm0073/django-memberpress-client/main/doc/memberpress-constants.png "memberpress_client constants")

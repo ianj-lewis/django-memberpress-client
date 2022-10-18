@@ -1,4 +1,5 @@
 # python stuff
+from asyncio.log import logger
 import os
 import io
 import unittest
@@ -26,13 +27,15 @@ def load_json(test_file):
 class TestMember(unittest.TestCase):
     def test_1_valid_dicts(self):
         def validate(event_str: str):
-            # load a json dict from a test file
             data_dict = load_json(event_str)
-            if data_dict:
-                event = get_event(data_dict)
-                self.assertEqual(event.is_valid, True)
-                self.assertEqual(event.event, event_str)
-                self.assertEqual(type(event), MEMBERPRESS_EVENT_CLASSES[event_str])
+            if not data_dict:
+                logger.warning("no test file for {event_str}".format(event_str=event_str))
+                return
+
+            event = get_event(data_dict)
+            self.assertEqual(event.is_valid, True)
+            self.assertEqual(event.event, event_str)
+            self.assertEqual(type(event), MEMBERPRESS_EVENT_CLASSES[event_str])
 
         for event_str in MemberpressEvents.all():
             validate(event_str=event_str)

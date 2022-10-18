@@ -30,6 +30,9 @@ settings.MEMBERPRESS_SENSITIVE_KEYS = [
     "Authorization",
     "secret",
 ]
+```
+
+```python
 
 # Alternatively, you can place a .env file in the root of this project, in the same folder location
 # as this README.md, with the following contents:

@@ -41,16 +41,9 @@ MEMBERPRESS_API_KEY="set-me-please"
 MEMBERPRESS_API_BASE_URL="https://set-me-please.com"
 
 # optional settings
-MEMBERPRESS_CACHE_EXPIRATION = 60*60*24
-MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
-MEMBERPRESS_SENSITIVE_KEYS = [
-    "password",
-    "token",
-    "client_id",
-    "client_secret",
-    "Authorization",
-    "secret",
-]
+MEMBERPRESS_CACHE_EXPIRATION=3600
+MEMBERPRESS_API_KEY_NAME="MEMBERPRESS-API-KEY"
+MEMBERPRESS_SENSITIVE_KEYS="password,token,client_id,client_secret,Authorization,secret"
 ```
 
 

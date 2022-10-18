@@ -22,7 +22,7 @@ settings.MEMBERPRESS_API_BASE_URL = 'https://set-me-please.com/'
 ```
 
 You'll find the memberpress API Key in the Wordpress admin site.
-![memberpress API Key](doc/memberpress-api-key.png "memberpress API Key")
+![memberpress API Key](https://raw.githubusercontent.com/lpm0073/django-memberpress-client/main/doc/memberpress-api-key.png "memberpress API Key")
 
 ## Usage
 
@@ -52,14 +52,14 @@ print(member.active_memberships[0].pricing_title)
 ### Webhooks
 
 This plugin listens for events from memberpress' webhooks framework, a Pro 'developer tools' premium option of memberpress. Add a url of the form https://yourdomain.com/mp/api/v1/webhook to the Developer "Webhooks" page.
-![memberpress webhooks](doc/memberpress-api-webhook.png "memberpress webhooks")
+![memberpress webhooks](https://raw.githubusercontent.com/lpm0073/django-memberpress-client/main/doc/memberpress-api-webhook.png "memberpress webhooks")
 
 urls:
 
 - receive http POST requests: https://your-django-project.com/mp/api/v1/events/
 - view the event log: https://your-django-project.com/admin/memberpress_client/memberpressevents/
 
-![Django admin console](doc/memberpress-django-admin2.png "Django admin console")
+![Django admin console](https://raw.githubusercontent.com/lpm0073/django-memberpress-client/main/doc/memberpress-django-admin2.png "Django admin console")
 
 ## Developers
 

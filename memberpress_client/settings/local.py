@@ -29,12 +29,9 @@ if READ_DOT_ENV_FILE:
 # -----------------------------------------------------------------------------
 MEMBERPRESS_API_KEY = env.str("MEMBERPRESS_API_KEY", "set-me-please")
 MEMBERPRESS_API_BASE_URL = env.str("MEMBERPRESS_API_BASE_URL", "https://example.com/")
-
-# common local dev & test settings
-# -----------------------------------------------------------------------------
-MEMBERPRESS_CACHE_EXPIRATION = 300
-MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
-MEMBERPRESS_SENSITIVE_KEYS = [
+MEMBERPRESS_CACHE_EXPIRATION = env.int("MEMBERPRESS_CACHE_EXPIRATION", 60 * 60)
+MEMBERPRESS_API_KEY_NAME = env.str("MEMBERPRESS_API_KEY_NAME", "MEMBERPRESS-API-KEY")
+MEMBERPRESS_SENSITIVE_KEYS = env.list("MEMBERPRESS_SENSITIVE_KEYS") or [
     "password",
     "token",
     "client_id",

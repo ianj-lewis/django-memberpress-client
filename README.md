@@ -12,14 +12,40 @@ A lightweight, performant Django plugin that implements REST api and Webhook int
 pip install django-memberpress-client
 ```
 
-Set the Django settings using tutor.
-
 ```python
 from django.conf import settings
 
+# required settings
 settings.MEMBERPRESS_API_KEY = 'set-me-please'
 settings.MEMBERPRESS_API_BASE_URL = 'https://set-me-please.com/'
+
+# optional settings
+settings.MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
+settings.MEMBERPRESS_CACHE_EXPIRATION = 60*60*24
+settings.MEMBERPRESS_SENSITIVE_KEYS = [
+    "password",
+    "token",
+    "client_id",
+    "client_secret",
+    "Authorization",
+    "secret",
+]
 ```
+
+Alternatively, you can place a .env file in the root of this project, in the same folder location
+as this README.md, with the following contents:
+
+```shell
+# required settings
+MEMBERPRESS_API_KEY=set-me-please
+MEMBERPRESS_API_BASE_URL=https://set-me-please.com
+
+# optional settings
+MEMBERPRESS_CACHE_EXPIRATION=3600
+MEMBERPRESS_API_KEY_NAME=MEMBERPRESS-API-KEY
+MEMBERPRESS_SENSITIVE_KEYS=password,token,client_id,client_secret,Authorization,secret
+```
+
 
 You'll find the memberpress API Key in the Wordpress admin site.
 ![memberpress API Key](https://raw.githubusercontent.com/lpm0073/django-memberpress-client/main/doc/memberpress-api-key.png "memberpress API Key")

@@ -5,7 +5,7 @@ from django.http import HttpResponse
 
 from memberpress_client.decorators import app_logger
 from memberpress_client.events import get_event
-from memberpress_client.models import MemberpressEvents
+from memberpress_client.models import MemberpressEventLog
 from memberpress_client.utils import get_user
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class EventView(APIView):
         except Exception:
             username = "missing"
 
-        MemberpressEvents(
+        MemberpressEventLog(
             sender=request.REMOTE_HOST,
             username=username,
             event=event.event,

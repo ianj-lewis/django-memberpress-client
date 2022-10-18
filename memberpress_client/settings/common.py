@@ -12,6 +12,19 @@ env = environ.Env(
     # set casting, default value
     MEMBERPRESS_API_KEY=(str, "set-me-please"),
     MEMBERPRESS_API_BASE_URL=(str, "https://yourdomain.com"),
+    MEMBERPRESS_API_KEY_NAME=(str, "MEMBERPRESS-API-KEY"),
+    MEMBERPRESS_CACHE_EXPIRATION=(int, 60 * 60 * 24),
+    MEMBERPRESS_SENSITIVE_KEYS=(
+        list,
+        [
+            "password",
+            "token",
+            "client_id",
+            "client_secret",
+            "Authorization",
+            "secret",
+        ],
+    ),
 )
 
 # path to this file.
@@ -26,23 +39,13 @@ environ.Env.read_env(os.path.join(REPO_ROOT, ".env"))
 def plugin_settings(settings):
     """
     Injects local settings into django settings
-
-    see: https://stackoverflow.com/questions/56129708/how-to-force-redirect-uri-to-use-https-with-python-social-app
     """
 
     settings.MEMBERPRESS_API_KEY = env("MEMBERPRESS_API_KEY")
     settings.MEMBERPRESS_API_BASE_URL = env("MEMBERPRESS_API_BASE_URL")
-
-    settings.MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"  # noqa: F841
-    settings.MEMBERPRESS_CACHE_EXPIRATION = 300  # noqa: F841
-    settings.MEMBERPRESS_SENSITIVE_KEYS = [  # noqa: F841
-        "password",
-        "token",
-        "client_id",
-        "client_secret",
-        "Authorization",
-        "secret",
-    ]
+    settings.MEMBERPRESS_API_KEY_NAME = env("MEMBERPRESS-API-KEY")  # noqa: F841
+    settings.MEMBERPRESS_CACHE_EXPIRATION = env("MEMBERPRESS_CACHE_EXPIRATION")  # noqa: F841
+    settings.MEMBERPRESS_SENSITIVE_KEYS = env("MEMBERPRESS_SENSITIVE_KEYS")  # noqa: F841
 
     settings.MAKO_TEMPLATE_DIRS_BASE.extend([TEMPLATES_DIR])
     settings.INSTALLED_APPS.append("django-environ")

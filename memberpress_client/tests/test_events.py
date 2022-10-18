@@ -13,15 +13,17 @@ from memberpress_client.events import get_event, MEMBERPRESS_EVENT_CLASSES
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
+EVENTS_FOLDER = os.path.join(HERE, "data", "events")
+EXT = (".json",)
 
 
 def load_json(test_file):
+    if test_file == "unidentified-event":
+        return
+
     test_file = test_file + ".json"
-    try:
-        with io.open(os.path.join(HERE, "data", "events", test_file), "rt", encoding="utf8") as f:
-            return json.loads(f.read(), strict=False)
-    except Exception:
-        pass
+    with io.open(os.path.join(EVENTS_FOLDER, test_file), "rt", encoding="utf8") as f:
+        return json.loads(f.read(), strict=False)
 
 
 class TestMember(unittest.TestCase):
@@ -37,6 +39,11 @@ class TestMember(unittest.TestCase):
             self.assertEqual(event.event, event_str)
             self.assertEqual(type(event), MEMBERPRESS_EVENT_CLASSES[event_str])
 
+        for file in os.listdir(EVENTS_FOLDER):
+            if file.endswith(EXT):
+                validate(event_str=file[:-5])
+
+        # test MemberpressEvents.all()
         for event_str in MemberpressEvents.all():
             validate(event_str=event_str)
 

@@ -2,15 +2,17 @@
 
 ## Version 0.0.5 (2022-10-17)
 
-- Add webhook event classes and listener
+- Add webhook event classes, listener and model
 - Create base class Membership() and refactor
+- Build unit tests for api and webhook events
+- Create a Makefile
 
 ## Version 0.0.4 (2022-10-14)
 
 - Operational but experimental plugin. Do not use in production.
-- implements REST API only.
-- all redundant code moved to the base class
-- added should_raise_paywall property
+- Implements REST API only.
+- All redundant code moved to the base class
+- Added should_raise_paywall property
 
 ## Version 0.0.2 (2022-10-13)
 

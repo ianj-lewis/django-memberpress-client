@@ -15,11 +15,11 @@ from jsonfield import JSONField
 from memberpress_client.constants import MEMBERPRESS_EVENTS, MEMBERPRESS_EVENT_TYPES
 
 
-class MemberpressEvents(TimeStampedModel):
+class MemberpressEventLog(TimeStampedModel):
     """ """
 
     class Meta:
-        verbose_name_plural = "memberpress events"
+        verbose_name_plural = "memberpress event log"
 
     sender = models.URLField(
         blank=True,
@@ -49,6 +49,12 @@ class MemberpressEvents(TimeStampedModel):
     is_valid = models.BooleanField(
         blank=False,
         help_text=_("True if the json received was validated by memberpress_client. False otherwise."),
+    )
+
+    is_processed = models.BooleanField(
+        blank=True,
+        default=False,
+        help_text=_("True if this event has been analyzed and acted upon."),
     )
 
     json = JSONField(

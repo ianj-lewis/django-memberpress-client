@@ -10,7 +10,7 @@ from datetime import datetime
 # -----------------------------------------------------------------------------
 from memberpress_client.constants import MemberpressEvents, MemberpressTransactionTypes
 from memberpress_client.events import get_event, MEMBERPRESS_EVENT_CLASSES
-from memberpress_client.models import MemberpressEvents as MemberpressEventsModel
+from memberpress_client.models import MemberpressEventLog
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -157,7 +157,7 @@ class TestMember(unittest.TestCase):
             data_dict = load_json(event_str)
             event = get_event(data_dict)
 
-            MemberpressEventsModel(
+            MemberpressEventLog(
                 sender="https://some-domain.com",
                 username="mcdaniel",
                 event=event.event,

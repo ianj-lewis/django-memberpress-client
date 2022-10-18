@@ -1,8 +1,8 @@
 from django.contrib import admin
-from memberpress_client.models import MemberpressEvents
+from memberpress_client.models import MemberpressEventLog
 
 
-class MemberpressEventsAdmin(admin.ModelAdmin):
+class MemberpressEventLogAdmin(admin.ModelAdmin):
     """
     Memberpress Webhook event log
     """
@@ -16,9 +16,10 @@ class MemberpressEventsAdmin(admin.ModelAdmin):
         "event",
         "event_type",
         "is_valid",
+        "is_processed",
         "username",
         "json",
     )
 
 
-admin.site.register(MemberpressEvents, MemberpressEventsAdmin)
+admin.site.register(MemberpressEventLog, MemberpressEventLogAdmin)

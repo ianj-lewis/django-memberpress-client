@@ -2,6 +2,16 @@
 # ------------------------------------------------------------------------------
 MEMBERPRESS_API_KEY="t5paMwZKGq"
 MEMBERPRESS_API_BASE_URL="https://stepwisemath.ai/"
+MEMBERPRESS_CACHE_EXPIRATION = 60*60
+MEMBERPRESS_API_KEY_NAME = "MEMBERPRESS-API-KEY"
+MEMBERPRESS_SENSITIVE_KEYS = [
+    "password",
+    "token",
+    "client_id",
+    "client_secret",
+    "Authorization",
+    "secret",
+]
 
 # General
 # ------------------------------------------------------------------------------

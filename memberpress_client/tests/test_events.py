@@ -10,6 +10,7 @@ from datetime import datetime
 # -----------------------------------------------------------------------------
 from memberpress_client.constants import MemberpressEvents, MemberpressTransactionTypes
 from memberpress_client.events import get_event, MEMBERPRESS_EVENT_CLASSES
+from memberpress_client.models import MemberpressEvents as MemberpressEventsModel
 
 # setup test data
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -27,7 +28,7 @@ def load_json(test_file):
 
 
 class TestMember(unittest.TestCase):
-    def test_1_valid_dicts(self):
+    def test_valid_dicts(self):
         def validate(event_str: str):
             data_dict = load_json(event_str)
             if not data_dict:
@@ -47,7 +48,7 @@ class TestMember(unittest.TestCase):
         for event_str in MemberpressEvents.all():
             validate(event_str=event_str)
 
-    def test_2_valid_login_event(self):
+    def test_valid_login_event(self):
         event_str = MemberpressEvents.LOGIN
         data_dict = load_json(event_str)
         event = get_event(data_dict)
@@ -79,7 +80,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.recent_transactions, [])
         self.assertEqual(event.recent_subscriptions, [])
 
-    def test_3_valid_payment_event(self):
+    def test_valid_payment_event(self):
         event_str = MemberpressEvents.OFFLINE_PAYMENT_COMPLETE
         data_dict = load_json(event_str)
         event = get_event(data_dict)
@@ -110,7 +111,7 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.rebill, False)
         self.assertEqual(event.subscription_payment_index, False)
 
-    def test_4_valid_subscription_event(self):
+    def test_valid_subscription_event(self):
         event_str = MemberpressEvents.SUBSCRIPTION_CREATED
         data_dict = load_json(event_str)
         event = get_event(data_dict)
@@ -150,3 +151,21 @@ class TestMember(unittest.TestCase):
         self.assertEqual(event.tax_compound, False)
         self.assertEqual(event.tax_shipping, True)
         self.assertEqual(event.response, None)
+
+    def test_persist_data(self):
+        def validate(event_str: str):
+            data_dict = load_json(event_str)
+            event = get_event(data_dict)
+
+            MemberpressEventsModel(
+                sender="https://some-domain.com",
+                username="mcdaniel",
+                event=event.event,
+                event_type=event.event_type,
+                is_valid=event.is_valid,
+                json=event.json,
+            ).save()
+
+        for file in os.listdir(EVENTS_FOLDER):
+            if file.endswith(EXT):
+                validate(event_str=file[:-5])

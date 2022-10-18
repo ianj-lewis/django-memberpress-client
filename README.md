@@ -59,7 +59,7 @@ urls:
 - receive http POST requests: https://your-django-project.com/mp/api/v1/events/
 - view the event log: https://your-django-project.com/admin/memberpress_client/memberpressevents/
 
-![Django admin console](doc/memberpress-django-admin.png "Django admin console")
+![Django admin console](doc/memberpress-django-admin2.png "Django admin console")
 
 ## Developers
 

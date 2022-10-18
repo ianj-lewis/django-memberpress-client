@@ -32,8 +32,8 @@ settings.MEMBERPRESS_SENSITIVE_KEYS = [
 ]
 ```
 
-Alternatively, you can place a .env file in the root of this project, in the same folder location
-as this README.md, with the following contents:
+Alternatively, you can rename .env-sample, located in the same folder location
+as this README.md, to .env:
 
 ```shell
 # required settings
@@ -93,6 +93,24 @@ Use these class objects rather than working directly with the memberpress
 json dicts returned by the api. These class objects include structural and type-checking validations,
 plus they handle dict value data type conversations for you.
 
+### quick start
+
+Keep in mind that this code package is intended to install as an add-on to your existing Django project. Therefore,
+the 'production' settings and requirements intentionally ommit all Django and Django support packages
+other than those that are unique to this repo. The 'local' settings and requirements compensate for this by including all of the settings and requirements that you'd typically find in 'common' and/or 'production'.
+
+You should be able to follow the normal workflow for setting up a Django project for local development. This substantially
+consists of the following:
+
+- rename ./memberpress_client/settings/.env-sample to ./memberpress_client/settings/.env
+- install all service-level dependencies on your local dev machine. This includes MySQL and Redis.
+- clone this repo
+- create and activate a Python virtual environment
+- run make quickstart
+
+Other common dev chores are automated in the Makefile, noting however that some syntax is specific to macOS environments (my sincerest apologies), plus, it assumes that you've installed mysql and redis using homebrew.
+
+
 ### class hierarchy
 
 ```python
@@ -137,19 +155,3 @@ subscription-expired
 print(MemberpressEvents.TRANSACTION_COMPLETED)
 transaction-completed
 ```
-
-### developer getting started guide
-
-Keep in mind that this code package is intended to install as an add-on to your existing Django project. Therefore,
-the 'production' settings and requirements intentionally ommit all Django and Django support packages
-other than those that are unique to this repo. The 'local' settings and requirements compensate for this by including all of the settings and requirements that you'd typically find in 'common' and/or 'production'.
-
-You should be able to follow the normal workflow for setting up a Django project for local development. This substantially
-consists of the following:
-
-- install all service-level dependencies on your local dev machine. This includes MySQL and Redis.
-- clone this repo
-- create and activate a Python virtual environment
-- run make quickstart
-
-Other common dev chores are automated in the Makefile, noting however that some syntax is specific to macOS environments (my sincerest apologies), plus, it assumes that you've installed mysql and redis using homebrew.

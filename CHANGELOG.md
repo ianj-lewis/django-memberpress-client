@@ -1,5 +1,10 @@
 # CHANGE LOG
 
+## Version 0.0.6 (????)
+
+- validate event.setter against MemberpressEvents.all_events()
+- validate event_type.setter against MemberpressEventTypes.all_event_types()
+
 ## Version 0.0.5 (2022-10-17)
 
 - Add webhook event classes, listener and model

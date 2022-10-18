@@ -164,7 +164,7 @@ class MemberpressEvent(Generic[MemberpressEventChild], Memberpress):
     @event_type.setter
     def event_type(self, value):
         if type(value) == str or value is None:
-            if value in MemberpressEventTypes.all_events():
+            if value in MemberpressEventTypes.all_event_types():
                 self._event_type = value
             else:
                 logger.warning("event_type() received an unknown event type {value}".format(value=value))

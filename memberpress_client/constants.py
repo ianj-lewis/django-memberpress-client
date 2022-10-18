@@ -16,7 +16,7 @@ class MemberpressTransactionTypes:
 
 class MemberpressEventTypes:
     @classmethod
-    def all_events(self):
+    def all_event_types(self):
         """
         generate a list of all class variable values
         """

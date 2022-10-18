@@ -15,6 +15,18 @@ class MemberpressTransactionTypes:
 
 
 class MemberpressEventTypes:
+    @classmethod
+    def all_events(self):
+        """
+        generate a list of all class variable values
+        """
+        return [
+            getattr(self, event_type)
+            for event_type in [
+                attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")
+            ]
+        ]
+
     TRANSACTION = "transaction"
     SUBSCRIPTION = "subscription"
     MEMBER = "member"

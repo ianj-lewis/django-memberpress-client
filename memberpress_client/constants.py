@@ -14,36 +14,26 @@ class MemberpressTransactionTypes:
     PAYMENT = "payment"
 
 
-class MemberpressEventTypes:
+class TypeBase:
     @classmethod
-    def all_event_types(self):
+    def all(self):
         """
         generate a list of all class variable values
         """
         return [
-            getattr(self, event_type)
-            for event_type in [
-                attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")
-            ]
+            getattr(self, value)
+            for value in [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")]
         ]
 
+
+class MemberpressEventTypes(TypeBase):
     TRANSACTION = "transaction"
     SUBSCRIPTION = "subscription"
     MEMBER = "member"
     MEMBERSHIP = "membership"
 
 
-class MemberpressEvents:
-    @classmethod
-    def all_events(self):
-        """
-        generate a list of all class variable values
-        """
-        return [
-            getattr(self, event)
-            for event in [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")]
-        ]
-
+class MemberpressEvents(TypeBase):
     AFTER_CC_EXPIRES_REMINDER = "after-cc-expires-reminder"
     AFTER_MEMBER_SIGNUP_REMINDER = "after-member-signup-reminder"
     AFTER_SIGNUP_ABANDONED_REMINDER = "after-signup-abandoned-reminder"

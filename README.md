@@ -89,10 +89,6 @@ urls:
 
 ## Developers
 
-Use these class objects rather than working directly with the memberpress
-json dicts returned by the api. These class objects include structural and type-checking validations,
-plus they handle dict value data type conversations for you.
-
 ### quick start
 
 Keep in mind that this code package is intended to install as an add-on to your existing Django project. Therefore,
@@ -112,6 +108,12 @@ Other common dev chores are automated in the Makefile, noting however that some 
 
 
 ### class hierarchy
+
+Use these class objects rather than working directly with the memberpress
+json dicts returned by the api. These class objects include structural and type-checking validations,
+plus they handle dict value data type conversations for you.
+
+
 
 ```python
 class Memberpress:

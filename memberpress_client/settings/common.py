@@ -48,5 +48,3 @@ def plugin_settings(settings):
     settings.MEMBERPRESS_SENSITIVE_KEYS = env("MEMBERPRESS_SENSITIVE_KEYS")  # noqa: F841
 
     settings.MAKO_TEMPLATE_DIRS_BASE.extend([TEMPLATES_DIR])
-    settings.INSTALLED_APPS.append("django-environ")
-    settings.INSTALLED_APPS.append("validators")

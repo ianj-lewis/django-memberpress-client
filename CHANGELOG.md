@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## Version 0.0.7 (2022-10-19)
+
+- bug fixes. remove django-environ and validators from INSTALLED_APPS
+
 ## Version 0.0.6 (2022-10-17)
 
 - validate event.setter against MemberpressEvents.all_events()

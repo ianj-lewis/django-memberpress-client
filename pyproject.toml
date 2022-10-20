@@ -24,7 +24,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 #------------------------------------------------------------------------------
 [project]
 name = "django-memberpress-client"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
   { name="Lawrence McDaniel", email="lpm0073@gmail.com" }
 ]
@@ -52,7 +52,7 @@ Repository = "https://github.com/lpm0073/django-memberpress-client"
 #------------------------------------------------------------------------------
 [project.optional-dependencies]
 common = [
-     "Django>=2.2,<2.3"
+     "Django>=3.2"
 ]
 local = [
     "pre-commit",

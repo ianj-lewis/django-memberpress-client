@@ -112,6 +112,6 @@ setup(
         "Programming Language :: Python :: 3.10",
     ],
     extras_require={
-        "Django": ["Django>=2.2,<2.3"],
+        "Django": ["Django>=3.2"],
     },
 )

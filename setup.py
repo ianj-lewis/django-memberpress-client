@@ -14,19 +14,7 @@ def load_readme():
         return f.read()
 
 
-def load_about():
-    about = {}
-    with io.open(
-        os.path.join(HERE, "memberpress_client", "__about__.py"),
-        "rt",
-        encoding="utf-8",
-    ) as f:
-        exec(f.read(), about)  # pylint: disable=exec-used
-    return about
-
-
 README = load_readme()
-ABOUT = load_about()
 
 
 def load_requirements(*requirements_paths):

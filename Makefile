@@ -29,6 +29,9 @@ requirements:
 	pip install -r requirements/common.txt
 	pip install -r requirements/local.txt
 
+report:
+	cloc $(git ls-files)
+
 shell:
 	./manage.py shell_plus
 

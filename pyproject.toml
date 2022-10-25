@@ -24,7 +24,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 #------------------------------------------------------------------------------
 [project]
 name = "django-memberpress-client"
-version = "0.0.8"
+version = "0.0.9"
 authors = [
   { name="Lawrence McDaniel", email="lpm0073@gmail.com" }
 ]
@@ -37,7 +37,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "Django>=2.2,<2.3"
+  "Django>=3.2"
 ]
 
 keywords = ["Python", "Django", "Wordpress", "MemberPress", "REST API"]
@@ -51,9 +51,6 @@ Repository = "https://github.com/lpm0073/django-memberpress-client"
 # see: https://setuptools.pypa.io/en/latest/userguide/dependency_management.html
 #------------------------------------------------------------------------------
 [project.optional-dependencies]
-common = [
-     "Django>=3.2"
-]
 local = [
     "pre-commit",
     "black",

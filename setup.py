@@ -27,7 +27,6 @@ def load_about():
 
 README = load_readme()
 ABOUT = load_about()
-VERSION = ABOUT["__version__"]
 
 
 def load_requirements(*requirements_paths):
@@ -66,7 +65,6 @@ print("requirements found: {requirements}".format(requirements=load_requirements
 
 setup(
     name="django-memberpress-client",
-    version=VERSION,
     url="https://github.com/lpm0073/django-memberpress-client",
     project_urls={
         "Code": "https://github.com/lpm0073/django-memberpress-client",
@@ -111,7 +109,4 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    extras_require={
-        "Django": ["Django>=3.2"],
-    },
 )

@@ -1,8 +1,7 @@
 # -------------------------------------------------------------------------
 # build a package for PyPi
 # -------------------------------------------------------------------------
-.PHONY: build
-.PHONY: requirements
+.PHONY: build requirements deps-update deps-init
 
 db:
 	mysql -uroot -p < memberpress_client/scripts/init-db.sql
@@ -62,6 +61,19 @@ build:
 	python3 -m pip install --upgrade twine
 	twine check dist/*
 
+
+deps-init:
+	rm -rf .tox
+	python -m pip install --upgrade pip wheel
+	pwd
+	python -m pip install --upgrade -r requirements/common.txt -r requirements/local.txt -e .
+	python -m pip check
+
+deps-update:
+	pre-commit autoupdate
+	python -m pip install --upgrade pip-tools pip wheel
+	python -m piptools compile --upgrade --resolver backtracking -o ./requirements/common.txt pyproject.toml
+	python -m piptools compile --extra dev --upgrade --resolver backtracking -o ./requirements/local.txt pyproject.toml
 
 # -------------------------------------------------------------------------
 # upload to PyPi Test

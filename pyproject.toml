@@ -37,7 +37,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "Django>=3.2"
+  "Django==3.2.16",
+  "validators",
+  "django-environ"
 ]
 
 keywords = ["Python", "Django", "Wordpress", "MemberPress", "REST API"]

@@ -81,7 +81,7 @@ deps-update:
 # -------------------------------------------------------------------------
 release-test:
 	make build
-	twine upload --skip-existing --repository testpypi dist/*
+	twine upload --verbose --skip-existing --repository testpypi dist/*
 
 
 # -------------------------------------------------------------------------
@@ -90,4 +90,4 @@ release-test:
 # -------------------------------------------------------------------------
 release-prod:
 	make build
-	twine upload --skip-existing dist/*
+	twine upload --verbose --skip-existing dist/*

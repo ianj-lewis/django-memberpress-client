@@ -3,49 +3,64 @@
 # -------------------------------------------------------------------------
 .PHONY: build requirements deps-update deps-init
 
-db:
+dev-db:
 	mysql -uroot -p < memberpress_client/scripts/init-db.sql
 
-up:
+dev-up:
 	brew services start mysql
 	brew services start redis
 
-down:
+dev-down:
 	brew services stop mysql
 	brew services stop redis
 
-server:
+django-server:
 	./manage.py runserver 0.0.0.0:8000
 
-migrate:
+django-migrate:
 	./manage.py migrate
 	./manage.py makemigrations memberpress_client
 	./manage.py migrate memberpress_client
 
+django-shell:
+	./manage.py shell_plus
+
+
+django-quickstart:
+	pre-commit install
+	make requirements
+	make dev-up
+	make dev-db
+	make django-migrate
+	./manage.py createsuperuser
+	make django-server
+
+django-test:
+	./manage.py test
+
 requirements:
+	pre-commit autoupdate
+	python -m pip install --upgrade pip wheel
 	pip-compile requirements/common.in
 	pip-compile requirements/local.in
 	pip install -r requirements/common.txt
 	pip install -r requirements/local.txt
 
+deps-init:
+	rm -rf .tox
+	python -m pip install --upgrade pip wheel
+	python -m pip install --upgrade -r requirements/common.txt -r requirements/local.txt -e .
+	python -m pip check
+
+deps-update:
+	python -m pip install --upgrade pip-tools pip wheel
+	python -m piptools compile --upgrade --resolver backtracking -o ./requirements/common.txt pyproject.toml
+	python -m piptools compile --extra dev --upgrade --resolver backtracking -o ./requirements/local.txt pyproject.toml
+
+
 report:
 	cloc $(git ls-files)
 
-shell:
-	./manage.py shell_plus
-
-
-quickstart:
-	pre-commit install
-	make requirements
-	make up
-	make db
-	make migrate
-	./manage.py createsuperuser
-	make server
-
-test:
-	./manage.py test
 
 build:
 	python3 -m pip install --upgrade setuptools wheel twine
@@ -61,19 +76,6 @@ build:
 	python3 -m pip install --upgrade twine
 	twine check dist/*
 
-
-deps-init:
-	rm -rf .tox
-	python -m pip install --upgrade pip wheel
-	pwd
-	python -m pip install --upgrade -r requirements/common.txt -r requirements/local.txt -e .
-	python -m pip check
-
-deps-update:
-	pre-commit autoupdate
-	python -m pip install --upgrade pip-tools pip wheel
-	python -m piptools compile --upgrade --resolver backtracking -o ./requirements/common.txt pyproject.toml
-	python -m piptools compile --extra dev --upgrade --resolver backtracking -o ./requirements/local.txt pyproject.toml
 
 # -------------------------------------------------------------------------
 # upload to PyPi Test

@@ -1,6 +1,6 @@
 # CHANGE LOG
 
-## Version 0.0.10 (2022-10-28)
+## Version 0.0.11 (2022-10-28)
 
 - bug fixes. remove django-environ and validators from INSTALLED_APPS
 - bug fixes. change django version requirement to >= 3.2

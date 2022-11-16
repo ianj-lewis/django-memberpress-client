@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## Version 0.0.12 (2022-11-15)
+
+- bug fixes.
+
 ## Version 0.0.11 (2022-10-28)
 
 - bug fixes. remove django-environ and validators from INSTALLED_APPS
@@ -10,7 +14,7 @@
 - validate event.setter against MemberpressEvents.all_events()
 - validate event_type.setter against MemberpressEventTypes.all_event_types()
 - add more event tests
-- createe .env-sample for local and production
+- create .env-sample for local and production
 
 ## Version 0.0.5 (2022-10-17)
 

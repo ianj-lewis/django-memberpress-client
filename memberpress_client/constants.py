@@ -157,8 +157,13 @@ class MemberPressAPI_Endpoints:
     # -------------------------------------------------------------------------
     # api end points originating from https://stepwisemath.ai/wp-json/mp/v1/
     # -------------------------------------------------------------------------
-    MEMBERPRESS_API_BASE = settings.MEMBERPRESS_API_BASE_URL + "wp-json/mp/v1/"
-    MEMBERPRESS_API_ME_PATH = MEMBERPRESS_API_BASE + "me/"
+    @property
+    def MEMBERPRESS_API_BASE(self):
+        return f"{settings.MEMBERPRESS_API_BASE_URL}wp-json/mp/v1/"
+
+    @property
+    def MEMBERPRESS_API_ME_PATH(self):
+        return f"{settings.MEMBERPRESS_API_BASE}me/"
 
     # -------------------------------------------------------------------------
     # curl "https://set-me-please.com/wp-json/mp/v1/members?search=mcdaniel" -H "MEMBERPRESS-API-KEY: set-me-please"

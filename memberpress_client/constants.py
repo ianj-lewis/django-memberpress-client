@@ -7,7 +7,7 @@ memberpress REST API Client plugin for Django - plugin constants
 
 # django stuff
 from django.conf import settings
-from django.utils.decorators import classproperty
+from django.utils.functional import classproperty
 
 
 class MemberpressTransactionTypes:

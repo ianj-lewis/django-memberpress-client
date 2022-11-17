@@ -7,6 +7,7 @@ memberpress REST API Client plugin for Django - plugin constants
 
 # django stuff
 from django.conf import settings
+from django.utils.functional import classproperty
 
 
 class MemberpressTransactionTypes:
@@ -157,8 +158,14 @@ class MemberPressAPI_Endpoints:
     # -------------------------------------------------------------------------
     # api end points originating from https://stepwisemath.ai/wp-json/mp/v1/
     # -------------------------------------------------------------------------
-    MEMBERPRESS_API_BASE = settings.MEMBERPRESS_API_BASE_URL + "wp-json/mp/v1/"
-    MEMBERPRESS_API_ME_PATH = MEMBERPRESS_API_BASE + "me/"
+
+    @classproperty
+    def MEMBERPRESS_API_BASE(cls):
+        return f"{settings.MEMBERPRESS_API_BASE_URL}wp-json/mp/v1/"
+
+    @classproperty
+    def MEMBERPRESS_API_ME_PATH(cls):
+        return f"{cls.MEMBERPRESS_API_BASE}me/"
 
     # -------------------------------------------------------------------------
     # curl "https://set-me-please.com/wp-json/mp/v1/members?search=mcdaniel" -H "MEMBERPRESS-API-KEY: set-me-please"

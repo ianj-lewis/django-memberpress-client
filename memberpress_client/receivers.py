@@ -18,10 +18,10 @@ try:
 
     RUNNING_LOCALLY = False
 except ImportError:
-    RUNNING_LOCALLY = True
     from django.dispatch import Signal
 
     COURSE_GRADE_NOW_PASSED = Signal()
+    RUNNING_LOCALLY = True
 
 
 # this repo

@@ -24,7 +24,7 @@ build-backend = "setuptools.build_meta:__legacy__"
 #------------------------------------------------------------------------------
 [project]
 name = "django-memberpress-client"
-version = "0.0.12"
+version = "0.0.13"
 authors = [
   { name="Lawrence McDaniel", email="lpm0073@gmail.com" }
 ]
@@ -37,7 +37,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "Django==3.2.16",
+  "Django>=3.2,<=3.3",
   "validators",
   "django-environ"
 ]

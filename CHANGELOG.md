@@ -1,6 +1,10 @@
 # CHANGE LOG
 
-## Version 0.0.13 (2022-12-20)
+## Version 1.0.1 (2022-12-20)
+
+- standardize usage of python3 in Makefile
+
+## Version 1.0.0 (2022-12-20)
 
 - general production release
 

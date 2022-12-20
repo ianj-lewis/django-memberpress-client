@@ -40,7 +40,7 @@ django-test:
 
 requirements:
 	pre-commit autoupdate
-	python -m pip install --upgrade pip wheel
+	python3 -m pip install --upgrade pip wheel
 	pip-compile requirements/common.in
 	pip-compile requirements/local.in
 	pip install -r requirements/common.txt
@@ -48,14 +48,14 @@ requirements:
 
 deps-init:
 	rm -rf .tox
-	python -m pip install --upgrade pip wheel
-	python -m pip install --upgrade -r requirements/common.txt -r requirements/local.txt -e .
-	python -m pip check
+	python3 -m pip install --upgrade pip wheel
+	python3 -m pip install --upgrade -r requirements/common.txt -r requirements/local.txt -e .
+	python3 -m pip check
 
 deps-update:
-	python -m pip install --upgrade pip-tools pip wheel
-	python -m piptools compile --upgrade --resolver backtracking -o ./requirements/common.txt pyproject.toml
-	python -m piptools compile --extra dev --upgrade --resolver backtracking -o ./requirements/local.txt pyproject.toml
+	python3 -m pip install --upgrade pip-tools pip wheel
+	python3 -m piptools compile --upgrade --resolver backtracking -o ./requirements/common.txt pyproject.toml
+	python3 -m piptools compile --extra dev --upgrade --resolver backtracking -o ./requirements/local.txt pyproject.toml
 
 
 report:
@@ -64,7 +64,7 @@ report:
 
 build:
 	python3 -m pip install --upgrade setuptools wheel twine
-	python -m pip install --upgrade build
+	python3 -m pip install --upgrade build
 
 	if [ -d "./build" ]; then sudo rm -r build; fi
 	if [ -d "./dist" ]; then sudo rm -r dist; fi

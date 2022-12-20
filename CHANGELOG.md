@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## Version 0.0.13 (2022-12-20)
+
+- general production release
+
 ## Version 0.0.13 (2022-11-21)
 
 - bug fixes.

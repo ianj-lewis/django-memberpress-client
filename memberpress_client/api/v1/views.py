@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class EventView(APIView):
     @app_logger
-    def put(self, request):
+    def post(self, request):
         data = request.POST
         method = request.REQUEST_METHOD
 

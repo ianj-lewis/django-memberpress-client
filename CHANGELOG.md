@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## Version 1.0.2 (2023-02-15)
+
+- fix webhooks api to receive post requests
+
 ## Version 1.0.1 (2022-12-20)
 
 - standardize usage of python3 in Makefile

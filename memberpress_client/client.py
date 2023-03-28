@@ -98,7 +98,7 @@ class MemberpressAPIClient(Memberpress):
             # caching results iff response is a valid json object.
             cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
             self.unlock()
-        return response    
+        return response
 
     def is_valid_dict(self, response, qc_keys) -> bool:
         if not type(response) == dict:

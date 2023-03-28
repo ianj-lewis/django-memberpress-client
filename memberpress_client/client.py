@@ -71,7 +71,7 @@ class MemberpressAPIClient(Memberpress):
     @request_manager
     def get(self, path, params=None, operation="") -> json:
         url = self.get_url(path)
-        cache_key = f"MemberpressAPIClient.get:{url}"
+        cache_key = f"MemberpressAPIClient.get:{url}:{params}"
         response = cache.get(cache_key)
 
         if not response and not self.locked:
@@ -98,7 +98,7 @@ class MemberpressAPIClient(Memberpress):
             # caching results iff response is a valid json object.
             cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
             self.unlock()
-        return response
+        return response    
 
     def is_valid_dict(self, response, qc_keys) -> bool:
         if not type(response) == dict:

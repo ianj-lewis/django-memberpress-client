@@ -1,5 +1,9 @@
 # CHANGE LOG
 
+## Version 1.0.3 (2023-03-29)
+
+- fix caching to include query parameters in cache key
+
 ## Version 1.0.2 (2023-02-15)
 
 - fix webhooks api to receive post requests

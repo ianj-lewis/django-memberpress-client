@@ -69,10 +69,13 @@ class MemberpressAPIClient(Memberpress):
         return response
 
     @request_manager
-    def get(self, path, params=None, operation="") -> json:
+    def get(self, path, params=None, operation="", enable_caching=True) -> json:
         url = self.get_url(path)
-        cache_key = f"MemberpressAPIClient.get:{url}:{params}"
-        response = cache.get(cache_key)
+        response = None
+        if enable_caching:
+            cache_key_params = json.dumps(params, sort_keys=True, separators=(',', ':'))
+            cache_key = f"MemberpressAPIClient.get:{url}:{cache_key_params}"
+            response = cache.get(cache_key)
 
         if not response and not self.locked:
             # set a lock to prevent multiple calls
@@ -80,7 +83,8 @@ class MemberpressAPIClient(Memberpress):
 
             # purge whatever might have previously existing in the cache, in case our
             # response object raises an exception here ...
-            cache.delete(cache_key)
+            if enable_caching:
+                cache.delete(cache_key)
 
             log_pretrip(caller=inspect.currentframe().f_code.co_name, url=url, data={}, operation=operation)
             response = requests.get(url, params=params, headers=self.headers, verify=False)
@@ -96,7 +100,8 @@ class MemberpressAPIClient(Memberpress):
                     response = json.dumps(response)
 
             # caching results iff response is a valid json object.
-            cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
+            if enable_caching:
+                cache.set(cache_key, response, settings.MEMBERPRESS_CACHE_EXPIRATION)
             self.unlock()
         return response
 

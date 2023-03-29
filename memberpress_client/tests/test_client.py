@@ -38,3 +38,16 @@ class TestClient(TestCase):
         # second call with params should retrieve from cache
         client.get("test", params={"param_1": "value_1"})
         assert mock_get.call_count == 2
+        # first call with multiple params should make a request
+        client.get("test", params={"param_1": "value_1", "param_2": "value_2"})
+        assert mock_get.call_count == 3
+        # second call with params out of order should still retrieve from cache
+        client.get("test", params={"param_2": "value_2", "param_1": "value_1"})
+        assert mock_get.call_count == 3
+        # third call with same params but different values should make a request
+        client.get("test", params={"param_1": "value_1", "param_2": "value_3"})
+        assert mock_get.call_count == 4
+        # call again with same params but caching disabled should make a request
+        client.get("test", params={"param_1": "value_1", "param_2": "value_3"}, enable_caching=False)
+        assert mock_get.call_count == 5
+        

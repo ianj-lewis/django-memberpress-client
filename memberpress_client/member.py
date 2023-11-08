@@ -39,8 +39,9 @@ class Member(MemberpressAPIClient):
     _latest_transaction = None
     _active_memberships = None
 
-    def __init__(self, username=None, user=None, request=None, response=None) -> None:
+    def __init__(self, user_id=None, username=None, user=None, request=None, response=None) -> None:
         """
+        user_id <int>: a Wordpress user ID
         username <str>: a Wordpress username
         user <obj>: a Django user object
         request <requests> a Django requests.request object
@@ -51,30 +52,34 @@ class Member(MemberpressAPIClient):
         self.request = request
         self.json = response
 
-        # 4th priority username
+        # 5th priority username
         if response:
             try:
                 self._username = response["username"]
             except Exception:
                 pass
 
-        # 3rd priority username
+        # 4rd priority username
         if request:
             try:
                 self._username = request.user.username
             except Exception:
                 pass
 
-        # 2nd priority username
+        # 3nd priority username
         if user:
             try:
                 self._username = user.username
             except Exception:
                 pass
 
-        # 1st priority username
+        # 2st priority username
         if username:
             self._username = username
+
+        # 1st priority user ID
+        if user_id:
+            self._user_id = user_id
 
         self.validate()
 
@@ -85,6 +90,7 @@ class Member(MemberpressAPIClient):
     def init(self):
         super().init()
         self._request = None
+        self._user_id = None
         self._username = None
         self._is_valid = False
         self._recent_subscriptions = None
@@ -155,11 +161,11 @@ class Member(MemberpressAPIClient):
         an empty dict {} for the life of the object instance.
         """
         # note: need to use private _username in order to avoid recursion.
-        if self._username and not self.json and not self.locked:
+        if (self._user_id or self._username) and not self.json and not self.locked:
             """
             expected result is a list containing 1 dict
             """
-            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(username=self._username)
+            path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(user_id=self._user_id, username=self._username)
             retval = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
 
             if type(retval) == list and len(retval) == 1:

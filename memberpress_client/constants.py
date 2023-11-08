@@ -170,8 +170,11 @@ class MemberPressAPI_Endpoints:
     # -------------------------------------------------------------------------
     # curl "https://set-me-please.com/wp-json/mp/v1/members?search=mcdaniel" -H "MEMBERPRESS-API-KEY: set-me-please"
     # -------------------------------------------------------------------------
-    def MEMBERPRESS_API_MEMBER_PATH(username):
-        return MemberPressAPI_Endpoints.MEMBERPRESS_API_BASE + "members?search=" + username
+    def MEMBERPRESS_API_MEMBER_PATH(user_id=None, username=None):
+        suffix = f"members?search={username}"
+        if user_id:
+            suffix = f"members/{user_id}" 
+        return MemberPressAPI_Endpoints.MEMBERPRESS_API_BASE + suffix
 
 
 COMPLETE_MEMBER_DICT = [

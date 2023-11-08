@@ -39,13 +39,13 @@ class Member(MemberpressAPIClient):
     _latest_transaction = None
     _active_memberships = None
 
-    def __init__(self, user_id=None, username=None, user=None, request=None, response=None) -> None:
+    def __init__(self, username=None, user=None, request=None, response=None, user_id=None) -> None:
         """
-        user_id <int>: a Wordpress user ID
         username <str>: a Wordpress username
         user <obj>: a Django user object
         request <requests> a Django requests.request object
         response <json> the json reponse from memberpress REST API
+        user_id <int>: a Wordpress user ID
         """
         super().__init__()
         self.init()

@@ -163,7 +163,8 @@ class Member(MemberpressAPIClient):
         # note: need to use private _username in order to avoid recursion.
         if (self._user_id or self._username) and not self.json and not self.locked:
             """
-            expected result is a list containing 1 dict
+            expected result is a dict if `user_id` is provided, or list containing
+            one or more dicts if `username` is used to search for the member.
             """
             path = MemberPressAPI_Endpoints.MEMBERPRESS_API_MEMBER_PATH(user_id=self._user_id, username=self._username)
             retval = self.get(path=path, operation=MemberPressAPI_Operations.GET_MEMBER)
